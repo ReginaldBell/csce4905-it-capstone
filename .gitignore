@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# Uploaded pet photos are runtime data, not source.
+src/static/uploads/*
+!src/static/uploads/.gitkeep

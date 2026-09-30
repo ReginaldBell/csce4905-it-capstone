@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}My Pets — Pet Finder{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>My Pets</h1>
+  <a class="btn" href="{{ url_for('pets.new_pet') }}">Add a pet</a>
+</div>
+
+{% if pets %}
+<div class="pet-grid">
+  {% for pet in pets %}
+  <article class="pet-card">
+    {% if pet.photo_path %}
+      <img class="pet-photo" src="{{ url_for('static', filename=pet.photo_path) }}" alt="Photo of {{ pet.name }}">
+    {% else %}
+      <div class="pet-photo pet-photo-placeholder">No photo</div>
+    {% endif %}
+    <h2><a href="{{ url_for('pets.view_pet', pet_id=pet.id) }}">{{ pet.name }}</a></h2>
+    <p class="pet-meta">{{ pet.species }}{% if pet.breed %} · {{ pet.breed }}{% endif %}</p>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p>You haven't added any pets yet.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ pet.name }} — Pet Finder{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ pet.name }}</h1>
+  <div class="actions">
+    <a class="btn" href="{{ url_for('pets.edit_pet', pet_id=pet.id) }}">Edit</a>
+    <a class="btn btn-danger" href="{{ url_for('pets.confirm_delete_pet', pet_id=pet.id) }}">Delete</a>
+  </div>
+</div>
+
+{% if pet.photo_path %}
+  <img class="pet-photo-large" src="{{ url_for('static', filename=pet.photo_path) }}" alt="Photo of {{ pet.name }}">
+{% endif %}
+
+<dl class="pet-details">
+  <dt>Species</dt><dd>{{ pet.species }}</dd>
+  <dt>Breed</dt><dd>{{ pet.breed or '—' }}</dd>
+  <dt>Birth date</dt><dd>{{ pet.birth_date or '—' }}</dd>
+  <dt>Notes</dt><dd>{{ pet.notes or '—' }}</dd>
+  <dt>Added</dt><dd>{{ pet.created_at.strftime('%Y-%m-%d') }}</dd>
+</dl>
+
+<p><a href="{{ url_for('pets.list_pets') }}">&larr; Back to my pets</a></p>
+{% endblock %}
