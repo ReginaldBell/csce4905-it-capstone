@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Delete {{ pet.name }} — Pet Finder{% endblock %}
+{% block content %}
+<h1>Delete {{ pet.name }}?</h1>
+<p>This permanently removes {{ pet.name }} and its photo. This cannot be undone.</p>
+
+<form method="post" action="{{ url_for('pets.delete_pet', pet_id=pet.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-actions">
+    <button type="submit" class="btn btn-danger">Yes, delete {{ pet.name }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('pets.view_pet', pet_id=pet.id) }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}
