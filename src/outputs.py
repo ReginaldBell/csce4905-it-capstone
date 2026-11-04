@@ -6,7 +6,7 @@ current state of the Report, its Pets, and (where relevant) a Contact.
 
 from urllib.parse import quote
 
-from flask import Blueprint, abort, render_template
+from flask import Blueprint, abort, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
 
 from models import Contact
@@ -25,6 +25,11 @@ def _get_owned_contact_or_404(contact_id):
 
 def _pet_list_text(report):
     pets = report.pets
+    if not pets:
+        # Defense in depth: every route that reaches this already checks
+        # report.pets and redirects before calling it, but don't crash on
+        # descriptions[-1] if a future caller forgets to.
+        return "no pets on file"
     descriptions = [
         f"{pet.name} ({pet.species}{', ' + pet.breed if pet.breed else ''})"
         for pet in pets
@@ -70,10 +75,29 @@ def build_agency_email(report):
     return subject, "\n".join(lines)
 
 
+def _require_report_pets_or_redirect(report):
+    """Pets can be deleted independently of the report that references
+    them (deleting a pet drops its report_pets link, not the report
+    itself), so a report can legitimately end up with zero pets by the
+    time someone generates an output for it. Returns a redirect response
+    if that's the case, None otherwise."""
+    if not report.pets:
+        flash(
+            "This report has no pets attached — nothing to generate an output about.",
+            "error",
+        )
+        return redirect(url_for("reports.view_report", report_id=report.id))
+    return None
+
+
 @outputs_bp.route("/<int:report_id>/email", methods=["GET"])
 @login_required
 def pick_email_contact(report_id):
     report = _get_owned_report_or_404(report_id)
+    redirect_response = _require_report_pets_or_redirect(report)
+    if redirect_response:
+        return redirect_response
+
     contacts = (
         Contact.query.filter_by(owner_id=current_user.id)
         .order_by(Contact.category.asc(), Contact.name.asc())
@@ -88,6 +112,10 @@ def pick_email_contact(report_id):
 @login_required
 def email_preview(report_id, contact_id):
     report = _get_owned_report_or_404(report_id)
+    redirect_response = _require_report_pets_or_redirect(report)
+    if redirect_response:
+        return redirect_response
+
     contact = _get_owned_contact_or_404(contact_id)
 
     subject, body = build_agency_email(report)
