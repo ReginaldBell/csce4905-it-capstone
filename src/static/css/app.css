@@ -430,3 +430,72 @@ a {
   flex: 1;
   background: var(--color-bg);
 }
+
+.flyer {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+  border: 4px solid var(--color-text);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+
+.flyer-heading {
+  font-size: 3rem;
+  letter-spacing: 0.1em;
+  margin: 0 0 1rem;
+}
+
+.flyer-photo {
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+}
+
+.flyer-names {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+}
+
+.flyer-details {
+  text-align: left;
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  row-gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.flyer-details dt {
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.flyer-details dd {
+  margin: 0;
+}
+
+.flyer-contact {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+@media print {
+  .site-header,
+  .flash-messages,
+  .no-print {
+    display: none !important;
+  }
+
+  main.container {
+    max-width: none;
+    padding: 0;
+  }
+
+  .flyer {
+    border-width: 2px;
+    page-break-inside: avoid;
+  }
+}

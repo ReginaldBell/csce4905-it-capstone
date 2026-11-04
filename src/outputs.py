@@ -265,3 +265,43 @@ def social_post_preview(report_id):
         pets_with_photos=pets_with_photos,
         pets_without_photos=pets_without_photos,
     )
+
+
+# Report.notes is an unbounded Text column (same as Pet.notes and
+# Contact.notes elsewhere in the app) with no length cap on the form —
+# fine everywhere else, but the flyer has a hard "one page" requirement
+# that free text of unbounded length can blow past: page-break-inside:
+# avoid only stops an *avoidable* break, it can't keep a box on one page
+# once that box is taller than the page itself. Bounded, deterministic
+# truncation is the only thing that actually guarantees one page here,
+# short of adding a layout/PDF engine this project has no other need for.
+MAX_FLYER_NOTES_LENGTH = 200
+
+
+def _truncate_for_flyer(text, max_length=MAX_FLYER_NOTES_LENGTH):
+    if text is None or len(text) <= max_length:
+        return text
+    return text[: max_length - 1].rstrip() + "…"
+
+
+@outputs_bp.route("/<int:report_id>/flyer", methods=["GET"])
+@login_required
+def flyer_preview(report_id):
+    report = _get_owned_report_or_404(report_id)
+    redirect_response = _require_report_pets_or_redirect(report)
+    if redirect_response:
+        return redirect_response
+
+    cover_pet = next((pet for pet in report.pets if pet.photo_path), None)
+    pet_names = ", ".join(pet.name for pet in report.pets)
+    species_text = ", ".join(sorted({pet.species for pet in report.pets}))
+    flyer_notes = _truncate_for_flyer(report.notes) if report.notes else None
+
+    return render_template(
+        "outputs/flyer_preview.html",
+        report=report,
+        cover_pet=cover_pet,
+        pet_names=pet_names,
+        species_text=species_text,
+        flyer_notes=flyer_notes,
+    )

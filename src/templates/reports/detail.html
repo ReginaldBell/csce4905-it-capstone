@@ -49,6 +49,7 @@
   <a class="btn btn-secondary" href="{{ url_for('outputs.pick_email_contact', report_id=report.id) }}">Email an agency</a>
   <a class="btn btn-secondary" href="{{ url_for('outputs.pick_phone_contact', report_id=report.id) }}">Generate phone script</a>
   <a class="btn btn-secondary" href="{{ url_for('outputs.social_post_preview', report_id=report.id) }}">Generate social post</a>
+  <a class="btn btn-secondary" href="{{ url_for('outputs.flyer_preview', report_id=report.id) }}">Printable flyer</a>
 </p>
 
 <p><a href="{{ url_for('reports.list_reports') }}">&larr; Back to reports</a></p>
