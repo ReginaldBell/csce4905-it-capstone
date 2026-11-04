@@ -95,4 +95,4 @@ from approved requirements.
 
 | Date | Author | Summary |
 |---|---|---|
-| 2026-11-04 | Codex | Document delivered Sprint 2 features, local setup, project-state links, and verification scope. |
+| 2026-11-04 | Reginad Bell | Document delivered Sprint 2 features, local setup, project-state links, and verification scope. |
