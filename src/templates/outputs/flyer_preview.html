@@ -19,7 +19,7 @@
       {{ report.last_seen_location }}
       {%- if report.last_seen_at %} — {{ report.last_seen_at.strftime('%Y-%m-%d %H:%M UTC') }}{% endif %}
     </dd>
-    {% if report.notes %}<dt>Notes</dt><dd>{{ report.notes }}</dd>{% endif %}
+    {% if flyer_notes %}<dt>Notes</dt><dd>{{ flyer_notes }}</dd>{% endif %}
   </dl>
   <p class="flyer-contact">If found, please contact: {{ current_user.email }}</p>
 </div>
