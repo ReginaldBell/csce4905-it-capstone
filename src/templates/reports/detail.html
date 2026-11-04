@@ -19,6 +19,31 @@
   <dt>Filed</dt><dd>{{ report.created_at.strftime('%Y-%m-%d %H:%M') }}</dd>
 </dl>
 
+<h2>Change status</h2>
+<form class="inline-form status-form" method="post" action="{{ url_for('reports.update_report_status', report_id=report.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <select name="status">
+    {% for choice in statuses %}
+    <option value="{{ choice }}" {% if choice == report.status %}selected{% endif %}>{{ choice | capitalize }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn">Update status</button>
+</form>
+
+<h2>History</h2>
+<ul class="history-list">
+  {% for event in report.status_events %}
+  <li>
+    {% if event.from_status %}
+      {{ event.from_status | capitalize }} &rarr; {{ event.to_status | capitalize }}
+    {% else %}
+      Filed as {{ event.to_status | capitalize }}
+    {% endif %}
+    <span class="report-meta">{{ event.changed_at.strftime('%Y-%m-%d %H:%M') }}</span>
+  </li>
+  {% endfor %}
+</ul>
+
 <h2>Outputs</h2>
 <p><a class="btn btn-secondary" href="{{ url_for('outputs.pick_email_contact', report_id=report.id) }}">Email an agency</a></p>
 
