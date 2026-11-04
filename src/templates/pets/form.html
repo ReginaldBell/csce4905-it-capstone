@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if pet else 'Add' }} Pet — Pet Finder{% endblock %}
+{% block content %}
+<h1>{{ 'Edit' if pet else 'Add a' }} pet</h1>
+
+<form class="stacked-form" method="post" action="{{ form_action }}" enctype="multipart/form-data" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" value="{{ values.name }}" required maxlength="100" autofocus>
+    {% if errors.get('name') %}<p class="field-error">{{ errors['name'] }}</p>{% endif %}
+  </div>
+
+  <div class="form-group">
+    <label for="species">Species</label>
+    <input type="text" id="species" name="species" value="{{ values.species }}" list="species-list" required>
+    <datalist id="species-list">
+      {% for choice in species_choices %}<option value="{{ choice }}">{% endfor %}
+    </datalist>
+    {% if errors.get('species') %}<p class="field-error">{{ errors['species'] }}</p>{% endif %}
+  </div>
+
+  <div class="form-group">
+    <label for="breed">Breed</label>
+    <input type="text" id="breed" name="breed" value="{{ values.breed }}">
+  </div>
+
+  <div class="form-group">
+    <label for="birth_date">Birth date</label>
+    <input type="date" id="birth_date" name="birth_date" value="{{ values.birth_date }}">
+    {% if errors.get('birth_date') %}<p class="field-error">{{ errors['birth_date'] }}</p>{% endif %}
+  </div>
+
+  <div class="form-group">
+    <label for="notes">Notes</label>
+    <textarea id="notes" name="notes" rows="4">{{ values.notes }}</textarea>
+  </div>
+
+  <div class="form-group">
+    <label for="photo">Photo (JPG or PNG, up to 5 MB)</label>
+    <input type="file" id="photo" name="photo" accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+    {% if errors.get('photo') %}<p class="field-error">{{ errors['photo'] }}</p>{% endif %}
+    {% if pet and pet.photo_path %}
+      <p class="hint">Uploading a new photo replaces the current one.</p>
+    {% endif %}
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn">{{ 'Save changes' if pet else 'Add pet' }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('pets.view_pet', pet_id=pet.id) if pet else url_for('pets.list_pets') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}
