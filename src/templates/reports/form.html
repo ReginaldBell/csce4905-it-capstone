@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}File a Report — Pet Finder{% endblock %}
+{% block content %}
+<h1>File a missing pet report</h1>
+
+<form class="stacked-form" method="post" action="{{ form_action }}" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <div class="form-group">
+    <label>Pets</label>
+    <ul class="checkbox-list">
+      {% for pet in pets %}
+      <li>
+        <label class="checkbox-label">
+          <input type="checkbox" name="pet_ids" value="{{ pet.id }}" {% if pet.id in selected_pet_ids %}checked{% endif %}>
+          {{ pet.name }} ({{ pet.species }})
+        </label>
+      </li>
+      {% endfor %}
+    </ul>
+    {% if errors.get('pet_ids') %}<p class="field-error">{{ errors['pet_ids'] }}</p>{% endif %}
+  </div>
+
+  <div class="form-group">
+    <label for="last_seen_location">Last seen location</label>
+    <input type="text" id="last_seen_location" name="last_seen_location" value="{{ values.last_seen_location }}" required maxlength="255">
+    {% if errors.get('last_seen_location') %}<p class="field-error">{{ errors['last_seen_location'] }}</p>{% endif %}
+  </div>
+
+  <div class="form-group">
+    <label for="last_seen_at">Last seen time (optional)</label>
+    <input type="datetime-local" id="last_seen_at" name="last_seen_at" value="{{ values.last_seen_at }}">
+    {% if errors.get('last_seen_at') %}<p class="field-error">{{ errors['last_seen_at'] }}</p>{% endif %}
+  </div>
+
+  <div class="form-group">
+    <label for="notes">Notes</label>
+    <textarea id="notes" name="notes" rows="4">{{ values.notes }}</textarea>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn">File report</button>
+    <a class="btn btn-secondary" href="{{ url_for('reports.list_reports') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,141 @@
+from datetime import datetime
+
+from flask import (
+    Blueprint,
+    abort,
+    flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+from flask_login import current_user, login_required
+
+from extensions import db
+from models import Pet, Report, ReportPet
+
+reports_bp = Blueprint("reports", __name__, url_prefix="/reports")
+
+MAX_LOCATION_LENGTH = 255
+
+
+def _get_owned_report_or_404(report_id):
+    """Every report lookup is scoped to current_user.id, same as pets."""
+    report = Report.query.filter_by(id=report_id, owner_id=current_user.id).first()
+    if report is None:
+        abort(404)
+    return report
+
+
+def _validate_report_form(form):
+    errors = {}
+
+    last_seen_location = form.get("last_seen_location", "").strip()
+    last_seen_at_raw = form.get("last_seen_at", "").strip()
+    notes = form.get("notes", "").strip()
+    pet_ids_raw = form.getlist("pet_ids")
+
+    if not last_seen_location:
+        errors["last_seen_location"] = "Last seen location is required."
+    elif len(last_seen_location) > MAX_LOCATION_LENGTH:
+        errors["last_seen_location"] = (
+            f"Location must be {MAX_LOCATION_LENGTH} characters or fewer."
+        )
+
+    last_seen_at = None
+    if last_seen_at_raw:
+        try:
+            last_seen_at = datetime.strptime(last_seen_at_raw, "%Y-%m-%dT%H:%M")
+            if last_seen_at > datetime.utcnow():
+                errors["last_seen_at"] = "Last seen time cannot be in the future."
+        except ValueError:
+            errors["last_seen_at"] = "Enter a valid date and time."
+
+    # Only ever accept pet ids that are both well-formed and actually owned
+    # by the current user — a forged id for another user's pet is silently
+    # dropped rather than trusted.
+    try:
+        requested_ids = {int(pid) for pid in pet_ids_raw}
+    except ValueError:
+        requested_ids = set()
+
+    owned_pets = []
+    if requested_ids:
+        owned_pets = Pet.query.filter(
+            Pet.id.in_(requested_ids), Pet.owner_id == current_user.id
+        ).all()
+
+    if not owned_pets:
+        errors["pet_ids"] = "Select at least one pet."
+
+    cleaned = {
+        "last_seen_location": last_seen_location,
+        "last_seen_at": last_seen_at,
+        "notes": notes or None,
+        "pets": owned_pets,
+    }
+    return errors, cleaned
+
+
+@reports_bp.route("", methods=["GET"])
+@login_required
+def list_reports():
+    reports = (
+        Report.query.filter_by(owner_id=current_user.id)
+        .order_by(Report.created_at.desc())
+        .all()
+    )
+    return render_template("reports/list.html", reports=reports)
+
+
+@reports_bp.route("/new", methods=["GET", "POST"])
+@login_required
+def new_report():
+    pets = Pet.query.filter_by(owner_id=current_user.id).order_by(Pet.name.asc()).all()
+
+    if not pets:
+        flash("Add a pet before filing a missing pet report.", "info")
+        return redirect(url_for("pets.new_pet"))
+
+    errors = {}
+    values = {"last_seen_location": "", "last_seen_at": "", "notes": ""}
+    selected_pet_ids = set()
+
+    if request.method == "POST":
+        errors, cleaned = _validate_report_form(request.form)
+        values.update(request.form)
+        selected_pet_ids = {p.id for p in cleaned["pets"]}
+
+        if not errors:
+            report = Report(
+                owner_id=current_user.id,
+                status="open",
+                last_seen_location=cleaned["last_seen_location"],
+                last_seen_at=cleaned["last_seen_at"],
+                notes=cleaned["notes"],
+            )
+            db.session.add(report)
+            db.session.flush()  # assigns report.id before the join rows
+
+            for pet in cleaned["pets"]:
+                db.session.add(ReportPet(report_id=report.id, pet_id=pet.id))
+
+            db.session.commit()
+            flash("Missing pet report filed.", "success")
+            return redirect(url_for("reports.view_report", report_id=report.id))
+
+    return render_template(
+        "reports/form.html",
+        errors=errors,
+        values=values,
+        pets=pets,
+        selected_pet_ids=selected_pet_ids,
+        form_action=url_for("reports.new_report"),
+    )
+
+
+@reports_bp.route("/<int:report_id>", methods=["GET"])
+@login_required
+def view_report(report_id):
+    report = _get_owned_report_or_404(report_id)
+    return render_template("reports/detail.html", report=report)
