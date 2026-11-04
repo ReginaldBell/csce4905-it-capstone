@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Delete {{ contact.name }} — Pet Finder{% endblock %}
+{% block content %}
+<h1>Delete {{ contact.name }}?</h1>
+<p>This permanently removes {{ contact.name }} from your contacts. This cannot be undone.</p>
+
+<form method="post" action="{{ url_for('contacts.delete_contact', contact_id=contact.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-actions">
+    <button type="submit" class="btn btn-danger">Yes, delete {{ contact.name }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('contacts.view_contact', contact_id=contact.id) }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

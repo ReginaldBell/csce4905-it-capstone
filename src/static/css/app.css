@@ -279,3 +279,44 @@ a {
 .pet-details dd {
   margin: 0;
 }
+
+/* Contacts */
+
+.contact-group {
+  margin-bottom: 1.5rem;
+}
+
+.contact-group-heading {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.contact-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.contact-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.contact-row:last-child {
+  border-bottom: none;
+}
+
+.contact-meta {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
