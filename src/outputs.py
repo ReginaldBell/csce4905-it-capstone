@@ -2,6 +2,10 @@
 phone script (card 7), social post (card 8), and flyer (card 9). Nothing
 here is persisted — every route builds its text on the fly from the
 current state of the Report, its Pets, and (where relevant) a Contact.
+
+Email and phone script both need the user to pick which contact the
+output is for; social post and flyer don't (they're not addressed to
+anyone), so only those two share the pick_contact.html picker.
 """
 
 from urllib.parse import quote
@@ -21,6 +25,14 @@ def _get_owned_contact_or_404(contact_id):
     if contact is None:
         abort(404)
     return contact
+
+
+def _owned_contacts():
+    return (
+        Contact.query.filter_by(owner_id=current_user.id)
+        .order_by(Contact.category.asc(), Contact.name.asc())
+        .all()
+    )
 
 
 def _pet_list_text(report):
@@ -73,6 +85,40 @@ def build_agency_email(report):
         "Thank you for your help.",
     ]
     return subject, "\n".join(lines)
+
+
+def build_phone_script(report, contact):
+    """Returns a single script to read when calling a contact about this
+    report."""
+    is_plural = len(report.pets) != 1
+    noun = "pets" if is_plural else "pet"
+    article = "" if is_plural else "a "
+
+    last_seen_at = (
+        report.last_seen_at.strftime("%Y-%m-%d %H:%M UTC")
+        if report.last_seen_at
+        else "an unknown time"
+    )
+
+    lines = [
+        f"Hi, I'm calling {contact.name} to report {article}missing {noun}.",
+        "",
+        f"Pet(s): {_pet_list_text(report)}",
+        f"Last seen location: {report.last_seen_location}",
+        f"Last seen time: {last_seen_at}",
+    ]
+    if report.notes:
+        lines.append(f"Additional details: {report.notes}")
+    lines += [
+        "",
+        "Could you let me know if you have anything on file matching this "
+        "description, or what steps I should take next?",
+        "",
+        f"You can reach me at {current_user.email} if you need to follow up.",
+        "",
+        "Thank you for your time.",
+    ]
+    return "\n".join(lines)
 
 
 def build_social_post(report):
@@ -128,13 +174,12 @@ def pick_email_contact(report_id):
     if redirect_response:
         return redirect_response
 
-    contacts = (
-        Contact.query.filter_by(owner_id=current_user.id)
-        .order_by(Contact.category.asc(), Contact.name.asc())
-        .all()
-    )
     return render_template(
-        "outputs/pick_email_contact.html", report=report, contacts=contacts
+        "outputs/pick_contact.html",
+        report=report,
+        contacts=_owned_contacts(),
+        heading="Email an agency",
+        target_endpoint="outputs.email_preview",
     )
 
 
@@ -162,6 +207,42 @@ def email_preview(report_id, contact_id):
         subject=subject,
         body=body,
         mailto_url=mailto_url,
+    )
+
+
+@outputs_bp.route("/<int:report_id>/phone-script", methods=["GET"])
+@login_required
+def pick_phone_contact(report_id):
+    report = _get_owned_report_or_404(report_id)
+    redirect_response = _require_report_pets_or_redirect(report)
+    if redirect_response:
+        return redirect_response
+
+    return render_template(
+        "outputs/pick_contact.html",
+        report=report,
+        contacts=_owned_contacts(),
+        heading="Generate a phone script",
+        target_endpoint="outputs.phone_script_preview",
+    )
+
+
+@outputs_bp.route("/<int:report_id>/phone-script/<int:contact_id>", methods=["GET"])
+@login_required
+def phone_script_preview(report_id, contact_id):
+    report = _get_owned_report_or_404(report_id)
+    redirect_response = _require_report_pets_or_redirect(report)
+    if redirect_response:
+        return redirect_response
+
+    contact = _get_owned_contact_or_404(contact_id)
+    script = build_phone_script(report, contact)
+
+    return render_template(
+        "outputs/phone_script_preview.html",
+        report=report,
+        contact=contact,
+        script=script,
     )
 
 
