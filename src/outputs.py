@@ -133,3 +133,24 @@ def email_preview(report_id, contact_id):
         body=body,
         mailto_url=mailto_url,
     )
+
+
+@outputs_bp.route("/<int:report_id>/flyer", methods=["GET"])
+@login_required
+def flyer_preview(report_id):
+    report = _get_owned_report_or_404(report_id)
+    redirect_response = _require_report_pets_or_redirect(report)
+    if redirect_response:
+        return redirect_response
+
+    cover_pet = next((pet for pet in report.pets if pet.photo_path), None)
+    pet_names = ", ".join(pet.name for pet in report.pets)
+    species_text = ", ".join(sorted({pet.species for pet in report.pets}))
+
+    return render_template(
+        "outputs/flyer_preview.html",
+        report=report,
+        cover_pet=cover_pet,
+        pet_names=pet_names,
+        species_text=species_text,
+    )

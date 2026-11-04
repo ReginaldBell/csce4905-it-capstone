@@ -45,7 +45,10 @@
 </ul>
 
 <h2>Outputs</h2>
-<p><a class="btn btn-secondary" href="{{ url_for('outputs.pick_email_contact', report_id=report.id) }}">Email an agency</a></p>
+<p>
+  <a class="btn btn-secondary" href="{{ url_for('outputs.pick_email_contact', report_id=report.id) }}">Email an agency</a>
+  <a class="btn btn-secondary" href="{{ url_for('outputs.flyer_preview', report_id=report.id) }}">Printable flyer</a>
+</p>
 
 <p><a href="{{ url_for('reports.list_reports') }}">&larr; Back to reports</a></p>
 {% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Flyer — Pet Finder{% endblock %}
+{% block content %}
+<div class="no-print form-actions">
+  <button type="button" class="btn" onclick="window.print()">Print this flyer</button>
+  <a class="btn btn-secondary" href="{{ url_for('reports.view_report', report_id=report.id) }}">&larr; Back to report</a>
+</div>
+
+<div class="flyer">
+  <h1 class="flyer-heading">MISSING</h1>
+  {% if cover_pet %}
+  <img class="flyer-photo" src="{{ url_for('static', filename=cover_pet.photo_path) }}" alt="Photo of {{ cover_pet.name }}">
+  {% endif %}
+  <p class="flyer-names">{{ pet_names }}</p>
+  <dl class="flyer-details">
+    <dt>Species</dt><dd>{{ species_text }}</dd>
+    <dt>Last seen</dt>
+    <dd>
+      {{ report.last_seen_location }}
+      {%- if report.last_seen_at %} — {{ report.last_seen_at.strftime('%Y-%m-%d %H:%M UTC') }}{% endif %}
+    </dd>
+    {% if report.notes %}<dt>Notes</dt><dd>{{ report.notes }}</dd>{% endif %}
+  </dl>
+  <p class="flyer-contact">If found, please contact: {{ current_user.email }}</p>
+</div>
+{% endblock %}
