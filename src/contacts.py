@@ -25,9 +25,12 @@ CATEGORY_CHOICES = [
     "Other",
 ]
 MAX_NAME_LENGTH = 100
+MAX_EMAIL_LENGTH = 255
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
-PHONE_RE = re.compile(r"^[0-9()+\-.\s]{7,30}$")
+# Requires at least one digit so punctuation-only input ("-------") can't
+# pass as a phone number.
+PHONE_RE = re.compile(r"^(?=.*\d)[0-9()+\-.\s]{7,30}$")
 
 
 def _get_owned_contact_or_404(contact_id):
@@ -62,6 +65,8 @@ def _validate_contact_form(form):
 
     if email and not EMAIL_RE.match(email):
         errors["email"] = "Enter a valid email address."
+    elif email and len(email) > MAX_EMAIL_LENGTH:
+        errors["email"] = f"Email must be {MAX_EMAIL_LENGTH} characters or fewer."
 
     if not phone and not email:
         errors["form"] = "Enter a phone number or an email address."

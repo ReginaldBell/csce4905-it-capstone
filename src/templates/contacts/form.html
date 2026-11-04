@@ -31,7 +31,7 @@
 
   <div class="form-group">
     <label for="email">Email</label>
-    <input type="email" id="email" name="email" value="{{ values.email }}">
+    <input type="email" id="email" name="email" value="{{ values.email }}" maxlength="255">
     {% if errors.get('email') %}<p class="field-error">{{ errors['email'] }}</p>{% endif %}
   </div>
 
