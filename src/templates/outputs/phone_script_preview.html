@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Phone Script — Pet Finder{% endblock %}
+{% block content %}
+<h1>Phone script for calling {{ contact.name }}</h1>
+<p class="hint">Generated from Report #{{ report.id }}. Nothing here is saved — read it on the call, or copy it, then come back if you need to regenerate it.</p>
+
+<div class="form-group">
+  <label for="phone-script">Script</label>
+  <div class="copy-row">
+    <textarea id="phone-script" rows="10" readonly>{{ script }}</textarea>
+    <button type="button" class="btn btn-secondary" data-copy-target="phone-script">Copy</button>
+  </div>
+</div>
+
+{% if contact.phone %}
+<p class="hint">{{ contact.name }}'s number on file: {{ contact.phone }}</p>
+{% else %}
+<p class="hint">{{ contact.name }} has no phone number on file.</p>
+{% endif %}
+
+<p><a href="{{ url_for('outputs.pick_phone_contact', report_id=report.id) }}">&larr; Choose a different contact</a></p>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelectorAll('[data-copy-target]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      var field = document.getElementById(button.getAttribute('data-copy-target'));
+      navigator.clipboard.writeText(field.value).then(function () {
+        var original = button.textContent;
+        button.textContent = 'Copied!';
+        setTimeout(function () { button.textContent = original; }, 1500);
+      });
+    });
+  });
+</script>
+{% endblock %}

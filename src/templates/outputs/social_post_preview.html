@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Social Post — Pet Finder{% endblock %}
+{% block content %}
+<h1>Social media post for Report #{{ report.id }}</h1>
+<p class="hint">Generated from this report. Nothing here is saved — copy the text and download photos to post, then come back if you need to regenerate it.</p>
+
+<div class="form-group">
+  <label for="social-post">Post text</label>
+  <div class="copy-row">
+    <textarea id="social-post" rows="8" readonly>{{ post_text }}</textarea>
+    <button type="button" class="btn btn-secondary" data-copy-target="social-post">Copy</button>
+  </div>
+</div>
+
+<h2>Photos</h2>
+{% if pets_with_photos %}
+<div class="pet-grid">
+  {% for pet in pets_with_photos %}
+  <article class="pet-card">
+    <img class="pet-photo" src="{{ url_for('static', filename=pet.photo_path) }}" alt="Photo of {{ pet.name }}">
+    <p class="pet-meta">{{ pet.name }}</p>
+    <a class="btn btn-secondary" href="{{ url_for('static', filename=pet.photo_path) }}" download>Download photo</a>
+  </article>
+  {% endfor %}
+</div>
+{% endif %}
+{% if pets_without_photos %}
+<p class="hint">No photo on file for: {{ pets_without_photos | map(attribute='name') | join(', ') }}.</p>
+{% endif %}
+
+<p><a href="{{ url_for('reports.view_report', report_id=report.id) }}">&larr; Back to report</a></p>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelectorAll('[data-copy-target]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      var field = document.getElementById(button.getAttribute('data-copy-target'));
+      navigator.clipboard.writeText(field.value).then(function () {
+        var original = button.textContent;
+        button.textContent = 'Copied!';
+        setTimeout(function () { button.textContent = original; }, 1500);
+      });
+    });
+  });
+</script>
+{% endblock %}
