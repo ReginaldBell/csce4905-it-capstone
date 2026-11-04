@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Nearby — Pet Finder{% endblock %}
+{% block styles %}{% include 'community/_map_styles.html' %}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Missing pets nearby</h1>
+  <a class="btn" href="{{ url_for('reports.list_reports') }}">Share a report</a>
+</div>
+<p>Find open reports near you and let owners know if you have seen their pets.</p>
+<form method="get" action="{{ url_for('community.feed') }}" class="nearby-search">
+  {% set location_help = 'Allow device location, or move the map and choose its center. Distances are measured to where each pet was last seen.' %}
+  {% include 'community/_location.html' %}
+  <div class="form-group">
+    <label for="radius">Search distance</label>
+    <select id="radius" name="radius">
+      {% for radius in radii %}<option value="{{ radius }}" {% if values.radius|string == radius|string %}selected{% endif %}>Within {{ radius }} miles</option>{% endfor %}
+    </select>
+  </div>
+  <button class="btn" type="submit">Find nearby reports</button>
+</form>
+
+{% if posts %}
+<h2>Open reports within {{ values.radius }} miles</h2>
+<div class="community-feed">
+  {% for post in posts %}
+    {% set report = post.report %}
+    <article class="community-post">
+      {% include 'community/_report.html' %}
+      <p class="hint">About {{ '%.1f'|format(post.distance) }} miles from your selected location</p>
+      <a class="btn btn-secondary" href="{{ url_for('community.view_post', report_id=report.id) }}">View post and comments</a>
+    </article>
+  {% endfor %}
+</div>
+{% if has_more %}
+<p><a class="btn" href="{{ url_for('community.feed', latitude=values.latitude, longitude=values.longitude, radius=values.radius, page=page+1) }}">Load more reports</a></p>
+{% endif %}
+{% elif searched and not errors %}
+<p class="empty-state">No open reports were found within this distance. Try a wider search.</p>
+{% else %}
+<p class="empty-state">Choose a location to find nearby missing pets.</p>
+{% endif %}
+{% endblock %}
+{% block scripts %}{% include 'community/_map_scripts.html' %}{% endblock %}

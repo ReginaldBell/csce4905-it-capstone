@@ -52,5 +52,20 @@
   <a class="btn btn-secondary" href="{{ url_for('outputs.flyer_preview', report_id=report.id) }}">Printable flyer</a>
 </p>
 
+<h2>Community</h2>
+{% if report.is_shared %}
+<p>This report is shared. Only open reports appear in the Nearby feed.</p>
+<p><a href="{{ url_for('community.view_post', report_id=report.id) }}">View community post and comments</a></p>
+{% endif %}
+{% if report.status == 'open' and report.pets %}
+<p><a class="btn btn-secondary" href="{{ url_for('community.share_report', report_id=report.id) }}">{{ 'Edit community post' if report.is_shared else 'Share with community' }}</a></p>
+{% endif %}
+{% if report.is_shared %}
+<form method="post" action="{{ url_for('community.unshare_report', report_id=report.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <button class="btn btn-secondary" type="submit">Stop sharing</button>
+</form>
+{% endif %}
+
 <p><a href="{{ url_for('reports.list_reports') }}">&larr; Back to reports</a></p>
 {% endblock %}

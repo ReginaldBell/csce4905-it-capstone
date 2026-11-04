@@ -1,0 +1,13 @@
+<div class="location-picker" data-location-picker>
+  <input type="hidden" name="latitude" value="{{ values.latitude }}">
+  <input type="hidden" name="longitude" value="{{ values.longitude }}">
+  <div class="form-actions">
+    <button type="button" class="btn btn-secondary" data-device-location disabled>Use my location</button>
+    <button type="button" class="btn btn-secondary" data-map-center disabled>Use map center</button>
+  </div>
+  <p class="hint">{{ location_help }}</p>
+  <p role="status" aria-live="polite" data-location-status></p>
+  <div class="location-map" data-location-map aria-label="Choose a location on the map"></div>
+  {% if errors.get('location') %}<p class="field-error">{{ errors.location }}</p>{% endif %}
+  <noscript><p>Enable JavaScript to choose a location and browse nearby reports.</p></noscript>
+</div>

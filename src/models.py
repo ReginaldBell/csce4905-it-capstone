@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from flask_login import UserMixin
+from sqlalchemy import false
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from extensions import db
@@ -12,6 +13,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
+    display_name = db.Column(db.String(50))
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     pets = db.relationship(
@@ -22,6 +24,9 @@ class User(db.Model, UserMixin):
     )
     reports = db.relationship(
         "Report", backref="owner", cascade="all, delete-orphan", lazy=True
+    )
+    comments = db.relationship(
+        "ReportComment", backref="author", cascade="all, delete-orphan", lazy=True
     )
 
     def set_password(self, password):
@@ -88,6 +93,16 @@ class Report(db.Model):
     )
     closed_at = db.Column(db.DateTime)
 
+    # Sharing is separate from the owner's private report details.
+    is_shared = db.Column(
+        db.Boolean, nullable=False, default=False, server_default=false()
+    )
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
+    community_area = db.Column(db.String(120))
+    community_description = db.Column(db.Text)
+    shared_at = db.Column(db.DateTime)
+
     report_pets = db.relationship(
         "ReportPet", backref="report", cascade="all, delete-orphan", lazy=True
     )
@@ -97,6 +112,13 @@ class Report(db.Model):
         cascade="all, delete-orphan",
         lazy=True,
         order_by="ReportStatusEvent.changed_at",
+    )
+    comments = db.relationship(
+        "ReportComment",
+        backref="report",
+        cascade="all, delete-orphan",
+        lazy=True,
+        order_by="ReportComment.created_at, ReportComment.id",
     )
 
     @property
@@ -115,6 +137,20 @@ class ReportPet(db.Model):
         db.Integer, db.ForeignKey("reports.id"), nullable=False, index=True
     )
     pet_id = db.Column(db.Integer, db.ForeignKey("pets.id"), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+
+class ReportComment(db.Model):
+    __tablename__ = "report_comments"
+
+    id = db.Column(db.Integer, primary_key=True)
+    report_id = db.Column(
+        db.Integer, db.ForeignKey("reports.id"), nullable=False, index=True
+    )
+    author_id = db.Column(
+        db.Integer, db.ForeignKey("users.id"), nullable=False, index=True
+    )
+    body = db.Column(db.String(1000), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 

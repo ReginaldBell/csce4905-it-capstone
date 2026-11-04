@@ -1,0 +1,16 @@
+<p class="hint">{{ report.owner.display_name or 'Pet owner' }} · {{ report.shared_at.strftime('%b %d, %Y') if report.shared_at else '' }}</p>
+<h2>{{ report.pets | map(attribute='name') | join(', ') }}</h2>
+<div class="community-photos">
+{% for pet in report.pets %}
+  <div>
+    {% if pet.photo_path %}
+    <img class="community-photo" src="{{ url_for('static', filename=pet.photo_path) }}" alt="Photo of {{ pet.name }}" loading="lazy">
+    {% else %}<p class="hint">No photo for {{ pet.name }}</p>{% endif %}
+    <p>{{ pet.name }}: {{ pet.species }}{% if pet.breed %}, {{ pet.breed }}{% endif %}</p>
+  </div>
+{% endfor %}
+</div>
+<p><strong>Last seen near:</strong> {{ report.community_area }}</p>
+{% if report.last_seen_at %}<p><strong>Last seen time:</strong> {{ report.last_seen_at.strftime('%Y-%m-%d %H:%M') }} UTC</p>{% endif %}
+<p class="community-text">{{ report.community_description }}</p>
+<p><span class="status-badge status-{{ report.status }}">{{ report.status }}</span></p>
