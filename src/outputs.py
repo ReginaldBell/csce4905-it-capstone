@@ -121,6 +121,36 @@ def build_phone_script(report, contact):
     return "\n".join(lines)
 
 
+def build_social_post(report):
+    """Returns a single public social-media post caption about this
+    report. Unlike the email/phone outputs, this isn't addressed to any
+    particular contact."""
+    is_plural = len(report.pets) != 1
+    noun = "pets" if is_plural else "pet"
+    article = "" if is_plural else "a "
+    heading = "MISSING PETS" if is_plural else "MISSING PET"
+
+    last_seen = f"Last seen: {report.last_seen_location}"
+    if report.last_seen_at:
+        last_seen += f" around {report.last_seen_at.strftime('%Y-%m-%d %H:%M UTC')}"
+
+    lines = [
+        f"\U0001f43e {heading} \U0001f43e",
+        "",
+        f"Please help us find {article}missing {noun}: {_pet_list_text(report)}.",
+        last_seen,
+    ]
+    if report.notes:
+        lines.append(report.notes)
+    lines += [
+        "",
+        f"If you have any information, please contact {current_user.email}.",
+        "",
+        "#MissingPet #LostAndFound #PetFinder",
+    ]
+    return "\n".join(lines)
+
+
 def _require_report_pets_or_redirect(report):
     """Pets can be deleted independently of the report that references
     them (deleting a pet drops its report_pets link, not the report
@@ -213,4 +243,25 @@ def phone_script_preview(report_id, contact_id):
         report=report,
         contact=contact,
         script=script,
+    )
+
+
+@outputs_bp.route("/<int:report_id>/social-post", methods=["GET"])
+@login_required
+def social_post_preview(report_id):
+    report = _get_owned_report_or_404(report_id)
+    redirect_response = _require_report_pets_or_redirect(report)
+    if redirect_response:
+        return redirect_response
+
+    post_text = build_social_post(report)
+    pets_with_photos = [pet for pet in report.pets if pet.photo_path]
+    pets_without_photos = [pet for pet in report.pets if not pet.photo_path]
+
+    return render_template(
+        "outputs/social_post_preview.html",
+        report=report,
+        post_text=post_text,
+        pets_with_photos=pets_with_photos,
+        pets_without_photos=pets_without_photos,
     )
