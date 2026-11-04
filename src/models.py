@@ -17,6 +17,9 @@ class User(db.Model, UserMixin):
     pets = db.relationship(
         "Pet", backref="owner", cascade="all, delete-orphan", lazy=True
     )
+    contacts = db.relationship(
+        "Contact", backref="owner", cascade="all, delete-orphan", lazy=True
+    )
     reports = db.relationship(
         "Report", backref="owner", cascade="all, delete-orphan", lazy=True
     )
@@ -128,3 +131,26 @@ class ReportStatusEvent(db.Model):
     from_status = db.Column(db.String(20))
     to_status = db.Column(db.String(20), nullable=False)
     changed_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+
+class Contact(db.Model):
+    """An external contact (vet, shelter, animal control, ...), grouped by
+    category in the UI. Scoped per owner, same as Pet."""
+
+    __tablename__ = "contacts"
+
+    id = db.Column(db.Integer, primary_key=True)
+    owner_id = db.Column(
+        db.Integer, db.ForeignKey("users.id"), nullable=False, index=True
+    )
+
+    category = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    phone = db.Column(db.String(30))
+    email = db.Column(db.String(255))
+    notes = db.Column(db.Text)
+
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
+    )

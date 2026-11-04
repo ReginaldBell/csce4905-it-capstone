@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ contact.name }} — Pet Finder{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ contact.name }}</h1>
+  <div class="actions">
+    <a class="btn" href="{{ url_for('contacts.edit_contact', contact_id=contact.id) }}">Edit</a>
+    <a class="btn btn-danger" href="{{ url_for('contacts.confirm_delete_contact', contact_id=contact.id) }}">Delete</a>
+  </div>
+</div>
+
+<dl class="pet-details">
+  <dt>Category</dt><dd>{{ contact.category }}</dd>
+  <dt>Phone</dt><dd>{{ contact.phone or '—' }}</dd>
+  <dt>Email</dt><dd>{{ contact.email or '—' }}</dd>
+  <dt>Notes</dt><dd>{{ contact.notes or '—' }}</dd>
+</dl>
+
+<p><a href="{{ url_for('contacts.list_contacts') }}">&larr; Back to contacts</a></p>
+{% endblock %}
