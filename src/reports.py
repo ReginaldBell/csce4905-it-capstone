@@ -18,6 +18,14 @@ reports_bp = Blueprint("reports", __name__, url_prefix="/reports")
 
 MAX_LOCATION_LENGTH = 255
 
+# Real-world UTC offsets range from UTC+14 (Kiribati) to UTC-12 (Baker/
+# Howland Islands), i.e. tz_offset_minutes (UTC - local) from -840 to
+# +720. Anything outside that is forged/corrupted input, not a real
+# timezone — reject it before it ever reaches timedelta(), which raises
+# an uncaught OverflowError on an absurd value.
+MIN_TZ_OFFSET_MINUTES = -14 * 60
+MAX_TZ_OFFSET_MINUTES = 12 * 60
+
 
 def _get_owned_report_or_404(report_id):
     """Every report lookup is scoped to current_user.id, same as pets."""
@@ -58,13 +66,16 @@ def _validate_report_form(form):
 
     last_seen_at = None
     if last_seen_at_raw:
-        try:
-            local_dt = datetime.strptime(last_seen_at_raw, "%Y-%m-%dT%H:%M")
-            last_seen_at = local_dt + timedelta(minutes=tz_offset_minutes)
-            if last_seen_at > datetime.utcnow():
-                errors["last_seen_at"] = "Last seen time cannot be in the future."
-        except ValueError:
+        if not (MIN_TZ_OFFSET_MINUTES <= tz_offset_minutes <= MAX_TZ_OFFSET_MINUTES):
             errors["last_seen_at"] = "Enter a valid date and time."
+        else:
+            try:
+                local_dt = datetime.strptime(last_seen_at_raw, "%Y-%m-%dT%H:%M")
+                last_seen_at = local_dt + timedelta(minutes=tz_offset_minutes)
+                if last_seen_at > datetime.utcnow():
+                    errors["last_seen_at"] = "Last seen time cannot be in the future."
+            except ValueError:
+                errors["last_seen_at"] = "Enter a valid date and time."
 
     # Only ever accept pet ids that are both well-formed and actually owned
     # by the current user — a forged id for another user's pet is silently
