@@ -20,6 +20,9 @@ class User(db.Model, UserMixin):
     contacts = db.relationship(
         "Contact", backref="owner", cascade="all, delete-orphan", lazy=True
     )
+    reports = db.relationship(
+        "Report", backref="owner", cascade="all, delete-orphan", lazy=True
+    )
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -50,10 +53,62 @@ class Pet(db.Model):
         db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
     )
 
-    # TODO (out of scope for Sprint 1, picked up in Sprint 2): the Report
-    # Missing workflow and generated outputs (email/phone script/social
-    # post/flyer text) will reference Pet in a later card. Do not build
-    # against those here.
+    # Deleting a pet drops its links into any missing-pet reports, but not
+    # the reports themselves (a report can cover more than one pet).
+    report_pets = db.relationship(
+        "ReportPet", backref="pet", cascade="all, delete-orphan", lazy=True
+    )
+
+    # TODO (out of scope for Sprint 1, picked up in Sprint 2): contacts
+    # live on their own Contact model. Generated outputs (email/phone
+    # script/social post/flyer text) read from Report + Pet + Contact but
+    # are not stored themselves.
+
+
+class Report(db.Model):
+    """A missing-pet report. Covers one or more pets via ReportPet."""
+
+    __tablename__ = "reports"
+
+    STATUSES = ("open", "found", "closed")
+
+    id = db.Column(db.Integer, primary_key=True)
+    owner_id = db.Column(
+        db.Integer, db.ForeignKey("users.id"), nullable=False, index=True
+    )
+
+    status = db.Column(db.String(20), nullable=False, default="open")
+    last_seen_at = db.Column(db.DateTime)
+    last_seen_location = db.Column(db.String(255))
+    notes = db.Column(db.Text)
+
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+    closed_at = db.Column(db.DateTime)
+
+    report_pets = db.relationship(
+        "ReportPet", backref="report", cascade="all, delete-orphan", lazy=True
+    )
+
+    @property
+    def pets(self):
+        """The Pet rows this report covers, in the order they were added."""
+        return [rp.pet for rp in self.report_pets]
+
+
+class ReportPet(db.Model):
+    """Join row: one pet covered by one missing-pet report."""
+
+    __tablename__ = "report_pets"
+
+    id = db.Column(db.Integer, primary_key=True)
+    report_id = db.Column(
+        db.Integer, db.ForeignKey("reports.id"), nullable=False, index=True
+    )
+    pet_id = db.Column(db.Integer, db.ForeignKey("pets.id"), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 
 class Contact(db.Model):
