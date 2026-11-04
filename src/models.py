@@ -91,6 +91,13 @@ class Report(db.Model):
     report_pets = db.relationship(
         "ReportPet", backref="report", cascade="all, delete-orphan", lazy=True
     )
+    status_events = db.relationship(
+        "ReportStatusEvent",
+        backref="report",
+        cascade="all, delete-orphan",
+        lazy=True,
+        order_by="ReportStatusEvent.changed_at",
+    )
 
     @property
     def pets(self):
@@ -109,6 +116,21 @@ class ReportPet(db.Model):
     )
     pet_id = db.Column(db.Integer, db.ForeignKey("pets.id"), nullable=False, index=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+
+class ReportStatusEvent(db.Model):
+    """One row per status change on a report, oldest first. The initial
+    creation is logged too, with from_status=None."""
+
+    __tablename__ = "report_status_events"
+
+    id = db.Column(db.Integer, primary_key=True)
+    report_id = db.Column(
+        db.Integer, db.ForeignKey("reports.id"), nullable=False, index=True
+    )
+    from_status = db.Column(db.String(20))
+    to_status = db.Column(db.String(20), nullable=False)
+    changed_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 
 class Contact(db.Model):
