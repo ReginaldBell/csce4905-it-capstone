@@ -12,7 +12,7 @@ from flask import (
 from flask_login import current_user, login_required
 
 from extensions import db
-from models import Pet, Report, ReportPet
+from models import Pet, Report, ReportPet, ReportStatusEvent
 
 reports_bp = Blueprint("reports", __name__, url_prefix="/reports")
 
@@ -115,10 +115,15 @@ def new_report():
                 notes=cleaned["notes"],
             )
             db.session.add(report)
-            db.session.flush()  # assigns report.id before the join rows
+            db.session.flush()  # assigns report.id before the join/history rows
 
             for pet in cleaned["pets"]:
                 db.session.add(ReportPet(report_id=report.id, pet_id=pet.id))
+            db.session.add(
+                ReportStatusEvent(
+                    report_id=report.id, from_status=None, to_status="open"
+                )
+            )
 
             db.session.commit()
             flash("Missing pet report filed.", "success")
@@ -138,4 +143,33 @@ def new_report():
 @login_required
 def view_report(report_id):
     report = _get_owned_report_or_404(report_id)
-    return render_template("reports/detail.html", report=report)
+    return render_template(
+        "reports/detail.html", report=report, statuses=Report.STATUSES
+    )
+
+
+@reports_bp.route("/<int:report_id>/status", methods=["POST"])
+@login_required
+def update_report_status(report_id):
+    report = _get_owned_report_or_404(report_id)
+    new_status = request.form.get("status", "").strip()
+
+    if new_status not in Report.STATUSES:
+        flash("Not a valid status.", "error")
+        return redirect(url_for("reports.view_report", report_id=report.id))
+
+    if new_status == report.status:
+        flash(f"Status is already {new_status}.", "info")
+        return redirect(url_for("reports.view_report", report_id=report.id))
+
+    db.session.add(
+        ReportStatusEvent(
+            report_id=report.id, from_status=report.status, to_status=new_status
+        )
+    )
+    report.status = new_status
+    report.closed_at = datetime.utcnow() if new_status == "closed" else None
+    db.session.commit()
+
+    flash(f"Status changed to {new_status}.", "success")
+    return redirect(url_for("reports.view_report", report_id=report.id))
