@@ -48,6 +48,23 @@
 
 {% block scripts %}
 <script>
-  document.getElementById('tz_offset_minutes').value = new Date().getTimezoneOffset();
+  // getTimezoneOffset() depends on daylight-saving rules for the specific
+  // date it's called on, not "today" — compute it from the selected
+  // sighting time, not from `new Date()`, so a sighting on the other
+  // side of a DST transition still converts to the correct UTC instant.
+  (function () {
+    var lastSeenInput = document.getElementById('last_seen_at');
+    var tzField = document.getElementById('tz_offset_minutes');
+
+    function updateTzOffset() {
+      var reference = lastSeenInput.value ? new Date(lastSeenInput.value) : new Date();
+      tzField.value = reference.getTimezoneOffset();
+    }
+
+    lastSeenInput.addEventListener('change', updateTzOffset);
+    lastSeenInput.addEventListener('input', updateTzOffset);
+    lastSeenInput.closest('form').addEventListener('submit', updateTzOffset);
+    updateTzOffset();
+  })();
 </script>
 {% endblock %}
