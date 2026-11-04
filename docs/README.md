@@ -1,39 +1,55 @@
 # Documentation
 
-Lifecycle documents for the CSCE 4905/4925 IT Capstone project, organized by
-**Unified Process** phase. Each document starts as a template — fill it in, keep it current,
-and update it in the same pull request as the work it describes.
+Lifecycle documents for the CSCE 4905/4925 IT Capstone project use the Unified
+Process. The Sprint 2 application baseline is `4d51cc3` on November 4, 2026.
+Implemented behavior is documented; sponsor approval, deployment, and formal
+acceptance remain separate pending activities.
 
-## Phases
+## Start here
 
-### 1 — Inception
-Define the problem, agree on scope with the sponsor, and capture requirements.
-- [`vision.md`](1-inception/vision.md) — problem statement, scope, stakeholders, success criteria
-- [`requirements-srs.md`](1-inception/requirements-srs.md) — functional and non-functional requirements
+- [Project state and change record](../PROJECT_STATE.md): living baseline, changes,
+  decision index, pending work, and update procedure.
+- [Sprint 2 delivery and decision record](project-management/sprint-2-record.md):
+  delivered cards, PR/commit ledger, rationale, review defects/fixes, and evidence limits.
+- [User manual](4-transition/user-manual.md): tasks and expected application behavior.
+- [Maintenance manual](4-transition/maintenance-manual.md): local setup and operation.
 
-### 2 — Elaboration
-Nail down behavior and architecture; retire the highest technical risks.
-- [`use-case-model.md`](2-elaboration/use-case-model.md) — actors, use cases, main and alternate flows
-- [`architecture-design.md`](2-elaboration/architecture-design.md) — architecture, components, data model, interfaces
+## Lifecycle documents
 
-### 3 — Construction
-Build the system in iterations and prove it works.
-- [`test-plan.md`](3-construction/test-plan.md) — test strategy, cases, traceability, results
-
-### 4 — Transition
-Hand the system over.
-- [`user-manual.md`](4-transition/user-manual.md) — how an end user operates the system
-- [`maintenance-manual.md`](4-transition/maintenance-manual.md) — how a future team runs, fixes, and extends it
+| Phase | Document | Current purpose |
+|---|---|---|
+| Inception | [Vision and scope](1-inception/vision.md) | Sponsor-facing draft; unresolved items stay explicit |
+| Inception | [Requirements](1-inception/requirements-srs.md) | Concrete Sprint 2 requirements and test traceability |
+| Elaboration | [Use cases](2-elaboration/use-case-model.md) | Implemented user flows and alternates |
+| Elaboration | [Architecture and design](2-elaboration/architecture-design.md) | Components, schema, interfaces, ownership, and design rules |
+| Construction | [Test plan and results](3-construction/test-plan.md) | Reproducible cases and historical review evidence |
+| Transition | [User manual](4-transition/user-manual.md) | End-user workflows and troubleshooting |
+| Transition | [Maintenance manual](4-transition/maintenance-manual.md) | Setup, data, configuration, and handover limits |
 
 ## Project management
-- [`project-management/kanban.md`](project-management/kanban.md) — board columns, card rules, definition of done
 
-## Document conventions
+- [Kanban conventions](project-management/kanban.md): board columns, card rules, definition of done.
+- [Sprint 2 record](project-management/sprint-2-record.md): preserve this as historical context.
+- [PROJECT_STATE.md](../PROJECT_STATE.md): update when behavior, decisions, or project status changes.
 
-- Markdown only; one document per file.
-- Every document carries a revision history table at the bottom — add a row on each
-  substantive change (date, author, summary).
-- Requirements get stable IDs (`FR-01`, `NFR-01`, `UC-01`) and those IDs are what test
-  cases and design sections reference.
-- Mark anything unresolved as `_TBD_` rather than deleting the heading, so gaps stay visible.
-- Diagrams: source in `docs/diagrams/` where possible, exported image committed alongside.
+## Conventions
+
+- Markdown is the source format. Add a dated revision row for substantive changes.
+- Sprint 2 requirement/use-case/test IDs use `FR-S2-xx`, `NFR-S2-xx`, `UC-S2-xx`,
+  and `TC-S2-xx`. Decisions use `S2-Dxx`. These replace unfilled template examples,
+  without claiming a sponsor-approved requirements baseline.
+- Link requirements to use cases, design, and test cases. Distinguish card numbers
+  from PR numbers.
+- Keep unknowns as `_TBD_` and distinguish implementation, verification, deployment,
+  and acceptance. Do not convert examples into approved requirements.
+- Record actual test environments and limits; temporary review scripts/PDFs do not
+  establish committed automation or CI.
+- Diagram source may be inline Mermaid, as in the architecture document, or stored
+  under `docs/diagrams/` when separate source/export files are needed.
+- Update this index, the root README, and project state when adding major records.
+
+## Revision history
+
+| Date | Author | Summary |
+|---|---|---|
+| 2026-11-04 | Codex | Index the Sprint 2 documentation set and establish state/decision/traceability conventions. |
