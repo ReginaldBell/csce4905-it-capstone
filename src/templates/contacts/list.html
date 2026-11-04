@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Contacts — Pet Finder{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Contacts</h1>
+  <a class="btn" href="{{ url_for('contacts.new_contact') }}">Add a contact</a>
+</div>
+
+{% if grouped_contacts %}
+  {% for category, contacts in grouped_contacts %}
+  <section class="contact-group">
+    <h2 class="contact-group-heading">{{ category }}</h2>
+    <ul class="contact-list">
+      {% for contact in contacts %}
+      <li class="contact-row">
+        <a href="{{ url_for('contacts.view_contact', contact_id=contact.id) }}">{{ contact.name }}</a>
+        <span class="contact-meta">
+          {% if contact.phone %}{{ contact.phone }}{% endif %}
+          {% if contact.phone and contact.email %} · {% endif %}
+          {% if contact.email %}{{ contact.email }}{% endif %}
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endfor %}
+{% else %}
+<p>You haven't added any contacts yet.</p>
+{% endif %}
+{% endblock %}
