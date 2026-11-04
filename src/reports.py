@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask import (
     Blueprint,
@@ -32,6 +32,7 @@ def _validate_report_form(form):
 
     last_seen_location = form.get("last_seen_location", "").strip()
     last_seen_at_raw = form.get("last_seen_at", "").strip()
+    tz_offset_raw = form.get("tz_offset_minutes", "").strip()
     notes = form.get("notes", "").strip()
     pet_ids_raw = form.getlist("pet_ids")
 
@@ -42,10 +43,24 @@ def _validate_report_form(form):
             f"Location must be {MAX_LOCATION_LENGTH} characters or fewer."
         )
 
+    # The <input type="datetime-local"> value is a naive wall-clock
+    # timestamp in the browser's local timezone, with no offset attached.
+    # A hidden field (set by JS via Date.getTimezoneOffset(), minutes to
+    # ADD to local time to get UTC) lets us normalize it before comparing
+    # against datetime.utcnow() or storing it — every other timestamp in
+    # this app is UTC, and comparing a naive local value against UTC
+    # directly accepts genuinely-future local times in timezones behind
+    # UTC and rejects genuinely-past ones in timezones ahead of it.
+    try:
+        tz_offset_minutes = int(tz_offset_raw) if tz_offset_raw else 0
+    except ValueError:
+        tz_offset_minutes = 0
+
     last_seen_at = None
     if last_seen_at_raw:
         try:
-            last_seen_at = datetime.strptime(last_seen_at_raw, "%Y-%m-%dT%H:%M")
+            local_dt = datetime.strptime(last_seen_at_raw, "%Y-%m-%dT%H:%M")
+            last_seen_at = local_dt + timedelta(minutes=tz_offset_minutes)
             if last_seen_at > datetime.utcnow():
                 errors["last_seen_at"] = "Last seen time cannot be in the future."
         except ValueError:

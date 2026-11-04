@@ -5,6 +5,7 @@
 
 <form class="stacked-form" method="post" action="{{ form_action }}" novalidate>
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" id="tz_offset_minutes" name="tz_offset_minutes" value="0">
 
   <div class="form-group">
     <label>Pets</label>
@@ -43,4 +44,10 @@
     <a class="btn btn-secondary" href="{{ url_for('reports.list_reports') }}">Cancel</a>
   </div>
 </form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById('tz_offset_minutes').value = new Date().getTimezoneOffset();
+</script>
 {% endblock %}

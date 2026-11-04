@@ -14,7 +14,7 @@
     {% endfor %}
   </dd>
   <dt>Last seen location</dt><dd>{{ report.last_seen_location }}</dd>
-  <dt>Last seen time</dt><dd>{{ report.last_seen_at.strftime('%Y-%m-%d %H:%M') if report.last_seen_at else '—' }}</dd>
+  <dt>Last seen time</dt><dd>{{ report.last_seen_at.strftime('%Y-%m-%d %H:%M') ~ ' UTC' if report.last_seen_at else '—' }}</dd>
   <dt>Notes</dt><dd>{{ report.notes or '—' }}</dd>
   <dt>Filed</dt><dd>{{ report.created_at.strftime('%Y-%m-%d %H:%M') }}</dd>
 </dl>
