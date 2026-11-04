@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Email an Agency — Pet Finder{% endblock %}
+{% block title %}{{ heading }} — Pet Finder{% endblock %}
 {% block content %}
-<h1>Email an agency about Report #{{ report.id }}</h1>
-<p>Choose which contact to draft an email to.</p>
+<h1>{{ heading }} for Report #{{ report.id }}</h1>
+<p>Choose which contact.</p>
 
 {% if contacts %}
 <ul class="report-list">
   {% for contact in contacts %}
   <li class="report-row">
-    <a href="{{ url_for('outputs.email_preview', report_id=report.id, contact_id=contact.id) }}">{{ contact.name }}</a>
+    <a href="{{ url_for(target_endpoint, report_id=report.id, contact_id=contact.id) }}">{{ contact.name }}</a>
     <span class="report-meta">{{ contact.category }}</span>
   </li>
   {% endfor %}
@@ -16,7 +16,7 @@
 {% else %}
 <p>
   You haven't added any contacts yet.
-  <a href="{{ url_for('contacts.new_contact') }}">Add one</a> to email about this report.
+  <a href="{{ url_for('contacts.new_contact') }}">Add one</a> for this report.
 </p>
 {% endif %}
 
