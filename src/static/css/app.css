@@ -416,3 +416,17 @@ a {
   font-size: 0.9rem;
   white-space: nowrap;
 }
+
+/* Generated outputs (email, phone script, social post, flyer) */
+
+.copy-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.copy-row input,
+.copy-row textarea {
+  flex: 1;
+  background: var(--color-bg);
+}

@@ -8,6 +8,7 @@ from config import Config
 from contacts import contacts_bp
 from extensions import db, login_manager
 from models import User
+from outputs import outputs_bp
 from pets import pets_bp
 from reports import reports_bp
 
@@ -31,6 +32,7 @@ def create_app(config_class=Config):
     app.register_blueprint(pets_bp)
     app.register_blueprint(reports_bp)
     app.register_blueprint(contacts_bp)
+    app.register_blueprint(outputs_bp)
 
     @login_manager.user_loader
     def load_user(user_id):
