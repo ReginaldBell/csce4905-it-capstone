@@ -651,6 +651,11 @@ a {
   font-size: 1.1rem;
 }
 
+.community-card-header .status-badge {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 .community-feed .community-post {
   padding: 0.85rem 1rem;
   margin: 0;
