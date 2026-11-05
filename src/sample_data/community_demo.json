@@ -1,0 +1,716 @@
+{
+  "description": "Fictional development test data centered on Denton, Texas. Sample pictures are illustrations. No real people or missing pets.",
+  "search_center": {
+    "latitude": 33.21,
+    "longitude": -97.13
+  },
+  "users": [
+    {
+      "email": "demo01@example.com",
+      "display_name": "Alex Rivera (demo)",
+      "pets": [
+        {
+          "name": "Maple",
+          "species": "Dog",
+          "breed": "Beagle",
+          "birth_date": null,
+          "notes": "Private demo notes for Maple; never included in community cards."
+        },
+        {
+          "name": "Peanut",
+          "species": "Cat",
+          "breed": "Tabby",
+          "birth_date": "2018-03-15",
+          "notes": "Private demo notes for Peanut; never included in community cards.",
+          "photo": "cat.png"
+        },
+        {
+          "name": "Sprout",
+          "species": "Rabbit",
+          "breed": null,
+          "birth_date": null,
+          "notes": "Pet without any missing report."
+        }
+      ]
+    },
+    {
+      "email": "demo02@example.com",
+      "display_name": "Sam Chen (demo)",
+      "pets": [
+        {
+          "name": "Mochi",
+          "species": "Cat",
+          "breed": "Domestic shorthair",
+          "birth_date": "2019-02-15",
+          "notes": "Private demo notes for Mochi; never included in community cards.",
+          "photo": "cat.png"
+        },
+        {
+          "name": "Kiwi",
+          "species": "Bird",
+          "breed": "Parakeet",
+          "birth_date": "2019-03-15",
+          "notes": "Private demo notes for Kiwi; never included in community cards.",
+          "photo": "bird.png"
+        }
+      ]
+    },
+    {
+      "email": "demo03@example.com",
+      "display_name": "Jordan Taylor (demo)",
+      "pets": [
+        {
+          "name": "Scout",
+          "species": "Dog",
+          "breed": "Labrador mix",
+          "birth_date": "2020-02-15",
+          "notes": "Private demo notes for Scout; never included in community cards.",
+          "photo": "dog.png"
+        },
+        {
+          "name": "Clover",
+          "species": "Rabbit",
+          "breed": "Holland lop",
+          "birth_date": null,
+          "notes": "Private demo notes for Clover; never included in community cards."
+        }
+      ]
+    },
+    {
+      "email": "demo04@example.com",
+      "display_name": "Casey Patel (demo)",
+      "pets": [
+        {
+          "name": "Pip & Squeak",
+          "species": "Other",
+          "breed": "Guinea pig",
+          "birth_date": null,
+          "notes": "Private demo notes for Pip & Squeak; never included in community cards."
+        },
+        {
+          "name": "Olive",
+          "species": "Cat",
+          "breed": null,
+          "birth_date": "2021-03-15",
+          "notes": "Private demo notes for Olive; never included in community cards.",
+          "photo": "cat.png"
+        }
+      ]
+    },
+    {
+      "email": "demo05@example.com",
+      "display_name": "Morgan Lee (demo)",
+      "pets": [
+        {
+          "name": "Wren",
+          "species": "Bird",
+          "breed": "Cockatiel",
+          "birth_date": "2022-02-15",
+          "notes": "Private demo notes for Wren; never included in community cards.",
+          "photo": "bird.png"
+        },
+        {
+          "name": "Hazel",
+          "species": "Rabbit",
+          "breed": null,
+          "birth_date": "2022-03-15",
+          "notes": "Private demo notes for Hazel; never included in community cards."
+        }
+      ]
+    },
+    {
+      "email": "demo06@example.com",
+      "display_name": "Riley Brooks (demo)",
+      "pets": [
+        {
+          "name": "Biscuit",
+          "species": "Dog",
+          "breed": null,
+          "birth_date": "2023-02-15",
+          "notes": "Private demo notes for Biscuit; never included in community cards.",
+          "photo": "dog.png"
+        },
+        {
+          "name": "Pepper",
+          "species": "Cat",
+          "breed": "Tuxedo",
+          "birth_date": null,
+          "notes": "Private demo notes for Pepper; never included in community cards."
+        }
+      ]
+    },
+    {
+      "email": "demo07@example.com",
+      "display_name": "Jamie Cruz (demo)",
+      "pets": [
+        {
+          "name": "Sunny",
+          "species": "Bird",
+          "breed": "Canary",
+          "birth_date": null,
+          "notes": "Private demo notes for Sunny; never included in community cards."
+        },
+        {
+          "name": "Coco",
+          "species": "Dog",
+          "breed": "Poodle mix",
+          "birth_date": "2018-03-15",
+          "notes": "Private demo notes for Coco; never included in community cards.",
+          "photo": "dog.png"
+        }
+      ]
+    },
+    {
+      "email": "demo08@example.com",
+      "display_name": "Avery Kim (demo)",
+      "pets": [
+        {
+          "name": "Juniper",
+          "species": "Rabbit",
+          "breed": "Mini rex",
+          "birth_date": "2019-02-15",
+          "notes": "Private demo notes for Juniper; never included in community cards."
+        },
+        {
+          "name": "Otis",
+          "species": "Dog",
+          "breed": "Terrier mix",
+          "birth_date": "2019-03-15",
+          "notes": "Private demo notes for Otis; never included in community cards.",
+          "photo": "dog.png"
+        }
+      ]
+    },
+    {
+      "email": "demo09@example.com",
+      "display_name": "Taylor Scott (demo)",
+      "pets": [
+        {
+          "name": "River",
+          "species": "Dog",
+          "breed": "Border collie",
+          "birth_date": "2020-02-15",
+          "notes": "Private demo notes for River; never included in community cards.",
+          "photo": "dog.png"
+        },
+        {
+          "name": "Miso",
+          "species": "Cat",
+          "breed": "Siamese mix",
+          "birth_date": null,
+          "notes": "Private demo notes for Miso; never included in community cards."
+        }
+      ]
+    },
+    {
+      "email": "demo10@example.com",
+      "display_name": "Cameron Ellis (demo)",
+      "pets": [
+        {
+          "name": "Poppy",
+          "species": "Cat",
+          "breed": "Calico",
+          "birth_date": null,
+          "notes": "Private demo notes for Poppy; never included in community cards."
+        },
+        {
+          "name": "Acorn",
+          "species": "Other",
+          "breed": "Hamster",
+          "birth_date": "2021-03-15",
+          "notes": "Private demo notes for Acorn; never included in community cards."
+        }
+      ]
+    },
+    {
+      "email": "demo11@example.com",
+      "display_name": "Drew Park (demo)",
+      "pets": [
+        {
+          "name": "Finn",
+          "species": "Dog",
+          "breed": "Golden retriever",
+          "birth_date": "2022-02-15",
+          "notes": "Private demo notes for Finn; never included in community cards.",
+          "photo": "dog.png"
+        },
+        {
+          "name": "Nori",
+          "species": "Cat",
+          "breed": "Domestic longhair",
+          "birth_date": "2022-03-15",
+          "notes": "Private demo notes for Nori; never included in community cards.",
+          "photo": "cat.png"
+        }
+      ]
+    },
+    {
+      "email": "demo12@example.com",
+      "display_name": "Quinn Adams (demo)",
+      "pets": [
+        {
+          "name": "Willow",
+          "species": "Dog",
+          "breed": "Spaniel mix",
+          "birth_date": "2023-02-15",
+          "notes": "Private demo notes for Willow; never included in community cards.",
+          "photo": "dog.png"
+        },
+        {
+          "name": "Fern",
+          "species": "Cat",
+          "breed": "Tabby",
+          "birth_date": null,
+          "notes": "Private demo notes for Fern; never included in community cards."
+        }
+      ]
+    }
+  ],
+  "reports": [
+    {
+      "owner_email": "demo01@example.com",
+      "pets": [
+        "Maple"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.213,
+      "longitude": -97.13,
+      "community_area": "North Lakes Park, Denton",
+      "hours_ago": 3,
+      "last_seen_known": true,
+      "community_description": "Maple was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.\nWearing a blue collar and usually friendly. Please avoid chasing. This longer example checks that the entire description stays readable on smaller screens. If you recognize Maple, include the time of your sighting and a nearby public landmark in your comment.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": [
+        {
+          "author_email": "demo02@example.com",
+          "body": "I noticed a similar pet near the park entrance this morning. Is there a collar?"
+        },
+        {
+          "author_email": "demo01@example.com",
+          "body": "Thank you! I will check that area. Please add any other sightings here."
+        }
+      ]
+    },
+    {
+      "owner_email": "demo01@example.com",
+      "pets": [
+        "Peanut"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.216,
+      "longitude": -97.128,
+      "community_area": "North Lakes Park, Denton",
+      "hours_ago": 6,
+      "last_seen_known": true,
+      "community_description": "Peanut was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo02@example.com",
+      "pets": [
+        "Mochi"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.219,
+      "longitude": -97.13,
+      "community_area": "University of North Texas, Denton",
+      "hours_ago": 9,
+      "last_seen_known": false,
+      "community_description": "Mochi was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": [
+        {
+          "author_email": "demo03@example.com",
+          "body": "I noticed a similar pet near the park entrance this morning. Is there a collar?"
+        },
+        {
+          "author_email": "demo02@example.com",
+          "body": "Thank you! I will check that area. Please add any other sightings here."
+        }
+      ]
+    },
+    {
+      "owner_email": "demo02@example.com",
+      "pets": [
+        "Kiwi"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.222,
+      "longitude": -97.128,
+      "community_area": "University of North Texas, Denton",
+      "hours_ago": 12,
+      "last_seen_known": true,
+      "community_description": "Kiwi was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo03@example.com",
+      "pets": [
+        "Scout"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.225,
+      "longitude": -97.13,
+      "community_area": "Quakertown Park, Denton",
+      "hours_ago": 15,
+      "last_seen_known": true,
+      "community_description": "Scout was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": [
+        {
+          "author_email": "demo04@example.com",
+          "body": "I noticed a similar pet near the park entrance this morning. Is there a collar?"
+        },
+        {
+          "author_email": "demo03@example.com",
+          "body": "Thank you! I will check that area. Please add any other sightings here."
+        }
+      ]
+    },
+    {
+      "owner_email": "demo03@example.com",
+      "pets": [
+        "Clover"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.228,
+      "longitude": -97.128,
+      "community_area": "Quakertown Park, Denton",
+      "hours_ago": 18,
+      "last_seen_known": true,
+      "community_description": "Clover was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo04@example.com",
+      "pets": [
+        "Pip & Squeak"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.231,
+      "longitude": -97.13,
+      "community_area": "South Lakes Park, Denton",
+      "hours_ago": 21,
+      "last_seen_known": true,
+      "community_description": "Pip & Squeak was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": [
+        {
+          "author_email": "demo05@example.com",
+          "body": "I noticed a similar pet near the park entrance this morning. Is there a collar?"
+        },
+        {
+          "author_email": "demo04@example.com",
+          "body": "Thank you! I will check that area. Please add any other sightings here."
+        }
+      ]
+    },
+    {
+      "owner_email": "demo04@example.com",
+      "pets": [
+        "Olive"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.234,
+      "longitude": -97.128,
+      "community_area": "South Lakes Park, Denton",
+      "hours_ago": 24,
+      "last_seen_known": true,
+      "community_description": "Olive was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo05@example.com",
+      "pets": [
+        "Wren"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.237,
+      "longitude": -97.13,
+      "community_area": "Rayzor Ranch, Denton",
+      "hours_ago": 27,
+      "last_seen_known": true,
+      "community_description": "Wren was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo05@example.com",
+      "pets": [
+        "Hazel"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.24,
+      "longitude": -97.128,
+      "community_area": "Rayzor Ranch, Denton",
+      "hours_ago": 30,
+      "last_seen_known": true,
+      "community_description": "Hazel was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo06@example.com",
+      "pets": [
+        "Biscuit"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.243,
+      "longitude": -97.13,
+      "community_area": "Downtown Denton",
+      "hours_ago": 33,
+      "last_seen_known": true,
+      "community_description": "Biscuit was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo06@example.com",
+      "pets": [
+        "Pepper"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.246,
+      "longitude": -97.128,
+      "community_area": "Downtown Denton",
+      "hours_ago": 36,
+      "last_seen_known": true,
+      "community_description": "Pepper was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo07@example.com",
+      "pets": [
+        "Sunny"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.249,
+      "longitude": -97.13,
+      "community_area": "Denia Park, Denton",
+      "hours_ago": 39,
+      "last_seen_known": true,
+      "community_description": "Sunny was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo07@example.com",
+      "pets": [
+        "Coco"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.252,
+      "longitude": -97.128,
+      "community_area": "Denia Park, Denton",
+      "hours_ago": 42,
+      "last_seen_known": true,
+      "community_description": "Coco was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo08@example.com",
+      "pets": [
+        "Juniper"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.255,
+      "longitude": -97.13,
+      "community_area": "McKenna Park, Denton",
+      "hours_ago": 45,
+      "last_seen_known": true,
+      "community_description": "Juniper was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo08@example.com",
+      "pets": [
+        "Otis"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.258,
+      "longitude": -97.128,
+      "community_area": "McKenna Park, Denton",
+      "hours_ago": 48,
+      "last_seen_known": true,
+      "community_description": "Otis was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo09@example.com",
+      "pets": [
+        "River"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.48,
+      "longitude": -97.13,
+      "community_area": "Fictional test area north of Denton",
+      "hours_ago": 51,
+      "last_seen_known": true,
+      "community_description": "River was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo09@example.com",
+      "pets": [
+        "Miso"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.8,
+      "longitude": -97.128,
+      "community_area": "Fictional test area north of Denton",
+      "hours_ago": 54,
+      "last_seen_known": true,
+      "community_description": "Miso was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo10@example.com",
+      "pets": [
+        "Poppy"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 30.2672,
+      "longitude": -97.7431,
+      "community_area": "Downtown Austin (far-away test)",
+      "hours_ago": 57,
+      "last_seen_known": true,
+      "community_description": "Poppy was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo10@example.com",
+      "pets": [
+        "Acorn"
+      ],
+      "status": "open",
+      "is_shared": false,
+      "latitude": null,
+      "longitude": null,
+      "community_area": null,
+      "hours_ago": 60,
+      "last_seen_known": true,
+      "community_description": null,
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo11@example.com",
+      "pets": [
+        "Finn"
+      ],
+      "status": "found",
+      "is_shared": true,
+      "latitude": 33.273,
+      "longitude": -97.13,
+      "community_area": "Quakertown Park, Denton",
+      "hours_ago": 63,
+      "last_seen_known": true,
+      "community_description": "Finn was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo11@example.com",
+      "pets": [
+        "Nori"
+      ],
+      "status": "closed",
+      "is_shared": true,
+      "latitude": 33.276,
+      "longitude": -97.128,
+      "community_area": "Quakertown Park, Denton",
+      "hours_ago": 66,
+      "last_seen_known": true,
+      "community_description": "Nori was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo12@example.com",
+      "pets": [
+        "Willow",
+        "Fern"
+      ],
+      "status": "open",
+      "is_shared": true,
+      "latitude": 33.279,
+      "longitude": -97.13,
+      "community_area": "South Lakes Park, Denton",
+      "hours_ago": 69,
+      "last_seen_known": true,
+      "community_description": "Willow and Fern slipped out together. One report covers both pets. Please comment if you see either of them.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    },
+    {
+      "owner_email": "demo12@example.com",
+      "pets": [
+        "Fern"
+      ],
+      "status": "open",
+      "is_shared": false,
+      "latitude": 33.282,
+      "longitude": -97.128,
+      "community_area": "South Lakes Park, Denton",
+      "hours_ago": 72,
+      "last_seen_known": true,
+      "community_description": "Fern was last seen near the walking path. Please leave a comment with the time and general area if you have a sighting.",
+      "private_location": "Fictional private address - not for the feed",
+      "private_notes": "Private demo report notes - not for the feed",
+      "comments": []
+    }
+  ]
+}

@@ -8,6 +8,7 @@ from flask_login import current_user, login_required
 
 from extensions import db
 from models import Report, ReportComment
+from pets import SPECIES_CHOICES
 from reports import _get_owned_report_or_404
 
 community_bp = Blueprint("community", __name__, url_prefix="/community")
@@ -53,11 +54,12 @@ def _name_error(name):
 @login_required
 def feed():
     errors = {}
-    values = {"latitude": "", "longitude": "", "radius": "10"}
+    values = {"latitude": "", "longitude": "", "radius": "10", "species": "", "q": ""}
     values.update(request.args)
     posts = []
     has_more = False
     page = 1
+    match_count = 0
     searched = bool(request.args)
     if searched:
         try:
@@ -71,6 +73,12 @@ def feed():
                 raise ValueError
         except ValueError:
             errors["location"] = "Choose a listed distance and a valid page."
+        species = request.args.get("species", "")
+        search_text = request.args.get("q", "").strip().casefold()
+        if species and species not in SPECIES_CHOICES:
+            errors["filters"] = "Choose a listed pet type."
+        if len(search_text) > 100:
+            errors["filters"] = "Keep your search to 100 characters or fewer."
         if not errors:
             # The capstone dataset is small; a normal query and distance
             # calculation keep this readable without a spatial database.
@@ -87,6 +95,17 @@ def feed():
             )
             matches = []
             for report in reports:
+                if species and not any(pet.species == species for pet in report.pets):
+                    continue
+                public_text = " ".join(
+                    [report.community_area or "", report.community_description or ""]
+                    + [
+                        f"{pet.name} {pet.species} {pet.breed or ''}"
+                        for pet in report.pets
+                    ]
+                )
+                if search_text and search_text not in public_text.casefold():
+                    continue
                 distance = _distance_miles(
                     latitude, longitude, report.latitude, report.longitude
                 )
@@ -94,6 +113,7 @@ def feed():
                     matches.append({"report": report, "distance": distance})
             matches.sort(key=lambda post: post["distance"])
             end = page * PAGE_SIZE
+            match_count = len(matches)
             posts = matches[:end]
             has_more = len(matches) > end
     return render_template(
@@ -105,6 +125,8 @@ def feed():
         has_more=has_more,
         page=page,
         radii=RADIUS_CHOICES,
+        species_choices=SPECIES_CHOICES,
+        match_count=match_count,
     )
 
 

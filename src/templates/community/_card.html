@@ -1,0 +1,28 @@
+<article class="community-post">
+  <div class="community-card-header">
+    <span class="hint">{{ report.owner.display_name or 'Pet owner' }} · {{ report.shared_at.strftime('%b %d, %Y') if report.shared_at else '' }}</span>
+    <span class="status-badge status-open">Open</span>
+  </div>
+  <div class="community-card-body">
+    <div>
+      <h3><a href="{{ url_for('community.view_post', report_id=report.id) }}">{{ report.pets | map(attribute='name') | join(', ') }}</a></h3>
+      {% for pet in report.pets %}
+      <p class="community-card-pet">{{ pet.name }} · {{ pet.species }}{% if pet.breed %} · {{ pet.breed }}{% endif %}</p>
+      {% endfor %}
+      <p class="community-card-area"><strong>Last seen near:</strong> {{ report.community_area }} · {{ '%.1f'|format(post.distance) }} miles away</p>
+      {% if report.last_seen_at %}<p class="hint">Last seen {{ report.last_seen_at.strftime('%b %d, %Y, %H:%M') }} UTC</p>{% endif %}
+    </div>
+    <div class="community-card-thumbnails">
+      {% for pet in report.pets %}
+      {% if pet.photo_path %}
+      <img class="community-thumbnail" src="{{ url_for('static', filename=pet.photo_path) }}" alt="Photo of {{ pet.name }}" loading="lazy">
+      {% else %}<span class="community-thumbnail no-photo">No photo</span>{% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  <p class="community-text">{{ report.community_description }}</p>
+  <div class="community-card-footer">
+    <a href="{{ url_for('community.view_post', report_id=report.id) }}">View post and comments</a>
+    <span class="hint">{{ report.comments|length }} {{ 'comment' if report.comments|length == 1 else 'comments' }}</span>
+  </div>
+</article>

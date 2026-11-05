@@ -6,38 +6,57 @@
   <h1>Missing pets nearby</h1>
   <a class="btn" href="{{ url_for('reports.list_reports') }}">Share a report</a>
 </div>
-<p>Find open reports near you and let owners know if you have seen their pets.</p>
-<form method="get" action="{{ url_for('community.feed') }}" class="nearby-search">
-  {% set location_help = 'Allow device location, or move the map and choose its center. Distances are measured to where each pet was last seen.' %}
-  {% include 'community/_location.html' %}
-  <div class="form-group">
-    <label for="radius">Search distance</label>
-    <select id="radius" name="radius">
-      {% for radius in radii %}<option value="{{ radius }}" {% if values.radius|string == radius|string %}selected{% endif %}>Within {{ radius }} miles</option>{% endfor %}
-    </select>
-  </div>
-  <button class="btn" type="submit">Find nearby reports</button>
-</form>
-
-{% if posts %}
-<h2>Open reports within {{ values.radius }} miles</h2>
-<div class="community-feed">
-  {% for post in posts %}
-    {% set report = post.report %}
-    <article class="community-post">
-      {% include 'community/_report.html' %}
-      <p class="hint">About {{ '%.1f'|format(post.distance) }} miles from your selected location</p>
-      <a class="btn btn-secondary" href="{{ url_for('community.view_post', report_id=report.id) }}">View post and comments</a>
-    </article>
-  {% endfor %}
+<p>Recognize a pet? Open their post to share a sighting or leave a comment.</p>
+<div class="nearby-browser">
+  <form method="get" action="{{ url_for('community.feed') }}" class="nearby-search">
+    <details class="nearby-area" {% if not searched or errors.get('location') %}open{% endif %}>
+    <summary>{{ 'Change search location' if searched and not errors.get('location') else 'Choose your search location' }}</summary>
+    {% set location_help = 'Use your current location, or select a search area on the map. Distances are measured to where pets were last seen.' %}
+    {% include 'community/_location.html' %}
+    </details>
+    <div class="nearby-filters">
+      <label class="filter-pill">Distance
+        <select id="radius" name="radius">
+          {% for radius in radii %}<option value="{{ radius }}" {% if values.radius|string == radius|string %}selected{% endif %}>{{ radius }} miles</option>{% endfor %}
+        </select>
+      </label>
+      <label class="filter-pill">Pets
+        <select name="species">
+          <option value="">All pets</option>
+          {% for species in species_choices %}<option value="{{ species }}" {% if values.species == species %}selected{% endif %}>{{ species }}</option>{% endfor %}
+        </select>
+      </label>
+      <span class="filter-pill open-only">Open reports only</span>
+    </div>
+    <div class="nearby-search-row">
+      <label class="nearby-query">Search pets or areas
+        <input type="search" name="q" value="{{ values.q }}" maxlength="100" placeholder="Pet name, breed, or area">
+      </label>
+      <button class="btn" type="submit">Find nearby reports</button>
+    </div>
+    {% if errors.get('filters') %}<p class="field-error">{{ errors.filters }}</p>{% endif %}
+  </form>
+  <section class="nearby-results" aria-labelledby="nearby-results-title">
+    <div class="nearby-results-header">
+      <h2 id="nearby-results-title">Open reports{% if searched and not errors %} <span class="hint">({{ match_count }})</span>{% endif %}</h2>
+      <span class="hint">Closest first</span>
+    </div>
+    {% if posts %}
+    <div class="community-feed" tabindex="0" role="region" aria-label="Scroll through nearby reports">
+      {% for post in posts %}
+        {% set report = post.report %}
+        {% include 'community/_card.html' %}
+      {% endfor %}
+      {% if has_more %}
+      <a class="btn btn-secondary load-more" href="{{ url_for('community.feed', latitude=values.latitude, longitude=values.longitude, radius=values.radius, species=values.species, q=values.q, page=page+1, _anchor='nearby-results-title') }}">Load more reports</a>
+      {% endif %}
+    </div>
+    {% elif searched and not errors %}
+    <p class="empty-state">No open reports match this search. Try a wider distance or different filters.</p>
+    {% else %}
+    <p class="empty-state">Choose a location to find nearby missing pets.</p>
+    {% endif %}
+  </section>
 </div>
-{% if has_more %}
-<p><a class="btn" href="{{ url_for('community.feed', latitude=values.latitude, longitude=values.longitude, radius=values.radius, page=page+1) }}">Load more reports</a></p>
-{% endif %}
-{% elif searched and not errors %}
-<p class="empty-state">No open reports were found within this distance. Try a wider search.</p>
-{% else %}
-<p class="empty-state">Choose a location to find nearby missing pets.</p>
-{% endif %}
 {% endblock %}
 {% block scripts %}{% include 'community/_map_scripts.html' %}{% endblock %}

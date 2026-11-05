@@ -206,6 +206,26 @@ class CommunityTests(unittest.TestCase):
         self.assertEqual(second.count('class="community-post"'), 13)
         self.assertNotIn("Load more reports", second)
 
+    def test_public_search_species_filter_and_comment_count(self):
+        self.share()
+        self.comment()
+        self.assertIn(b"Luna", self.search(species="Dog", q="NORTH PARK").data)
+        self.assertIn(b"1 comment", self.search().data)
+        self.assertNotIn(b"Luna", self.search(species="Cat").data)
+        self.assertNotIn(b"Luna", self.search(q="PRIVATE PET NOTES").data)
+        self.assertIn(b"field-error", self.search(species="invalid").data)
+        self.assertIn(b"field-error", self.search(q="x" * 101).data)
+        with self.app.app_context():
+            cat = Pet(owner_id=self.owner_id, name="Milo", species="Cat")
+            db.session.add(cat)
+            db.session.flush()
+            db.session.add(ReportPet(report_id=self.report_id, pet_id=cat.id))
+            db.session.commit()
+        # Matching one pet keeps both pets visible on their shared report.
+        page = self.search(species="Cat", q="milo").data
+        self.assertIn(b"Milo", page)
+        self.assertIn(b"Luna", page)
+
     def test_comments_owner_replies_and_author_only_deletion(self):
         self.share()
         self.assertEqual(self.comment(author_id=str(self.owner_id)).status_code, 302)
@@ -346,6 +366,108 @@ class CommunityTests(unittest.TestCase):
             self.assertEqual(self.owner.get(path).status_code, 200)
         self.assertEqual(self.post(self.owner, "/logout").status_code, 302)
         self.assertEqual(self.owner.get("/pets").status_code, 302)
+
+
+class CommunityDemoTests(unittest.TestCase):
+    def setUp(self):
+        self.files = tempfile.TemporaryDirectory()
+        self.app = create_app(TestConfig)
+        self.app.static_folder = self.files.name
+        self.app.config["UPLOAD_FOLDER"] = str(Path(self.files.name) / "uploads")
+        Path(self.app.config["UPLOAD_FOLDER"]).mkdir()
+        with self.app.app_context():
+            db.create_all()
+
+    def tearDown(self):
+        with self.app.app_context():
+            db.session.remove()
+            db.drop_all()
+        self.files.cleanup()
+
+    def test_examples_cover_feed_cases_and_reruns_preserve_edits(self):
+        with self.app.app_context():
+            db.session.add(
+                User(email="existing@example.com", password_hash="keep-hash")
+            )
+            db.session.commit()
+        runner = self.app.test_cli_runner()
+        result = runner.invoke(args=["seed-community-demo"])
+        self.assertEqual(result.exit_code, 0, result.output + repr(result.exception))
+        with self.app.app_context():
+            self.assertEqual(User.query.count(), 13)
+            self.assertEqual(Pet.query.count(), 25)
+            self.assertEqual(Report.query.count(), 24)
+            self.assertEqual(ReportComment.query.count(), 8)
+            self.assertEqual(Report.query.filter_by(status="found").count(), 1)
+            self.assertEqual(Report.query.filter_by(status="closed").count(), 1)
+            self.assertEqual(Report.query.filter_by(is_shared=False).count(), 2)
+            self.assertEqual(
+                {p.species for p in Pet.query.all()},
+                {"Dog", "Cat", "Bird", "Rabbit", "Other"},
+            )
+            self.assertTrue(any(len(r.pets) == 2 for r in Report.query.all()))
+            for pet in Pet.query.filter(Pet.photo_path.isnot(None)):
+                self.assertTrue((Path(self.files.name) / pet.photo_path).is_file())
+            user = User.query.filter_by(email="demo01@example.com").one()
+            self.assertTrue(user.check_password("DemoPass123!"))
+            user.display_name = "Edited demo owner"
+            user.set_password("ChangedDemo123!")
+            db.session.commit()
+        photos = sorted(Path(self.app.config["UPLOAD_FOLDER"]).iterdir())
+        result = runner.invoke(args=["seed-community-demo"])
+        self.assertEqual(result.exit_code, 0, result.output + repr(result.exception))
+        self.assertIn("already exist", result.output)
+        self.assertEqual(
+            sorted(Path(self.app.config["UPLOAD_FOLDER"]).iterdir()), photos
+        )
+        with self.app.app_context():
+            self.assertEqual(Pet.query.count(), 25)
+            user = User.query.filter_by(email="demo01@example.com").one()
+            self.assertEqual(user.display_name, "Edited demo owner")
+            self.assertTrue(user.check_password("ChangedDemo123!"))
+            self.assertEqual(
+                User.query.filter_by(email="existing@example.com").one().password_hash,
+                "keep-hash",
+            )
+            user_id = user.id
+        client = self.app.test_client()
+        with client.session_transaction() as session:
+            session["_user_id"] = str(user_id)
+            session["_fresh"] = True
+        values = dict(latitude=33.21, longitude=-97.13, radius=5)
+        page = client.get("/community", query_string=values).get_data(as_text=True)
+        self.assertEqual(page.count('class="community-post"'), 10)
+        self.assertIn("Load more reports", page)
+        self.assertNotIn("Finn", page)  # found
+        self.assertNotIn("Nori", page)  # closed
+        self.assertNotIn("Acorn", page)  # private
+        self.assertNotIn("Poppy", page)  # far away
+        page = client.get("/community", query_string=dict(values, page=2)).get_data(
+            as_text=True
+        )
+        self.assertEqual(page.count('class="community-post"'), 17)
+        self.assertIn("Willow, Fern", page)
+        self.assertIn("Pip &amp; Squeak", page)
+        self.assertNotIn("Private demo", page)
+        self.assertNotIn("Fictional private address", page)
+        page = client.get(
+            "/community", query_string=dict(values, radius=50, page=2)
+        ).get_data(as_text=True)
+        self.assertIn("River", page)
+        self.assertIn("Miso", page)
+        self.assertNotIn("Poppy", page)
+
+    def test_partial_demo_email_collision_changes_nothing(self):
+        with self.app.app_context():
+            db.session.add(User(email="demo01@example.com", password_hash="keep-hash"))
+            db.session.commit()
+        result = self.app.test_cli_runner().invoke(args=["seed-community-demo"])
+        self.assertNotEqual(result.exit_code, 0)
+        self.assertIn("No records were changed", result.output)
+        with self.app.app_context():
+            self.assertEqual(User.query.count(), 1)
+            self.assertEqual(Pet.query.count(), 0)
+        self.assertEqual(list(Path(self.app.config["UPLOAD_FOLDER"]).iterdir()), [])
 
 
 class CommunityUpgradeTests(unittest.TestCase):

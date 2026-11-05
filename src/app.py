@@ -9,6 +9,7 @@ from community import community_bp
 from community_schema import upgrade_community_command
 from config import Config
 from contacts import contacts_bp
+from demo_data import seed_community_demo_command
 from extensions import db, login_manager
 from models import Pet, Report, ReportPet, User
 from outputs import outputs_bp
@@ -38,6 +39,7 @@ def create_app(config_class=Config):
     app.register_blueprint(outputs_bp)
     app.register_blueprint(community_bp)
     app.cli.add_command(upgrade_community_command)
+    app.cli.add_command(seed_community_demo_command)
 
     @app.before_request
     def protect_uploaded_photos():

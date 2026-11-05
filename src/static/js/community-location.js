@@ -33,6 +33,12 @@
     map.on('click', function (event) {
       chooseLocation(event.latlng.lat, event.latlng.lng, 'Location selected on the map.');
     });
+    var areaDetails = picker.closest('details');
+    if (areaDetails) {
+      areaDetails.addEventListener('toggle', function () {
+        if (areaDetails.open) map.invalidateSize();
+      });
+    }
     if (hasLocation) chooseLocation(initial[0], initial[1], 'Your selected location is marked.');
     centerButton.addEventListener('click', function () {
       var center = map.getCenter();
@@ -50,7 +56,7 @@
       return;
     }
     deviceButton.disabled = true;
-    status.textContent = 'Waiting for your location permission...';
+    status.textContent = 'Finding your location... Allow location access if your browser asks.';
     navigator.geolocation.getCurrentPosition(function (position) {
       deviceButton.disabled = false;
       var lat = position.coords.latitude;
@@ -59,10 +65,17 @@
       chooseLocation(lat, lng, 'Device location selected. You can adjust the spot on the map.');
     }, function (error) {
       deviceButton.disabled = false;
-      status.textContent = error.code === 1
-        ? 'Location permission was denied. Choose an area on the map instead.'
-        : 'Your location is unavailable. Try again or choose an area on the map.';
-    }, {timeout: 10000, maximumAge: 60000});
+      if (error.code === 1) {
+        status.textContent = 'Location permission was denied. Allow location access in your browser and device settings, or choose an area on the map.';
+      } else if (error.code === 3) {
+        status.textContent = 'Finding your location timed out. Try again or choose an area on the map.';
+      } else {
+        status.textContent = 'This browser could not determine your device location. Check location access in your browser and device settings, try Chrome or Edge, or choose an area on the map.';
+      }
+      if (latitude.value !== '' && longitude.value !== '') {
+        status.textContent += ' Your previous selection is unchanged.';
+      }
+    }, {timeout: 20000, maximumAge: 60000, enableHighAccuracy: false});
   });
   deviceButton.disabled = false;
 })();
