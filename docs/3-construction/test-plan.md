@@ -341,14 +341,17 @@ an outcome only after that exact procedure runs, and record the commit and evide
 
 ### Scope limits for this sprint
 
-- **TC-609 and TC-1014** also name report filing and tip limits. Sprint 3 builds only
-  sign-in and reset limits, so these cases cannot fully pass in Sprint 3 as written.
-- **TC-607** includes browsing Nearby and sending a tip. Private tips are Sprint 5 work,
-  so the full keyboard path cannot be completed in Sprint 3.
+- **TC-607, TC-609, and TC-1014** include tip or report-filing behavior that is not in
+  Sprint 3. Under the rule the project owner approved on November 21, 2026, automated tests
+  and notes may record the Sprint 3 portion (sign-in and reset). The outcome stays
+  **Not run** until the full written procedure is executed. Do not mark these cases Pass
+  in Sprint 3.
 - **TC-604** needs current Chrome, Edge, Firefox, and Safari. Record each browser
   separately.
 - **TC-107** must be run as owner, another account, and guest, and with a replaced photo
-  and a known old link. Until then, photo privacy on the Sprint 3 branch is unverified.
+  and a known old link. Also check that a non-owner can open a photo on a shared open
+  report but not after that report is unshared, Found, or Closed. Until then, photo privacy
+  on the Sprint 3 branch is unverified.
 
 ### How to run the automated suite
 
@@ -373,3 +376,4 @@ a manual or browser case as Pass. Sprint 3 suite totals are _TBD_.
 | 2026-11-04 | Codex | Recorded Sprint 2 regression procedures, traceability, historical evidence, resolved defects and validation limits through `4d51cc3` |
 | 2026-11-21 | Claude | Recorded Material 3 UI, local database upgrade, and project-owner test evidence |
 | 2026-11-21 | Claude | Add the Sprint 3 case list, scope limits, and suite instructions; all Sprint 3 outcomes remain Not run. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: partial-case rule and shared photo checks, on the Sprint 3 integration branch, pending verification. |

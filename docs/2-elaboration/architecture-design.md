@@ -212,13 +212,13 @@ the Sprint 3 build contract. Nothing here states that it has been tested or depl
 
 ### Added columns
 
-All are nullable. `microchip_status` defaults to `unknown`.
+All are nullable except `users.session_version`. `microchip_status` defaults to `unknown`.
 
 | Table | Columns |
 |---|---|
 | `pets` | `sex` varchar(20), `height_inches` float, `weight_lbs` float, `colors` varchar(100), `markings` varchar(255), `microchip_status` varchar(20), `microchip_number` varchar(15) |
 | `contacts` | `address` varchar(255) |
-| `users` | `full_name` varchar(100), `phone` varchar(30) |
+| `users` | `full_name` varchar(100), `phone` varchar(30), `session_version` integer, not null, default 1 |
 
 `Pet.age_display` is a read-only property. It returns `None` with no birth date, or
 `Under 1 month`, `N month(s)`, `N year(s)`, or `N year(s), M month(s)` from today's date.
@@ -253,13 +253,25 @@ erDiagram
 
 Tokens come from `secrets.token_urlsafe(32)`. Only the SHA-256 hex digest is stored. The
 lifetime is `PASSWORD_RESET_TTL_MINUTES`, default 60. A new request invalidates earlier
-unused tokens. Success updates the password, marks the token used, and redirects to login.
+unused tokens. A successful email change or password reset invalidates all of that user's
+unused tokens. A successful reset also updates the password, marks the token used, clears
+login attempts for that email and the current client address, increments
+`session_version`, and redirects to login.
+
+Emailed links are built from `APP_BASE_URL` when it is set. If it is unset, the request
+host is used only when `app.debug` or `app.testing` is true. Otherwise nothing is sent, an
+error is logged without the token, and the user sees the generic message.
+
+### Session version
+
+`User.get_id()` returns `<id>:<session_version>`. The user loader accepts that format and
+rejects a version mismatch. A legacy session containing only `<id>` counts as version 1.
 
 ### Mail backends
 
 | `MAIL_BACKEND` | Behavior |
 |---|---|
-| `console` (default) | Prints the message for local development |
+| `console` (default) | Prints the message only when `app.debug` or `app.testing` is true. Otherwise prints nothing, logs an error without message content, and counts as a failed send |
 | `memory` | Appends `to`, `subject`, and `body` to `current_app.extensions["mail_outbox"]` |
 | `smtp` | Sends through `smtplib` using `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM`, and `MAIL_USE_TLS` |
 
@@ -273,7 +285,7 @@ not trusted.
 
 | Scope | Default limit | Counts | Over limit |
 |---|---|---|---|
-| `login` | `LOGIN_LIMIT=5` in `LOGIN_WINDOW_SECONDS=900` | Failed logins; success clears the key | Status 429, password not checked, `Too many attempts. Try again later.` |
+| `login` | `LOGIN_LIMIT=5` in `LOGIN_WINDOW_SECONDS=900` | Failed logins; a successful login or password reset clears the key | Status 429, password not checked, `Too many attempts. Try again later.` |
 | `reset` | `RESET_LIMIT=3` in `RESET_WINDOW_SECONDS=3600` | Every reset request | Same page and status 200; no email sent |
 
 ### Redirects and photo access
@@ -283,12 +295,13 @@ backslashes, and control characters, then falls back to `pets.list_pets`. Regist
 keeps its visible duplicate-email error because TC-002 requires it.
 
 On `main`, uploaded photo URLs are directly accessible. On the Sprint 3 branch, they are
-access-checked pending TC-107.
+access-checked pending TC-107. The owner can always open their current photo. A non-owner
+can open it only when it belongs to a report that is shared and has status `open`.
 
 ### Schema upgrade
 
-`flask upgrade-sprint3` adds the new columns and tables, keeps all records, and is
-designed to be safe to run twice on PostgreSQL and SQLite. Run it after `flask init-db`
+`flask upgrade-sprint3` adds the new columns and tables, sets `session_version` to 1 for
+existing users, keeps all records, and is designed to be safe to run twice on PostgreSQL and SQLite. Run it after `flask init-db`
 and `flask upgrade-community`. See the
 [maintenance manual](../4-transition/maintenance-manual.md#9-sprint-3-upgrade-and-operations).
 
@@ -300,3 +313,4 @@ and `flask upgrade-community`. See the
 | 2026-11-04 | Codex | Document implemented Sprint 2 components, schema, routes, lifecycle, security, UTC rules, and decisions. |
 | 2026-11-21 | Claude | Add Material 3 UI components, Settings route, report preselect, and the community upgrade command for the unmerged UI branch. |
 | 2026-11-21 | Claude | Add Sprint 3 fields, tables, modules, routes, mail backends, limits, and upgrade command, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: reset link, console mail, token, session, and shared photo design, on the Sprint 3 integration branch, pending verification. |

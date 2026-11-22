@@ -94,11 +94,11 @@ evidence; these entries describe the delivered baseline, not unapproved future w
 | Browser coverage | Exercise clipboard permission/failure paths and a defined browser matrix | Handlers inspected; not a browser certification |
 | Print coverage | Retest supported page/printer settings and representative content | Specific Chrome long-notes repro is one page; arbitrary layouts not certified |
 | Time fallback | Decide whether missing/non-numeric offsets should continue to mean UTC | Currently zero offset; JavaScript needed for automatic local conversion |
-| Uploaded media policy | Run TC-107; confirm future access and retention requirements | On `main`, uploaded photo URLs are directly accessible. On the Sprint 3 branch, they are access-checked pending TC-107 |
+| Uploaded media policy | Run TC-107; confirm future access and retention requirements | On `main`, uploaded photo URLs are directly accessible. On the Sprint 3 branch, they are access-checked pending TC-107: owners keep access, and non-owners need a shared, open report |
 | Sprint 3 verification | Run the 27 assigned cases and record exact results | All Not run; see the [test plan](docs/3-construction/test-plan.md#9-sprint-3-test-cases) |
 | Sprint 3 schema upgrade | Back up, then run `flask upgrade-sprint3` on the intended database | Not recorded as run on a shared or deployed database |
-| Sprint 3 mail configuration | Choose provider and sending address; supply settings to the app | _TBD_; Compose does not pass mail settings, so the console backend applies |
-| Sprint 3 partial cases | Decide how to record TC-607, TC-609, and TC-1014 | These name tip or filing behavior that is scheduled after Sprint 3 |
+| Sprint 3 mail configuration | Choose provider and sending address; set `APP_BASE_URL` and SMTP values outside the repository | Provider _TBD_; approved Compose pass-through of `APP_BASE_URL` and `MAIL_*` is pending verification |
+| Sprint 3 partial cases | Record only the sign-in and reset portion of TC-607, TC-609, and TC-1014 | Project owner approved November 21, 2026; outcomes stay Not run until each full procedure runs |
 | Material 3 design fidelity | Compare against exact Figma specs when plan limits allow | Built from Figma layout sizes, an overview screenshot, dialog specs, and Material 3 baseline tokens; not a verified pixel match |
 | Material 3 UI verification | Commit, review, and merge the branch, then repeat on the target environment | November 21, 2026: 26 unit tests passed; disposable PostgreSQL upgrade from `4d51cc3` kept records; Chrome checked photos, map, settings, and a one-page flyer; signed-in pages loaded on the upgraded local database; the project owner reported a hands-on local test with no problems (individual cases not itemized) |
 | Backup restore | Test restoring the November 21, 2026 local dump in an isolated database | Dump created and checked as complete; restore not tested; uploaded photos are not in the dump |
@@ -127,3 +127,4 @@ remain unassigned unless explicitly established.
 | 2026-11-21 | Claude | Add the planned Sprint 3 MVP production-readiness work. |
 | 2026-11-21 | Claude | Align Sprint 3 status to the team's official requirements. |
 | 2026-11-21 | Claude | Record Sprint 3 work on the Sprint 3 integration branch, pending verification, its open items, and the corrected photo access statement. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: mail status, photo rule, and partial cases, on the Sprint 3 integration branch, pending verification. |

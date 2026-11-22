@@ -65,6 +65,9 @@ the team's Requirements document where a requirement exists.
 | Email provider and sending address | S3-06 | _TBD_ |
 | Sign-in and reset request limits | S3-08 | Build defaults: 5 failed sign-ins per 15 minutes, 3 reset requests per hour; team approval _TBD_ |
 | Registration duplicate-email response | S3-09 | Decided: keep the visible error because TC-002 requires it |
+| Partial cases TC-607, TC-609, TC-1014 | S3-12 | Project owner approved November 21, 2026: record the Sprint 3 portion in tests and notes; outcome stays Not run until the full procedure runs |
+| Other sessions after password reset | S3-07 | Project owner approved November 21, 2026: end them with `User.session_version` |
+| Compose mail settings | S3-06 | Project owner approved November 21, 2026: pass `APP_BASE_URL` and `MAIL_*` to `web`; the coding agent owns this one `infra/**` change |
 | Card owners | Now | _TBD_ |
 | Whether proposed MVP items become requirements | Sprint 4 planning | _TBD_ |
 | ZIP search versus the current map and radius feed | Sprint 5 | _TBD_; requirements specify ZIP, the branch uses coordinates |
@@ -83,3 +86,4 @@ and the team completes the Reflection.
 | 2026-11-21 | Claude | Apply the project owner's priorities: security and product gaps High, all other cards Lower. |
 | 2026-11-21 | Claude | Align Sprint 3 to the team's official scope and move remaining MVP work to its target sprints. |
 | 2026-11-21 | Claude | Narrow S3-09 to login redirect validation, record the registration decision, and update card states to pending verification. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: approved decisions, on the Sprint 3 integration branch, pending verification. |

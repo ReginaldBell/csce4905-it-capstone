@@ -199,6 +199,7 @@ saved owner phone.
 2. If changing email, enter the current password.
 3. Submit the protected form.
 4. The server validates the values, stores email in lowercase, and saves the changes.
+5. If the email changed, the server invalidates that user's unused reset tokens.
 
 **Alternates:** a blank display name stores `NULL`. An invalid value or used email shows
 a field error and saves nothing. A missing or wrong current password during an email
@@ -219,17 +220,22 @@ account exists.
 
 **Alternates:** over the limit of 3 requests per hour, the page and status 200 stay the
 same and no email is sent. On a send failure, the server logs the failure without the
-token and the user sees the same message.
+token and the user sees the same message. If `APP_BASE_URL` is unset outside debug or
+testing, nothing is sent and an error is logged without the token. The `console` backend
+outside debug or testing prints nothing and counts as a failed send.
 
 ### UC-S3-03: Complete a password reset
 
 **Actor:** visitor with a reset link. **Precondition:** a valid, unused, unexpired link.
 **Trigger:** opens `/reset-password/<token>`. **Postcondition:** the password is
-updated and the token is marked used.
+updated, the user's unused reset tokens are invalid, and earlier sessions are logged out.
 
 1. Enter and confirm a new password that meets the registration rules.
 2. The server updates the password hash and marks the token used.
-3. The visitor is redirected to login.
+3. It invalidates the user's other unused reset tokens and clears login attempts for that
+   email and the current client address.
+4. It increments `User.session_version`, so sessions started before the reset are logged out.
+5. The visitor is redirected to login.
 
 **Alternates:** an invalid, expired, or used link returns status 400 with
 `This reset link is invalid or has expired.` Invalid password entries show field errors
@@ -257,3 +263,4 @@ Absolute URLs, `//host`, backslashes, and control characters in `next` are rejec
 | _TBD_ | _TBD_ | Initial draft template |
 | 2026-11-04 | Codex | Document eight implemented Sprint 2 use cases, alternate flows, ownership, and output limits. |
 | 2026-11-21 | Claude | Add account editing, password reset, and rate-limited sign-in flows, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: token invalidation, reset link, attempt clearing, and session flows, on the Sprint 3 integration branch, pending verification. |

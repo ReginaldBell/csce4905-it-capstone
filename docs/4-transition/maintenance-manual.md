@@ -276,33 +276,44 @@ Back up first. There is no downgrade command, and restoring the dump has not bee
 6. Compare record counts for users, pets, contacts, and reports with the counts before
    the upgrade, then sign in and open the pet, contact, report, and Settings pages.
 
-Pages that read the new columns can fail between steps 4 and 5, so keep users off the
-app during the upgrade. Compose bind-mounts `src/` from the current checkout, so photos
+`flask upgrade-sprint3` adds `users.session_version` with default 1 for existing users.
+Existing sessions that hold only a user ID count as version 1.
+
+Pages that read the new columns, including sign-in, can fail between steps 4 and 5, so
+keep users off the app during the upgrade. Compose bind-mounts `src/` from the current checkout, so photos
 saved under another checkout will not appear unless they are copied.
 
 ### Environment variables
 
 | Setting | Default | Purpose |
 |---|---|---|
+| `APP_BASE_URL` | Blank | Base address for emailed reset links; required outside debug or testing |
 | `MAIL_BACKEND` | `console` | `console`, `memory`, or `smtp` |
-| `MAIL_HOST`, `MAIL_PORT` | _TBD_ | SMTP server |
-| `MAIL_USERNAME`, `MAIL_PASSWORD` | _TBD_ | SMTP credentials; never commit them |
-| `MAIL_FROM` | _TBD_ | Sending address |
-| `MAIL_USE_TLS` | _TBD_ | SMTP TLS setting |
+| `MAIL_HOST` | Blank | SMTP server |
+| `MAIL_PORT` | `587` | SMTP port |
+| `MAIL_USERNAME`, `MAIL_PASSWORD` | Blank | SMTP credentials; never commit them |
+| `MAIL_FROM` | Blank | Sending address; provider and address are _TBD_ |
+| `MAIL_USE_TLS` | `true` | SMTP TLS setting |
 | `PASSWORD_RESET_TTL_MINUTES` | `60` | Reset link lifetime |
 | `LOGIN_LIMIT`, `LOGIN_WINDOW_SECONDS` | `5`, `900` | Failed sign-in limit |
 | `RESET_LIMIT`, `RESET_WINDOW_SECONDS` | `3`, `3600` | Reset request limit |
 
-The supplied Compose file passes only `DATABASE_URL`, `SECRET_KEY`, and `FLASK_DEBUG` to
-the web container. **The settings above do not reach the app through Compose until the
-environment is configured**, so the default `console` backend applies. The approved way
-to supply them, and whether the limit and lifetime values can be overridden from the
-environment, are _TBD_.
+The approved Sprint 3 Compose change, pending verification, passes `APP_BASE_URL` and the
+`MAIL_*` settings to the web service using `${NAME:-default}`, so no secret is written to
+the file. Set real values in your shell or in an untracked `infra/.env` file. The reset
+lifetime and limit settings are not Compose variables; whether they can be overridden from
+the environment is _TBD_.
 
 ### Operating notes
 
-- The `console` backend prints full reset links to the web logs. Treat those logs as
-  sensitive, and do not use this backend on a shared or public system.
+- The `console` backend prints only when `app.debug` or `app.testing` is true. The supplied
+  Compose file sets `FLASK_DEBUG=1`, so full reset links can appear in its web logs. Treat
+  those logs as sensitive, and do not use debug mode on a shared or public system.
+- Outside debug or testing, `console` prints nothing, logs an error without message
+  content, and counts as a failed send. Use `smtp` and set `APP_BASE_URL` there.
+- If `APP_BASE_URL` is unset outside debug or testing, no reset email is sent.
+- A successful password reset increments `session_version`, which logs out sessions
+  started before the reset. It also clears login attempts for that email and client address.
 - With the wrong backend or a failed send, users still see the generic success message.
   Check the web logs for a send failure.
 - Limits use `request.remote_addr`. Behind a proxy or container gateway, many users can
@@ -315,10 +326,12 @@ environment, are _TBD_.
 |---|---|
 | Missing-column error for a Sprint 3 field | Confirm the target database, back up, and run `flask upgrade-sprint3`. |
 | `No such command "upgrade-sprint3"` | The running code does not include Sprint 3. Check the checkout and rebuild. |
-| No reset email arrives | Check `MAIL_BACKEND`, whether the container received the SMTP settings, and the web logs. Remember that requests over the limit send nothing. |
-| Reset link returns 400 | The link is invalid, expired, used, or replaced by a newer request. Request a new one. |
+| No reset email arrives | Check `MAIL_BACKEND`, `APP_BASE_URL`, whether the container received the SMTP settings, and the web logs. `console` sends nothing outside debug or testing, and requests over the limit send nothing. |
+| Reset link has the wrong host | Set `APP_BASE_URL` to the site's address and recreate the web container. |
+| Users are logged out after a password reset | Expected: `session_version` changed. They must sign in again. |
+| Reset link returns 400 | The link is invalid, expired, used, replaced by a newer request, or canceled by an email change or reset. Request a new one. |
 | Valid users get status 429 | Check the failed-attempt window and whether users share one `remote_addr`. |
-| Photo returns 404 or redirects to login | Confirm the viewer's access and the stored `photo_path`. Access behavior is pending TC-107. |
+| Photo returns 404 or redirects to login | Confirm the stored `photo_path` and the viewer. Non-owners need a report that is shared and `open`. Access behavior is pending TC-107. |
 
 ## Revision history
 
@@ -329,3 +342,4 @@ environment, are _TBD_.
 | 2026-11-21 | Claude | Add the community upgrade step and Material 3 UI files for the unmerged UI branch. |
 | 2026-11-21 | Claude | Add the manual pre-upgrade backup procedure and its limits. |
 | 2026-11-21 | Claude | Add Sprint 3 upgrade order, backup, environment, and troubleshooting; correct the photo access statement, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: mail settings, console behavior, sessions, and troubleshooting, on the Sprint 3 integration branch, pending verification. |

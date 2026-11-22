@@ -57,8 +57,9 @@ commands above, run:
 docker compose -f infra/docker-compose.yml exec web flask upgrade-sprint3
 ```
 
-Password reset emails print to the web logs unless a mail backend is configured. To run
-the automated tests, see the [test plan](docs/3-construction/test-plan.md#how-to-run-the-automated-suite).
+With the supplied debug Compose settings, the default `console` mail backend prints reset
+links to the web logs. Outside debug, set `APP_BASE_URL` and use `smtp`; `console` sends
+nothing. To run the automated tests, see the [test plan](docs/3-construction/test-plan.md#how-to-run-the-automated-suite).
 
 ## Documentation
 
@@ -120,3 +121,4 @@ from approved requirements.
 | 2026-11-04 | Reginad Bell | Document delivered Sprint 2 features, local setup, project-state links, and verification scope. |
 | 2026-11-21 | Claude | Add the community upgrade step and link the Sprint 3 plan. |
 | 2026-11-21 | Claude | Add Sprint 3 status and run steps, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: reset mail run note, on the Sprint 3 integration branch, pending verification. |
