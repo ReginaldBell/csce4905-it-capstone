@@ -204,7 +204,8 @@ number using 9-15 letters or digits. Pet Finder shows the pet's age when a birth
 saved. Microchip numbers do not appear on community pages.
 
 You can always open your own current pet photo. Another signed-in user can open it only
-while it belongs to a report you shared that is still **Open**.
+while it belongs to a report you shared that is still **Open**. After the report is
+resolved, other users see *Photo unavailable because this report is resolved.*
 
 ### Add a contact address
 
@@ -236,8 +237,9 @@ other device or browser that was signed in is logged out and must sign in again.
 
 ### If sign-in is limited
 
-After 5 failed sign-ins for the same email and connection within 15 minutes, Pet Finder
-shows *Too many attempts. Try again later.* Wait 15 minutes and try again. Password reset
+You can make 5 failed sign-ins for the same email and connection within 15 minutes. The
+6th attempt shows *Too many attempts. Try again later.*, even if the password is correct.
+Wait 15 minutes and try again. Password reset
 requests are limited to 3 per hour; extra requests show the normal message but do not
 send another email.
 
@@ -261,3 +263,4 @@ send another email.
 | 2026-11-21 | Claude | Documented the Material 3 navigation, Settings, and Report missing shortcut on the unmerged UI branch. |
 | 2026-11-21 | Claude | Add pet detail, contact address, account, password reset, and sign-in limit tasks, on the Sprint 3 integration branch, pending verification. |
 | 2026-11-21 | Claude | Apply contract Addenda A and B: photo visibility, canceled links, and logout after reset, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: sixth-attempt limit and resolved photo message, on the Sprint 3 integration branch, pending verification. |

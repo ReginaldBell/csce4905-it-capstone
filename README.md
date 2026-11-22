@@ -41,7 +41,9 @@ no application landing route at `/`; use `/login`, `/pets`, or `/reports`.
 
 `flask init-db` creates missing tables; it does not clear data or migrate existing
 columns. `flask upgrade-community` adds the nearby-feed columns to an older database,
-keeps existing records, and is safe to run again. The database uses a named volume;
+keeps existing records, and is safe to run again. On the Sprint 3 integration branch,
+pending verification, it also adds `users.full_name`, `users.phone`, and
+`users.session_version`. The database uses a named volume;
 photos live in `src/static/uploads/`.
 See the [maintenance manual](docs/4-transition/maintenance-manual.md) before changing
 the environment. The supplied Compose configuration is for local development.
@@ -122,3 +124,4 @@ from approved requirements.
 | 2026-11-21 | Claude | Add the community upgrade step and link the Sprint 3 plan. |
 | 2026-11-21 | Claude | Add Sprint 3 status and run steps, on the Sprint 3 integration branch, pending verification. |
 | 2026-11-21 | Claude | Apply contract Addenda A and B: reset mail run note, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: upgrade-community columns, on the Sprint 3 integration branch, pending verification. |

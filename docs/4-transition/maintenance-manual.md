@@ -276,8 +276,10 @@ Back up first. There is no downgrade command, and restoring the dump has not bee
 6. Compare record counts for users, pets, contacts, and reports with the counts before
    the upgrade, then sign in and open the pet, contact, report, and Settings pages.
 
-`flask upgrade-sprint3` adds `users.session_version` with default 1 for existing users.
-Existing sessions that hold only a user ID count as version 1.
+`flask upgrade-community` also adds `users.full_name`, `users.phone`, and
+`users.session_version` (default 1), because existing code loads `User` after that command.
+`flask upgrade-sprint3` is still required for all other Sprint 3 schema changes. Existing
+sessions that hold only a user ID count as version 1.
 
 Pages that read the new columns, including sign-in, can fail between steps 4 and 5, so
 keep users off the app during the upgrade. Compose bind-mounts `src/` from the current checkout, so photos
@@ -289,10 +291,10 @@ saved under another checkout will not appear unless they are copied.
 |---|---|---|
 | `APP_BASE_URL` | Blank | Base address for emailed reset links; required outside debug or testing |
 | `MAIL_BACKEND` | `console` | `console`, `memory`, or `smtp` |
-| `MAIL_HOST` | Blank | SMTP server |
+| `MAIL_HOST` | `localhost` | SMTP server |
 | `MAIL_PORT` | `587` | SMTP port |
 | `MAIL_USERNAME`, `MAIL_PASSWORD` | Blank | SMTP credentials; never commit them |
-| `MAIL_FROM` | Blank | Sending address; provider and address are _TBD_ |
+| `MAIL_FROM` | `no-reply@petfinder.example.test` | Sending address; the production provider and address are _TBD_ |
 | `MAIL_USE_TLS` | `true` | SMTP TLS setting |
 | `PASSWORD_RESET_TTL_MINUTES` | `60` | Reset link lifetime |
 | `LOGIN_LIMIT`, `LOGIN_WINDOW_SECONDS` | `5`, `900` | Failed sign-in limit |
@@ -300,9 +302,13 @@ saved under another checkout will not appear unless they are copied.
 
 The approved Sprint 3 Compose change, pending verification, passes `APP_BASE_URL` and the
 `MAIL_*` settings to the web service using `${NAME:-default}`, so no secret is written to
-the file. Set real values in your shell or in an untracked `infra/.env` file. The reset
-lifetime and limit settings are not Compose variables; whether they can be overridden from
-the environment is _TBD_.
+the file. Set real values in your shell or in an untracked `infra/.env` file.
+
+The app also reads `PASSWORD_RESET_TTL_MINUTES`, `LOGIN_LIMIT`, `LOGIN_WINDOW_SECONDS`,
+`RESET_LIMIT`, and `RESET_WINDOW_SECONDS` from its environment, but the supplied Compose
+file does not forward them to `web`. Setting them in your shell or `infra/.env` has no
+effect on that stack, so the defaults above apply. Forwarding them needs an approved
+`infra/**` change.
 
 ### Operating notes
 
@@ -331,7 +337,7 @@ the environment is _TBD_.
 | Users are logged out after a password reset | Expected: `session_version` changed. They must sign in again. |
 | Reset link returns 400 | The link is invalid, expired, used, replaced by a newer request, or canceled by an email change or reset. Request a new one. |
 | Valid users get status 429 | Check the failed-attempt window and whether users share one `remote_addr`. |
-| Photo returns 404 or redirects to login | Confirm the stored `photo_path` and the viewer. Non-owners need a report that is shared and `open`. Access behavior is pending TC-107. |
+| Photo returns 404 or redirects to login | Confirm the stored `photo_path` and the viewer. Non-owners need a report that is shared and `open`. Rewritten paths such as `/static/./uploads/<file>` get the same check. Access behavior is pending TC-107. |
 
 ## Revision history
 
@@ -343,3 +349,4 @@ the environment is _TBD_.
 | 2026-11-21 | Claude | Add the manual pre-upgrade backup procedure and its limits. |
 | 2026-11-21 | Claude | Add Sprint 3 upgrade order, backup, environment, and troubleshooting; correct the photo access statement, on the Sprint 3 integration branch, pending verification. |
 | 2026-11-21 | Claude | Apply contract Addenda A and B: mail settings, console behavior, sessions, and troubleshooting, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: mail fallbacks, unforwarded limit settings, upgrade columns, and photo paths, on the Sprint 3 integration branch, pending verification. |

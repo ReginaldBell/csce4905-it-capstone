@@ -86,7 +86,9 @@ migrations, or backfill earlier status history. PostgreSQL uses the Compose
 Retention, production backups, and recovery objectives remain _TBD_.
 
 On the nearby feed and UI branches, `flask upgrade-community` adds the feed columns
-to an older database, keeps existing records, and is safe to run again.
+to an older database, keeps existing records, and is safe to run again. On the Sprint 3
+integration branch, pending verification, it also adds `users.full_name`, `users.phone`,
+and `users.session_version`, because existing code loads `User` after that command.
 
 ## 4. Application interfaces
 
@@ -245,7 +247,7 @@ erDiagram
 
 | Route | Methods | Access | Behavior |
 |---|---|---|---|
-| `/settings` | GET, POST | Login | Accepts `display_name`, `full_name`, `phone`, `email`, and `current_password` |
+| `/settings` | GET, POST | Login | Accepts `display_name`, `full_name`, `phone`, `email`, and `current_password`. A POST that omits `email` is not an email change |
 | `/forgot-password` (`auth.forgot_password`) | GET, POST | Public | Field `email`; same response for known and unknown emails |
 | `/reset-password/<token>` (`auth.reset_password`) | GET, POST | Reset link | Fields `password` and `confirm_password`; invalid, expired, or used link returns 400 |
 
@@ -285,7 +287,7 @@ not trusted.
 
 | Scope | Default limit | Counts | Over limit |
 |---|---|---|---|
-| `login` | `LOGIN_LIMIT=5` in `LOGIN_WINDOW_SECONDS=900` | Failed logins; a successful login or password reset clears the key | Status 429, password not checked, `Too many attempts. Try again later.` |
+| `login` | `LOGIN_LIMIT=5` in `LOGIN_WINDOW_SECONDS=900` | Failed logins; a successful login or password reset clears the key | Failures 1-5 return the normal error. The 6th attempt returns status 429 with `Too many attempts. Try again later.`, even with a correct password, because the password is not checked |
 | `reset` | `RESET_LIMIT=3` in `RESET_WINDOW_SECONDS=3600` | Every reset request | Same page and status 200; no email sent |
 
 ### Redirects and photo access
@@ -296,12 +298,25 @@ keeps its visible duplicate-email error because TC-002 requires it.
 
 On `main`, uploaded photo URLs are directly accessible. On the Sprint 3 branch, they are
 access-checked pending TC-107. The owner can always open their current photo. A non-owner
-can open it only when it belongs to a report that is shared and has status `open`.
+can open it only when it belongs to a report that is shared and has status `open`. On a
+resolved shared report, non-owners see `Photo unavailable because this report is resolved.`
+
+Every static request that resolves inside `uploads/` gets this check against its
+normalized path, however the URL is written. That includes `/static/./uploads/<file>`,
+`/static/x/../uploads/<file>`, `/static/%2e/uploads/<file>`,
+`/static/x/%2e%2e/uploads/<file>`, and backslash or repeated-slash forms. Other static
+assets keep working.
+
+### Form error association
+
+The report form's `pet_ids` checkboxes are one control, so `aria-describedby` on their
+enclosing `fieldset` satisfies the field-error rule.
 
 ### Schema upgrade
 
-`flask upgrade-sprint3` adds the new columns and tables, sets `session_version` to 1 for
-existing users, keeps all records, and is designed to be safe to run twice on PostgreSQL and SQLite. Run it after `flask init-db`
+`flask upgrade-community` adds the three `users` columns noted in section 3.
+`flask upgrade-sprint3` makes all other Sprint 3 schema changes, keeps `session_version`
+at default 1 for existing users, keeps all records, and is designed to be safe to run twice on PostgreSQL and SQLite. Run it after `flask init-db`
 and `flask upgrade-community`. See the
 [maintenance manual](../4-transition/maintenance-manual.md#9-sprint-3-upgrade-and-operations).
 
@@ -314,3 +329,4 @@ and `flask upgrade-community`. See the
 | 2026-11-21 | Claude | Add Material 3 UI components, Settings route, report preselect, and the community upgrade command for the unmerged UI branch. |
 | 2026-11-21 | Claude | Add Sprint 3 fields, tables, modules, routes, mail backends, limits, and upgrade command, on the Sprint 3 integration branch, pending verification. |
 | 2026-11-21 | Claude | Apply contract Addenda A and B: reset link, console mail, token, session, and shared photo design, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: upgrade columns, sixth-attempt limit, photo path guard, and fieldset errors, on the Sprint 3 integration branch, pending verification. |
