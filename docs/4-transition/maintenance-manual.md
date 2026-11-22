@@ -1,6 +1,6 @@
 # Maintenance Manual
 
-**Phase:** Transition | **Status:** Sprint 2 implementation documented; production handover _TBD_
+**Phase:** Transition | **Status:** Sprint 2 implementation documented; Sprint 3 operations on the Sprint 3 integration branch, pending verification; production handover _TBD_
 
 **Owner:** _TBD_ | **Audience:** maintainers | **Baseline:** `4d51cc3`, November 4, 2026
 
@@ -222,8 +222,9 @@ Temporary review harnesses are not a committed test suite or CI pipeline.
 
 ## 8. Known limits and handover work
 
-- Existing static photo URLs are directly accessible; owned application routes do
-  not constitute private media delivery.
+- On `main`, uploaded photo URLs are directly accessible, and owned application routes
+  do not constitute private media delivery. On the Sprint 3 branch, they are
+  access-checked pending TC-107.
 - Clipboard handlers were inspected, but browser permission/failure cases and
   a formal browser support matrix were not fully tested.
 - Missing/non-numeric timezone offset means UTC; automatic local conversion needs JS.
@@ -237,6 +238,88 @@ Record follow-up decisions and changes in [PROJECT_STATE.md](../../PROJECT_STATE
 Never commit real credentials; document only their approved storage/access procedure
 once one exists.
 
+## 9. Sprint 3 upgrade and operations
+
+This section applies to work on the Sprint 3 integration branch, pending verification.
+The upgrade has not been recorded as run on any shared or deployed database.
+
+### Upgrade order
+
+Back up first. There is no downgrade command, and restoring the dump has not been tested.
+
+1. Confirm which database you are changing. Compose names the project `infra` from the
+   folder name, so **every checkout uses the same `infra_pgdata` volume by default**. To
+   try the branch without touching it, stop the `infra` stack and add a separate project
+   name such as `-p pfs3-trial` to each Compose command.
+2. Take the database dump in [section 4](#persistence-and-backups) and confirm that it
+   ends with `PostgreSQL database dump complete`.
+3. Copy the photos, which are not in the dump:
+
+   ```bash
+   cp -r src/static/uploads ../petfinder-uploads-backup
+   ```
+
+4. Switch to the Sprint 3 code and rebuild:
+
+   ```bash
+   docker compose -f infra/docker-compose.yml up --build -d
+   ```
+
+5. Run the schema commands in this order:
+
+   ```bash
+   docker compose -f infra/docker-compose.yml exec web flask init-db
+   docker compose -f infra/docker-compose.yml exec web flask upgrade-community
+   docker compose -f infra/docker-compose.yml exec web flask upgrade-sprint3
+   ```
+
+6. Compare record counts for users, pets, contacts, and reports with the counts before
+   the upgrade, then sign in and open the pet, contact, report, and Settings pages.
+
+Pages that read the new columns can fail between steps 4 and 5, so keep users off the
+app during the upgrade. Compose bind-mounts `src/` from the current checkout, so photos
+saved under another checkout will not appear unless they are copied.
+
+### Environment variables
+
+| Setting | Default | Purpose |
+|---|---|---|
+| `MAIL_BACKEND` | `console` | `console`, `memory`, or `smtp` |
+| `MAIL_HOST`, `MAIL_PORT` | _TBD_ | SMTP server |
+| `MAIL_USERNAME`, `MAIL_PASSWORD` | _TBD_ | SMTP credentials; never commit them |
+| `MAIL_FROM` | _TBD_ | Sending address |
+| `MAIL_USE_TLS` | _TBD_ | SMTP TLS setting |
+| `PASSWORD_RESET_TTL_MINUTES` | `60` | Reset link lifetime |
+| `LOGIN_LIMIT`, `LOGIN_WINDOW_SECONDS` | `5`, `900` | Failed sign-in limit |
+| `RESET_LIMIT`, `RESET_WINDOW_SECONDS` | `3`, `3600` | Reset request limit |
+
+The supplied Compose file passes only `DATABASE_URL`, `SECRET_KEY`, and `FLASK_DEBUG` to
+the web container. **The settings above do not reach the app through Compose until the
+environment is configured**, so the default `console` backend applies. The approved way
+to supply them, and whether the limit and lifetime values can be overridden from the
+environment, are _TBD_.
+
+### Operating notes
+
+- The `console` backend prints full reset links to the web logs. Treat those logs as
+  sensitive, and do not use this backend on a shared or public system.
+- With the wrong backend or a failed send, users still see the generic success message.
+  Check the web logs for a send failure.
+- Limits use `request.remote_addr`. Behind a proxy or container gateway, many users can
+  share one address. Review this before deployment.
+- Retention and cleanup for `auth_attempts` and `password_reset_tokens` are _TBD_.
+
+### Sprint 3 troubleshooting
+
+| Symptom | Check / action |
+|---|---|
+| Missing-column error for a Sprint 3 field | Confirm the target database, back up, and run `flask upgrade-sprint3`. |
+| `No such command "upgrade-sprint3"` | The running code does not include Sprint 3. Check the checkout and rebuild. |
+| No reset email arrives | Check `MAIL_BACKEND`, whether the container received the SMTP settings, and the web logs. Remember that requests over the limit send nothing. |
+| Reset link returns 400 | The link is invalid, expired, used, or replaced by a newer request. Request a new one. |
+| Valid users get status 429 | Check the failed-attempt window and whether users share one `remote_addr`. |
+| Photo returns 404 or redirects to login | Confirm the viewer's access and the stored `photo_path`. Access behavior is pending TC-107. |
+
 ## Revision history
 
 | Date | Author | Summary |
@@ -245,3 +328,4 @@ once one exists.
 | 2026-11-04 | Codex | Document Sprint 2 setup, data lifecycle, configuration, preservation rules, verification, and operational limits. |
 | 2026-11-21 | Claude | Add the community upgrade step and Material 3 UI files for the unmerged UI branch. |
 | 2026-11-21 | Claude | Add the manual pre-upgrade backup procedure and its limits. |
+| 2026-11-21 | Claude | Add Sprint 3 upgrade order, backup, environment, and troubleshooting; correct the photo access statement, on the Sprint 3 integration branch, pending verification. |

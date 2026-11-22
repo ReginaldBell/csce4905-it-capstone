@@ -1,6 +1,6 @@
 # User Manual
 
-**Phase:** Transition | **Status:** Sprint 2 implementation documented; sponsor acceptance _TBD_ | **Owner:** _TBD_ | **Audience:** end users
+**Phase:** Transition | **Status:** Sprint 2 implementation documented; Sprint 3 tasks on the Sprint 3 integration branch, pending verification; sponsor acceptance _TBD_ | **Owner:** _TBD_ | **Audience:** end users
 
 This manual describes Pet Finder as delivered through Sprint 2 at commit `4d51cc3` on
 November 4, 2026. The [Sprint 2 record](../project-management/sprint-2-record.md)
@@ -191,6 +191,61 @@ Pet Finder do not update copies you already pasted, printed, downloaded, or sent
 Support contact and hours: _TBD_. Include the page, action, message shown, and approximate
 time of the problem. Do not include your password.
 
+## 14. Sprint 3 tasks
+
+The tasks in this section are on the Sprint 3 integration branch, pending verification.
+They are not available on `main` yet.
+
+### Add more pet details
+
+When you add or edit a pet, you can also enter sex, height in inches, weight in pounds,
+colors, markings, and microchip status. If you choose **Chipped**, enter the microchip
+number using 9-15 letters or digits. Pet Finder shows the pet's age when a birth date is
+saved. Microchip numbers do not appear on community pages.
+
+### Add a contact address
+
+Add or edit a contact and enter an address of up to 255 characters. You still need a
+phone number or email address.
+
+### Edit your account
+
+1. Open **Settings**.
+2. Change your display name, full name, phone, or email.
+3. If you change your email, enter your current password.
+4. Save your changes.
+
+Generated emails, phone scripts, social posts, and flyers show your saved phone along
+with your email. Review them before sharing, because anyone who receives them can see
+that information. Your phone does not appear on community pages.
+
+### Reset a forgotten password
+
+1. On the login page, choose the forgot-password link.
+2. Enter your account email and submit.
+3. The page says: *If an account exists for that email, we sent a reset link.*
+4. Open the link in the email. It works once and expires after 60 minutes by default.
+5. Enter and confirm a new password of at least eight characters, then log in.
+
+If you request another link, use the newest one. Earlier unused links stop working.
+
+### If sign-in is limited
+
+After 5 failed sign-ins for the same email and connection within 15 minutes, Pet Finder
+shows *Too many attempts. Try again later.* Wait 15 minutes and try again. Password reset
+requests are limited to 3 per hour; extra requests show the normal message but do not
+send another email.
+
+### Sprint 3 troubleshooting
+
+| Problem | What to do |
+|---|---|
+| No reset email arrives | Check spam and the address you entered. Wait before trying again, because extra requests do not send email. Contact the operator if it still does not arrive. |
+| *This reset link is invalid or has expired.* | Request a new link and use the newest email. |
+| *Too many attempts. Try again later.* | Wait up to 15 minutes, or reset your password after the wait. |
+| Email change is rejected | Check the current password, the email format, and whether another account uses that email. |
+| Microchip number is rejected | Choose **Chipped** and use 9-15 letters or digits. |
+
 ## Revision history
 
 | Date | Author | Summary |
@@ -198,3 +253,4 @@ time of the problem. Do not include your password.
 | _TBD_ | _TBD_ | Initial draft template |
 | 2026-11-04 | Codex | Documented delivered Sprint 2 workflows, validation, UTC behavior, generated outputs, flyer excerpt, stale reminder, and troubleshooting. |
 | 2026-11-21 | Claude | Documented the Material 3 navigation, Settings, and Report missing shortcut on the unmerged UI branch. |
+| 2026-11-21 | Claude | Add pet detail, contact address, account, password reset, and sign-in limit tasks, on the Sprint 3 integration branch, pending verification. |

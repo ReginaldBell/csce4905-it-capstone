@@ -1,6 +1,6 @@
 # Test Plan
 
-**Phase:** Construction | **Status:** Sprint 2 review results recorded | **Owner:** _TBD_
+**Phase:** Construction | **Status:** Sprint 2 review results recorded; Sprint 3 cases Not run | **Owner:** _TBD_
 
 ## 1. Scope and evidence
 
@@ -302,6 +302,69 @@ before merging; PR threads retain findings and re-review context.
 - Sponsor acceptance and formal non-functional targets remain _TBD_. Reviewed
   merges do not establish acceptance of untested requirements or arbitrary layouts.
 
+## 9. Sprint 3 test cases
+
+The Sprint 3 work is on the Sprint 3 integration branch, pending verification. The 27
+cases below use the IDs in the course `TestPlanTracker.xlsx`, which holds their full
+preconditions, steps, and expected outcomes. **All Sprint 3 outcomes are Not run.** Change
+an outcome only after that exact procedure runs, and record the commit and evidence.
+
+| Case | Requirement | Test | Sprint 3 outcome |
+|---|---|---|---|
+| TC-001 | R1 | Register a household | Not run |
+| TC-002 | R1, NF5 | Reject invalid account entries, including a used email | Not run |
+| TC-003 | R1, NF2 | Log out and check private pages | Not run |
+| TC-004 | R17, NF5, NF10 | Edit account details; outputs use saved phone | Not run |
+| TC-005 | R23 | Reset a forgotten password | Not run |
+| TC-101 | R2 | Add and save a pet with all identifiers | Not run |
+| TC-102 | R2, NF5 | Require pet name and species | Not run |
+| TC-103 | R3, NF2 | View pets and details | Not run |
+| TC-104 | NF2 | Block another household's pets | Not run |
+| TC-105 | R4 | Edit pet details | Not run |
+| TC-106 | R5 | Confirm pet deletion | Not run |
+| TC-107 | NF2, R20 | Keep photo links private | Not run |
+| TC-108 | R2, NF5 | Reject a future birth date | Not run |
+| TC-301 | R8, R9 | Add and view contacts, including address | Not run |
+| TC-302 | R9, NF5 | Edit and delete contacts | Not run |
+| TC-303 | NF2 | Keep contacts private | Not run |
+| TC-604 | NF8 | Check supported screens and browsers | Not run |
+| TC-605 | NF5 | Check form errors throughout the app | Not run |
+| TC-607 | NF12 | Use a keyboard | Not run |
+| TC-609 | NF14 | Limit repeated requests | Not run |
+| TC-1001 | R1, NF1 | Password storage | Not run |
+| TC-1002 | R1, NF2 | Session checks | Not run |
+| TC-1003 | R2-R3, NF2 | Pet ownership | Not run |
+| TC-1004 | R2, NF5 | Pet form checks | Not run |
+| TC-1005 | R2-R3 | Saving and listing pets | Not run |
+| TC-1006 | R2, NF5 | Special characters | Not run |
+| TC-1014 | NF14 | Request limits | Not run |
+
+### Scope limits for this sprint
+
+- **TC-609 and TC-1014** also name report filing and tip limits. Sprint 3 builds only
+  sign-in and reset limits, so these cases cannot fully pass in Sprint 3 as written.
+- **TC-607** includes browsing Nearby and sending a tip. Private tips are Sprint 5 work,
+  so the full keyboard path cannot be completed in Sprint 3.
+- **TC-604** needs current Chrome, Edge, Firefox, and Safari. Record each browser
+  separately.
+- **TC-107** must be run as owner, another account, and guest, and with a replaced photo
+  and a known old link. Until then, photo privacy on the Sprint 3 branch is unverified.
+
+### How to run the automated suite
+
+From your own checkout in Git Bash, with no network or database:
+
+```bash
+MSYS_NO_PATHCONV=1 docker run --rm --network none -v "$(pwd -W):/app" -w /app \
+  -e PYTHONPATH=/app/src -e PYTHONDONTWRITEBYTECODE=1 infra-web \
+  python -W ignore -m unittest discover -s tests
+```
+
+The command needs an existing `infra-web` image. Use synthetic data only: emails at
+`@example.test` and phones in the `555-01xx` range. Any PostgreSQL check uses disposable
+resources named `pfs3-*`, removed afterward. A passing unit test does not by itself mark
+a manual or browser case as Pass. Sprint 3 suite totals are _TBD_.
+
 ## Revision history
 
 | Date | Author | Summary |
@@ -309,3 +372,4 @@ before merging; PR threads retain findings and re-review context.
 | _TBD_ | _TBD_ | Initial draft template |
 | 2026-11-04 | Codex | Recorded Sprint 2 regression procedures, traceability, historical evidence, resolved defects and validation limits through `4d51cc3` |
 | 2026-11-21 | Claude | Recorded Material 3 UI, local database upgrade, and project-owner test evidence |
+| 2026-11-21 | Claude | Add the Sprint 3 case list, scope limits, and suite instructions; all Sprint 3 outcomes remain Not run. |
