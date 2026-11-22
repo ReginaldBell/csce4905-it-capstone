@@ -1,0 +1,296 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - 'sprint3/**'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - run: PYTHONPATH=src python -W ignore -m unittest discover -s tests
+
+  safari-render:
+    runs-on: macos-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - name: Check layouts in desktop and iOS Simulator Safari
+        run: |
+          python - <<'PY'
+          import base64
+          from contextlib import ExitStack
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import secrets
+          import socket
+          import subprocess
+          import sys
+          import tempfile
+          import time
+          from urllib.error import HTTPError, URLError
+          from urllib.parse import urlsplit
+          from urllib.request import ProxyHandler, Request, build_opener
+
+          local_http = build_opener(ProxyHandler({}))
+          artifacts = Path(os.environ["RUNNER_TEMP"]) / "safari-render"
+          artifacts.mkdir(exist_ok=True)
+          result = {"commit": os.environ["GITHUB_SHA"], "browsers": {}, "errors": []}
+
+          def output(*command):
+              return subprocess.check_output(command, text=True, timeout=60).strip()
+
+          def local_port():
+              with socket.socket() as listener:
+                  listener.bind(("127.0.0.1", 0))
+                  return listener.getsockname()[1]
+
+          def wait_for(description, check, seconds=30):
+              deadline = time.monotonic() + seconds
+              while time.monotonic() < deadline:
+                  value = check()
+                  if value:
+                      return value
+                  time.sleep(0.25)
+              raise RuntimeError(f"Timed out waiting for {description}")
+
+          def stop(process):
+              if process.poll() is None:
+                  process.terminate()
+                  try:
+                      process.wait(timeout=5)
+                  except subprocess.TimeoutExpired:
+                      process.kill()
+                      process.wait()
+
+          def launch(stack, filename, command, env=None):
+              log = stack.enter_context((artifacts / filename).open("w"))
+              process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, env=env)
+              stack.callback(stop, process)
+              return process
+
+          def wait_for_server(url, process, filename):
+              log_path = artifacts / filename
+              last_error = None
+
+              def ready():
+                  nonlocal last_error
+                  if process.poll() is not None:
+                      raise RuntimeError(f"{filename} exited with code {process.returncode}")
+                  try:
+                      with local_http.open(url, timeout=2) as response:
+                          return response.status == 200
+                  except (URLError, TimeoutError) as error:
+                      last_error = str(error)
+                      return False
+
+              try:
+                  wait_for(url, ready, seconds=45)
+              except RuntimeError as error:
+                  tail = log_path.read_text(encoding="utf-8", errors="replace")[-2000:]
+                  raise RuntimeError(f"{error}; last HTTP error: {last_error}; {filename}:\n{tail}") from error
+
+          def driver(method, path, payload=None):
+              data = json.dumps(payload).encode() if payload is not None else None
+              request = Request(driver_url + path, data=data, method=method,
+                                headers={"Content-Type": "application/json"})
+              try:
+                  with local_http.open(request, timeout=90) as response:
+                      return json.load(response)["value"]
+              except HTTPError as error:
+                  detail = json.load(error)["value"]
+                  raise RuntimeError(f"Safari WebDriver {method} {path}: {detail['message']}") from error
+
+          def simulator():
+              inventory = json.loads(output("xcrun", "simctl", "list", "--json"))
+              # These iPhones have a 1170-pixel-wide display at 3×. Verify 390 CSS px in Safari too.
+              models = {"iPhone 12", "iPhone 12 Pro", "iPhone 13", "iPhone 13 Pro",
+                        "iPhone 14", "iPhone 16e", "iPhone 17e"}
+              candidates = [
+                  (runtime, device)
+                  for runtime in inventory["runtimes"]
+                  if runtime["isAvailable"] and runtime["identifier"].startswith("com.apple.CoreSimulator.SimRuntime.iOS-")
+                  for device in inventory["devices"].get(runtime["identifier"], [])
+                  if device["isAvailable"] and device["name"] in models
+              ]
+              if not candidates:
+                  raise RuntimeError("No available iOS Simulator device has a 390 CSS px viewport. "
+                                     "Expected iPhone 12/13 (including Pro), 14, 16e, or 17e.")
+              return max(candidates, key=lambda candidate: tuple(map(int, candidate[0]["version"].split("."))))
+
+          def exercise(name, capabilities, evidence):
+              session = driver("POST", "/session", {"capabilities": {"alwaysMatch": capabilities}})
+              root = "/session/" + session["sessionId"]
+              screenshots = set()
+              try:
+                  def js(script, *args):
+                      return driver("POST", root + "/execute/sync", {"script": script, "args": args})
+
+                  def navigate(path):
+                      driver("POST", root + "/url", {"url": app_url + path})
+                      landed = urlsplit(driver("GET", root + "/url")).path
+                      if landed != path:
+                          raise RuntimeError(f"Expected {path}, Safari reached {landed}")
+
+                  def submit(selector, values, destination, pick_pet=False):
+                      js("""
+                          const field = document.querySelector(arguments[0]);
+                          const form = field.closest('form');
+                          for (const [name, value] of Object.entries(arguments[1])) {
+                              form.elements.namedItem(name).value = value;
+                          }
+                          if (arguments[2]) form.querySelector('input[name="pet_ids"]').checked = true;
+                          setTimeout(() => form.requestSubmit(), 0);
+                      """, selector, values, pick_pet)
+
+                      def arrived():
+                          current = urlsplit(driver("GET", root + "/url")).path
+                          return current if re.fullmatch(destination, current) else None
+
+                      return wait_for(f"{name} form {selector} to reach {destination}", arrived)
+
+                  def check_page(label, path, expected, heading_text=""):
+                      navigate(path)
+                      data = js("""
+                          const html = document.documentElement;
+                          return {
+                              expectedContent: document.querySelector(arguments[0]) !== null &&
+                                  document.querySelector('main h1').textContent.includes(arguments[1]),
+                              layoutWidth: html.clientWidth,
+                              screenWidth: screen.width,
+                              scrollWidth: Math.max(html.scrollWidth, document.body.scrollWidth),
+                              innerWidth: innerWidth
+                          };
+                      """, expected, heading_text)
+                      screenshot = f"{name}-{label}.png"
+
+                      def new_frame():
+                          png = driver("GET", root + "/screenshot")
+                          return png if png not in screenshots else None
+
+                      png = wait_for(f"{name} screenshot for {label}", new_frame, seconds=10)
+                      screenshots.add(png)
+                      (artifacts / screenshot).write_bytes(base64.b64decode(png, validate=True))
+                      data.update({"page": label, "path": path, "screenshot": screenshot,
+                                   "overflowPx": max(0, data["scrollWidth"] - data["layoutWidth"])})
+                      evidence["pages"].append(data)
+                      if not data["expectedContent"]:
+                          raise RuntimeError(f"{name} {label} did not render {expected}")
+                      if name == "ios" and (data["screenWidth"], data["layoutWidth"]) != (390, 390):
+                          raise RuntimeError(f"{name} {label} did not render at 390 CSS px: {data}")
+                      if name == "desktop" and data["layoutWidth"] < 1000:
+                          raise RuntimeError(f"Desktop Safari viewport is narrower than 1000 CSS px: {data}")
+
+                  evidence["browserVersion"] = session["capabilities"].get("browserVersion")
+                  if name == "desktop":
+                      driver("POST", root + "/window/rect", {"x": 0, "y": 0, "width": 1280, "height": 800})
+                  navigate("/login")
+                  evidence["userAgent"] = js("return navigator.userAgent;")
+                  if not evidence["browserVersion"]:
+                      version = re.search(r"Version/([^ ]+)", evidence["userAgent"])
+                      evidence["browserVersion"] = version.group(1) if version else "unreported"
+                  submit("#email", {"email": "demo01@example.com", "password": "DemoPass123!"}, r"/pets/?")
+
+                  check_page("contacts-new", "/contacts/new", "input#category")
+                  contact_name = "C" * (100 - len(name)) + name
+                  contact = submit("#category", {"category": "Shelter", "name": contact_name,
+                                                 "phone": "940-555-0100", "email": "shelter@example.test"},
+                                   r"/contacts/\d+")
+                  check_page("contacts", "/contacts", "a[href^='/contacts/']")
+                  check_page("contact-detail", contact, ".pet-details", contact_name)
+                  check_page("report-filing", "/reports/new", "input[name='pet_ids']")
+                  report = submit("#last_seen_location", {"last_seen_location": "Fictional park",
+                                                        "notes": "Fictional CI missing-pet report."},
+                                  r"/reports/\d+", pick_pet=True)
+                  check_page("report-detail", report, "select#report-status")
+                  check_page("flyer", f"{report}/flyer", ".flyer-heading")
+                  contact_id = contact.rsplit("/", 1)[-1]
+                  check_page("agency-email", f"{report}/email/{contact_id}", "textarea#email-body", contact_name)
+                  check_page("phone-script", f"{report}/phone-script/{contact_id}", "textarea#phone-script", contact_name)
+                  overflowing = [page["page"] for page in evidence["pages"] if page["overflowPx"]]
+                  if overflowing:
+                      raise RuntimeError(f"{name} horizontal overflow: {', '.join(overflowing)}")
+              finally:
+                  driver("DELETE", root)
+
+          try:
+              result["macOSVersion"] = output("sw_vers", "-productVersion")
+              result["xcodeVersion"] = output("xcodebuild", "-version")
+              subprocess.run(["sudo", "safaridriver", "--enable"], check=True, timeout=60)
+              with tempfile.TemporaryDirectory(dir=os.environ["RUNNER_TEMP"]) as work, ExitStack() as stack:
+                  app_port = local_port()
+                  app_url = f"http://127.0.0.1:{app_port}"
+                  env = {**os.environ, "PYTHONPATH": "src", "SECRET_KEY": secrets.token_hex(32),
+                         "DATABASE_URL": f"sqlite:///{Path(work) / 'petfinder.sqlite3'}",
+                         "MAIL_BACKEND": "memory", "APP_BASE_URL": app_url}
+                  flask = [sys.executable, "-u", "-m", "flask", "--app", "src/app.py"]
+                  for command in ("init-db", "upgrade-community", "upgrade-sprint3", "seed-community-demo"):
+                      subprocess.run(flask + [command], env=env, check=True, timeout=60)
+                  flask_server = launch(stack, "flask.log", flask + ["run", "--host", "127.0.0.1", "--port", str(app_port)], env)
+                  wait_for_server(app_url + "/login", flask_server, "flask.log")
+                  driver_port = local_port()
+                  driver_url = f"http://127.0.0.1:{driver_port}"
+                  safari_driver = launch(stack, "safaridriver.log", ["safaridriver", "--port", str(driver_port)])
+                  wait_for_server(driver_url + "/status", safari_driver, "safaridriver.log")
+
+                  for name in ("desktop", "ios"):
+                      evidence = result["browsers"][name] = {"pages": []}
+                      capabilities = {"browserName": "safari", "platformName": "mac"}
+                      try:
+                          if name == "ios":
+                              runtime, device = simulator()
+                              udid = device["udid"]
+                              evidence.update({"iOSVersion": runtime["version"], "device": device["name"]})
+                              if device["state"] != "Booted":
+                                  subprocess.run(["xcrun", "simctl", "boot", udid], check=True, timeout=60)
+                              developer_dir = Path(os.environ.get("DEVELOPER_DIR") or output("xcode-select", "-p"))
+                              simulator_app = developer_dir / "Applications" / "Simulator.app"
+                              subprocess.run(["open", "-a", str(simulator_app)], check=True, timeout=30)
+                              subprocess.run(["xcrun", "simctl", "bootstatus", udid, "-b"], check=True, timeout=240)
+                              capabilities.update({"platformName": "ios", "safari:useSimulator": True,
+                                                   "safari:deviceUDID": udid})
+                          exercise(name, capabilities, evidence)
+                      except Exception as error:
+                          result["errors"].append(f"{name}: {error}")
+          except Exception as error:
+              result["errors"].append(f"setup: {error}")
+          finally:
+              result["passed"] = not result["errors"]
+              summary = json.dumps(result, indent=2)
+              (artifacts / "result.json").write_text(summary + "\n", encoding="utf-8")
+              print(summary)
+          if result["errors"]:
+              raise SystemExit(1)
+          PY
+      - name: Upload screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: safari-render
+          path: ${{ runner.temp }}/safari-render/
+          retention-days: 14
