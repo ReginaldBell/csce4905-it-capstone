@@ -144,7 +144,7 @@ class RequestLimitTests(Sprint3TestCase):
         self.assertEqual(len(self.outbox()), limit)
 
     def test_tc_1014_attempts_store_only_hashed_keys(self):
-        model = self.model_or_fail("AuthAttempt")
+        model = self.auth_attempt_model()
         self.fail_login()
         self.reset()
         email = self.users["owner"]["email"]
@@ -157,7 +157,7 @@ class RequestLimitTests(Sprint3TestCase):
                 self.assertNotIn(ADDR_A, row.key_hash)
 
     def test_tc_1014_expired_attempts_no_longer_count(self):
-        model = self.model_or_fail("AuthAttempt")
+        model = self.auth_attempt_model()
         from datetime import datetime, timedelta
         self.exhaust_login()
         self.assertEqual(self.fail_login().status_code, 429)
