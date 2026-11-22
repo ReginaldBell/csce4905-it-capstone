@@ -18,6 +18,10 @@ on November 4, 2026. Sponsor acceptance and final delivery remain pending.
 - Reminders: a successful-login message for pets last updated more than 90 days ago.
 - Existing account, pet CRUD, and photo-upload functionality is retained.
 
+Sprint 3 work is on the Sprint 3 integration branch, pending verification. It covers pet
+and contact details, account editing, password reset, sign-in and reset limits, photo
+access checks, and usability fixes. It is not on `main`, and its test cases are Not run.
+
 Start with [PROJECT_STATE.md](PROJECT_STATE.md) for the living status, change log,
 decisions, and pending work. The [Sprint 2 record](docs/project-management/sprint-2-record.md)
 contains the detailed decisions, dependencies, merged PRs, and review fixes.
@@ -41,6 +45,21 @@ keeps existing records, and is safe to run again. The database uses a named volu
 photos live in `src/static/uploads/`.
 See the [maintenance manual](docs/4-transition/maintenance-manual.md) before changing
 the environment. The supplied Compose configuration is for local development.
+
+### Sprint 3 branch
+
+Back up first by following the
+[Sprint 3 upgrade steps](docs/4-transition/maintenance-manual.md#9-sprint-3-upgrade-and-operations).
+By default, every checkout uses the same `infra_pgdata` database volume. After the setup
+commands above, run:
+
+```bash
+docker compose -f infra/docker-compose.yml exec web flask upgrade-sprint3
+```
+
+With the supplied debug Compose settings, the default `console` mail backend prints reset
+links to the web logs. Outside debug, set `APP_BASE_URL` and use `smtp`; `console` sends
+nothing. To run the automated tests, see the [test plan](docs/3-construction/test-plan.md#how-to-run-the-automated-suite).
 
 ## Documentation
 
@@ -101,3 +120,5 @@ from approved requirements.
 |---|---|---|
 | 2026-11-04 | Reginad Bell | Document delivered Sprint 2 features, local setup, project-state links, and verification scope. |
 | 2026-11-21 | Claude | Add the community upgrade step and link the Sprint 3 plan. |
+| 2026-11-21 | Claude | Add Sprint 3 status and run steps, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: reset mail run note, on the Sprint 3 integration branch, pending verification. |

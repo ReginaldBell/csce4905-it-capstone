@@ -1,6 +1,6 @@
 # Use Case Model
 
-**Phase:** Elaboration | **Status:** Sprint 2 implementation documented; acceptance _TBD_
+**Phase:** Elaboration | **Status:** Sprint 2 implementation documented; Sprint 3 flows on the Sprint 3 integration branch, pending verification; acceptance _TBD_
 
 **Owner:** _TBD_ | **Baseline:** `4d51cc3`, November 4, 2026
 
@@ -137,8 +137,9 @@ available for manual posting elsewhere.
 3. Publish in the chosen external social application.
 
 **Alternates:** pets without photos are named in a fallback note. A missing
-physical file retains the existing static-file 404 behavior. The route is owned,
-but inherited static photo URLs are directly accessible.
+physical file retains the existing static-file 404 behavior. The route is owned.
+On `main`, inherited static photo URLs are directly accessible. On the Sprint 3 branch,
+they are access-checked pending TC-107.
 
 ### UC-S2-07 — Print a flyer
 
@@ -176,9 +177,90 @@ separate acknowledgement action.
 and relevant regressions. Formal sponsor validation, additional diagrams, and
 requirements outside this recorded increment remain _TBD_.
 
+## 5. Sprint 3 use cases
+
+These flows are on the Sprint 3 integration branch, pending verification. Their test
+cases are Not run.
+
+| ID | Name | Requirement | Test cases |
+|---|---|---|---|
+| UC-S3-01 | Edit account details | R17, NF2, NF5 | TC-004 |
+| UC-S3-02 | Request a password reset | R23, NF14 | TC-005, TC-609, TC-1014 |
+| UC-S3-03 | Complete a password reset | R23, NF1 | TC-005, TC-1001 |
+| UC-S3-04 | Sign in with request limits | R1, NF2, NF14 | TC-001, TC-002, TC-609, TC-1002, TC-1014 |
+
+### UC-S3-01: Edit account details
+
+**Actor:** owner. **Precondition:** signed in. **Trigger:** opens Settings.
+**Postcondition:** valid account details are saved, and generated outputs show the
+saved owner phone.
+
+1. Change display name, full name, phone, or email.
+2. If changing email, enter the current password.
+3. Submit the protected form.
+4. The server validates the values, stores email in lowercase, and saves the changes.
+5. If the email changed, the server invalidates that user's unused reset tokens.
+
+**Alternates:** a blank display name stores `NULL`. An invalid value or used email shows
+a field error and saves nothing. A missing or wrong current password during an email
+change shows an error on `current_password`. Owner phone does not appear on community
+pages.
+
+### UC-S3-02: Request a password reset
+
+**Actor:** visitor. **Precondition:** none. **Trigger:** chooses the forgot-password link
+on the login page. **Postcondition:** the same response is shown whether or not the
+account exists.
+
+1. Enter an email at `/forgot-password`.
+2. The server counts the request for that email and client address.
+3. For a known account within the limit, it invalidates earlier unused tokens, stores a
+   new token hash, and sends the link.
+4. The page shows: `If an account exists for that email, we sent a reset link.`
+
+**Alternates:** over the limit of 3 requests per hour, the page and status 200 stay the
+same and no email is sent. On a send failure, the server logs the failure without the
+token and the user sees the same message. If `APP_BASE_URL` is unset outside debug or
+testing, nothing is sent and an error is logged without the token. The `console` backend
+outside debug or testing prints nothing and counts as a failed send.
+
+### UC-S3-03: Complete a password reset
+
+**Actor:** visitor with a reset link. **Precondition:** a valid, unused, unexpired link.
+**Trigger:** opens `/reset-password/<token>`. **Postcondition:** the password is
+updated, the user's unused reset tokens are invalid, and earlier sessions are logged out.
+
+1. Enter and confirm a new password that meets the registration rules.
+2. The server updates the password hash and marks the token used.
+3. It invalidates the user's other unused reset tokens and clears login attempts for that
+   email and the current client address.
+4. It increments `User.session_version`, so sessions started before the reset are logged out.
+5. The visitor is redirected to login.
+
+**Alternates:** an invalid, expired, or used link returns status 400 with
+`This reset link is invalid or has expired.` Invalid password entries show field errors
+and do not use the token.
+
+### UC-S3-04: Sign in with request limits
+
+**Actor:** visitor. **Precondition:** none. **Trigger:** submits the login form.
+**Postcondition:** a valid login opens a safe destination, or the attempt is refused.
+
+1. The server checks the failed-attempt count for that email and client address.
+2. Within the limit, it checks the password.
+3. A successful login clears that key's login attempts.
+4. The user goes to a same-site relative `next` path, or to the pet list.
+
+**Alternates:** a failed password adds one attempt. At the limit of 5 failed attempts in
+15 minutes, the response is status 429 with `Too many attempts. Try again later.` and the
+password is not checked. Different emails or client addresses are counted separately.
+Absolute URLs, `//host`, backslashes, and control characters in `next` are rejected.
+
 ## Revision history
 
 | Date | Author | Summary |
 |---|---|---|
 | _TBD_ | _TBD_ | Initial draft template |
 | 2026-11-04 | Codex | Document eight implemented Sprint 2 use cases, alternate flows, ownership, and output limits. |
+| 2026-11-21 | Claude | Add account editing, password reset, and rate-limited sign-in flows, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: token invalidation, reset link, attempt clearing, and session flows, on the Sprint 3 integration branch, pending verification. |
