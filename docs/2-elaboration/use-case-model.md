@@ -258,6 +258,18 @@ normal login error. The 6th attempt returns status 429 with
 is not checked. Different emails or client addresses are counted separately.
 Absolute URLs, `//host`, backslashes, and control characters in `next` are rejected.
 
+### Pending changes to these flows
+
+Patches on `sprint3-fix/*`, pending integration and verification, change these flows:
+
+- **UC-S3-02:** each accepted request is reserved atomically. A blocked retry sends nothing
+  and does not extend the block. With `smtp`, the email sends in the background, and
+  without `APP_BASE_URL` nothing is sent, even in debug.
+- **UC-S3-04:** an attempt is reserved before the password check. A correct password within
+  the limit clears that key. The 6th attempt still returns status 429.
+- **Comments:** an author can delete their own comment after the report is unshared, using
+  a post page that was already open. Other requests return 404, and the post and comments stay hidden from everyone else.
+
 ## Revision history
 
 | Date | Author | Summary |
@@ -269,3 +281,4 @@ Absolute URLs, `//host`, backslashes, and control characters in `next` are rejec
 | 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: sixth-attempt limit and display name rule, implemented on `sprint3/integration`, not merged. |
 | 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
 | 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-22 | IT Capstone Team (B) | Note pending patch changes to reset, sign-in, and comment deletion flows. |

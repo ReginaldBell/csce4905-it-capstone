@@ -22,7 +22,12 @@ Sprint 3 work is implemented on `sprint3/integration`. It covers pet
 and contact details, account editing, password reset, sign-in and reset limits, photo
 access checks, and usability fixes. It is not on `main`. All 180 automated tests passed.
 In the official November 22, 2026 run, 22 of 27 Sprint 3 test cases passed. The other 5
-remain Not run because they need Safari or features from later sprints.
+remain Not run because they need Safari or features from later sprints. The latest `main`
+CI run [failed its Safari job](https://github.com/ReginaldBell/csce4905-it-capstone/actions/runs/45063727705) after checking 2 of 8 desktop pages and 0 iOS pages,
+so TC-604 stays Not run.
+
+Review patches P1-P11 are on `sprint3-fix/*` branches, pending integration and
+verification. See [Sprint 3 review patches](PROJECT_STATE.md#sprint-3-review-patches).
 
 Start with [PROJECT_STATE.md](PROJECT_STATE.md) for the living status, change log,
 decisions, and pending work. The [Sprint 2 record](docs/project-management/sprint-2-record.md)
@@ -63,6 +68,10 @@ docker compose -f infra/docker-compose.yml exec web flask upgrade-sprint3
 With the supplied debug Compose settings, the default `console` mail backend prints reset
 links to the web logs. Outside debug, set `APP_BASE_URL` and use `smtp`; `console` sends
 nothing. To run the automated tests, see the [test plan](docs/3-construction/test-plan.md#how-to-run-the-automated-suite).
+
+The pending patches change reset mail, TLS, request limits, and seeding. Read the
+[pending patch notes](docs/4-transition/maintenance-manual.md#pending-review-patches)
+before configuring SMTP.
 
 ### Isolated PostgreSQL for Sprint 3 testing
 
@@ -150,3 +159,4 @@ from approved requirements.
 | 2026-11-22 | Reginald Bell | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
 | 2026-11-22 | Reginald Bell | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
 | 2026-11-22 | Reginald Bell | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
+| 2026-11-22 | IT Capstone Team (B) | Link pending review patches P1-P11 and record the failing Safari CI result; TC-604 stays Not run. |

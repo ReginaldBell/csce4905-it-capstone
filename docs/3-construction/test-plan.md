@@ -290,6 +290,7 @@ passed. Independent #17/#18/#20 merged while #19's print defect was being fixed.
 | 2026-11-22 | `1724829` plus heading-wrap patch | Official Sprint 3 run | 180 automated tests passed. 22 cases Pass and 5 Not run. See section 9 |
 | 2026-11-22 | `1724829` plus heading-wrap patch | Project-owner browser report | Owner reported that a team member's Chrome and Firefox run was good. Browser versions and page details were not provided. TC-604 stays Not run until Safari is tested |
 | 2026-11-22 | `sprint3/integration` at `1724829`, isolated `petfinder-qa` | Project-owner accessibility check | Owner reported a manual accessibility check. Individual cases, browsers, and results were not itemized, so TC-604 and TC-607 remain Not run |
+| 2026-11-22 | `main` at `8038dc8` | [CI run 45063727705](https://github.com/ReginaldBell/csce4905-it-capstone/actions/runs/45063727705) | `unit-tests` passed. `safari-render` failed: desktop Safari checked 2 of 8 pages and timed out on the contact-detail screenshot; iOS checked 0 pages because `xcrun simctl list --json` timed out after 60 seconds. TC-604 stays Not run |
 
 Rows summarize coverage, not assertion counts or a claim that every case was
 re-run on every merge commit. Reviews used relevant PR heads/reconciled trees
@@ -359,7 +360,7 @@ Headings and hints now wrap. After the patch, all 42 page views per browser fit 
 
 | Case | Passed so far | Still needed |
 |---|---|---|
-| TC-604 | Chrome and Edge at phone and desktop widths; Firefox reported passing by the project owner | Safari |
+| TC-604 | Chrome and Edge at phone and desktop widths; Firefox reported passing by the project owner | Safari. Latest `main` CI checked 2 of 8 desktop pages and 0 iOS pages |
 | TC-605 | Form errors on every available form | Report editing (R22) |
 | TC-607 | Filing, error correction, Nearby, and opening a report by keyboard in Chrome | Sending a tip (R21) |
 | TC-609 | Normal use and sign-in and reset limits | Report-filing and tip limits |
@@ -373,7 +374,9 @@ Headings and hints now wrap. After the patch, all 42 page views per browser fit 
   **Not run** until the full written procedure is executed. Do not mark these cases Pass
   in Sprint 3.
 - **TC-604** needs current Chrome, Edge, Firefox, and Safari. Record each browser
-  separately.
+  separately. The P11 CI patch is pending integration and verification. A passing
+  `safari-render` job is evidence for this case but does not change its outcome until
+  the full written procedure runs.
 - **TC-107** must be run as owner, another account, and guest, and with a replaced photo
   and a known old link. Also check that a non-owner can open a photo on a shared open
   report but not after that report is unshared, Found, or Closed. Repeat guest and
@@ -412,3 +415,4 @@ a manual or browser case as Pass. At commit `1724829`, the suite ran 180 test me
 | 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
 | 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
 | 2026-11-22 | Claude | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
+| 2026-11-22 | IT Capstone Team (B) | Record the failing Safari CI run; TC-604 stays Not run and the 22 Pass, 5 Not run result is unchanged. |

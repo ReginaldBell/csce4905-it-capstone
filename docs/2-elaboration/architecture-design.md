@@ -320,6 +320,24 @@ at default 1 for existing users, keeps all records, and is designed to be safe t
 and `flask upgrade-community`. See the
 [maintenance manual](../4-transition/maintenance-manual.md#9-sprint-3-upgrade-and-operations).
 
+### Pending review patches
+
+These design changes are on `sprint3-fix/*` branches, pending integration and verification.
+Sections above describe the current code until they are verified.
+
+| Patch | Design change |
+|---|---|
+| P1 | `_can_build_reset_link()` is true when `APP_BASE_URL` is set. Without it, it is true only in debug or testing with `MAIL_BACKEND` set to `console` or `memory` |
+| P2 | `server.starttls(context=ssl.create_default_context())` verifies the SMTP certificate and hostname |
+| P3, P4 | `reserve_attempt(scope, email, address)` removes expired rows for the scope, inserts and commits an `AuthAttempt`, then counts the key. Over the limit, it deletes that row, commits, and returns `False`. Login and reset call it before password checking or sending |
+| P5 | An `IntegrityError` during an email change returns the inline `EMAIL_TAKEN` error with status 200 and a rolled-back session |
+| P6 | `format_measure` never emits exponent notation |
+| P7 | Comment deletion looks up comment ID, report ID, and author ID, whether or not the report is shared. Anything else returns 404 |
+| P8 | `send_email_background(to, subject, body)` uses a daemon thread in a copied app context for `smtp`. `console` and `memory` stay synchronous |
+| P9 | `register()` applies `MAX_EMAIL_LENGTH` with a field error on `email` |
+| P10 | The seed command names both upgrade commands and exits nonzero without a partial seed when Sprint 3 pet columns are missing |
+| P11 | `safari-render` adds bounded waits, Simulator readiness checks, retries, and diagnostics, and must check all 8 pages in desktop and 390 px iOS Safari |
+
 ## Revision history
 
 | Date | Author | Summary |
@@ -332,3 +350,4 @@ and `flask upgrade-community`. See the
 | 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: upgrade columns, sixth-attempt limit, photo path guard, and fieldset errors, implemented on `sprint3/integration`, not merged. |
 | 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
 | 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-22 | IT Capstone Team (B) | Add the design of pending patches P1-P11 on `sprint3-fix/*`. |

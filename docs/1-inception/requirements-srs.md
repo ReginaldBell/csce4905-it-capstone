@@ -118,6 +118,10 @@ work is implemented on `sprint3/integration`, not merged. All 180 automated test
 listed cases passed; TC-604, TC-605, TC-607, TC-609, and TC-1014 remain Not run. Listing a requirement here is not implementation approval, deployment, or
 sponsor acceptance.
 
+Pending patch P1 narrows NF2: without `APP_BASE_URL`, only debug or testing with the
+`console` or `memory` mail backend may build a reset link from the request host. It is
+on `sprint3-fix/auth`, pending integration and verification.
+
 | ID | Sprint 3 requirement | Test cases |
 |---|---|---|
 | R1 | Keep register, log in, and log out. Accept only a same-site relative `next` path after login; otherwise open the pet list. Registration keeps its visible duplicate-email error. | TC-001, TC-002, TC-003, TC-1001, TC-1002 |
@@ -169,3 +173,4 @@ and cases are in the [test plan](../3-construction/test-plan.md#9-sprint-3-test-
 | 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: display name, photo path, and fieldset rules, implemented on `sprint3/integration`, not merged. |
 | 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
 | 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-22 | IT Capstone Team (B) | Note pending patch P1 for the reset link requirement. |

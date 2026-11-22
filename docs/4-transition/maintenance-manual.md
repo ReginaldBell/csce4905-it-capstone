@@ -327,6 +327,30 @@ effect on that stack, so the defaults above apply. Forwarding them needs an appr
   share one address. Review this before deployment.
 - Retention and cleanup for `auth_attempts` and `password_reset_tokens` are _TBD_.
 
+### Pending review patches
+
+The behavior in this subsection applies only after patches P1-P11 are integrated and
+verified. They are on `sprint3-fix/*` branches and are not recorded as passed, merged, or
+deployed. See [PROJECT_STATE.md](../../PROJECT_STATE.md#sprint-3-review-patches).
+
+| Patch | Operating change | What maintainers should do |
+|---|---|---|
+| P1, reset link | With `smtp` and no `APP_BASE_URL`, nothing is sent, even in debug. An error is logged without the token and the user sees the generic message | Set `APP_BASE_URL` wherever `smtp` is used |
+| P2, verified TLS | With `MAIL_USE_TLS=true`, STARTTLS verifies the certificate and hostname | Set `MAIL_HOST` to a name on the certificate. A self-signed or private-CA relay fails unless the container trusts it |
+| P3, sign-in limit | An attempt is reserved before the password check. Failures 1-5 show the normal error. The 6th attempt returns 429 even with the correct password. A correct password within the limit clears that key | Expect the same limit under concurrent requests |
+| P4, reset limit | An accepted request is reserved before sending. A blocked retry sends nothing, shows the generic page, and does not extend the block | Wait for the window to pass; repeated retries do not lengthen it |
+| P5, email change | A concurrent email conflict shows the inline email-taken error and rolls back | Treat a 500 on this path as a defect |
+| P6, measurements | Very small saved values display in plain decimal form | Do not rewrite stored values |
+| P7, comments | The author can delete their own comment after unsharing, then returns to the community feed. Other requests get 404 | Unsharing still hides the post and comments from everyone else. The delete button is only on the post page, which returns 404 after unsharing, so this works only from a page already open |
+| P8, background SMTP | With `smtp`, reset mail sends from a daemon thread, so a slow server does not delay the response. `console` and `memory` stay synchronous | Check web logs for a send failure. Only the error type is logged. There is no retry, and a process stop can lose a message in progress |
+| P9, registration email | Registration applies `MAX_EMAIL_LENGTH` and shows a field error | Treat a 500 on this path as a defect |
+| P10, seed prerequisite | If Sprint 3 pet columns are missing, the seed prints the required commands and exits nonzero without a partial seed | Run `flask init-db`, `flask upgrade-community`, and `flask upgrade-sprint3` before `flask seed-community-demo` |
+| P11, Safari CI | The job adds bounded waits, Simulator readiness checks, retries, and diagnostics. It still fails if any of the 8 pages is unchecked in either browser, overflows, or lacks expected content, or if iOS is not 390 px | Read the `safari-render` artifact. Do not use `continue-on-error` |
+
+The latest `main` CI run, [45063727705](https://github.com/ReginaldBell/csce4905-it-capstone/actions/runs/45063727705), failed `safari-render`: desktop Safari
+checked 2 of 8 pages and iOS checked 0. TC-604 stays Not run. A passing job is evidence
+for that case, not a replacement for its full written procedure.
+
 ### Sprint 3 troubleshooting
 
 | Symptom | Check / action |
@@ -353,3 +377,4 @@ effect on that stack, so the defaults above apply. Forwarding them needs an appr
 | 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: mail fallbacks, unforwarded limit settings, upgrade columns, and photo paths, implemented on `sprint3/integration`, not merged. |
 | 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
 | 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-22 | IT Capstone Team (B) | Document pending patches P1-P11: reset mail, verified TLS, background SMTP, atomic limits, comments, measurements, seed prerequisite, and Safari CI. |

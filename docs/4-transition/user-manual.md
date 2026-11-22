@@ -243,6 +243,17 @@ Wait 15 minutes and try again. Password reset
 requests are limited to 3 per hour; extra requests show the normal message but do not
 send another email.
 
+### Pending account and comment fixes
+
+These fixes are awaiting integration and verification, so they may not be in the version
+you are using:
+
+- Registration will show a field error for an email address that is too long.
+- A very small pet measurement will keep its exact decimal value when you edit the pet.
+- If a report stops being shared while its post is open on your screen, you will still be
+  able to delete your own comment from that page. Once you leave, the post is unavailable,
+  and other people still cannot see it or its comments.
+
 ### Sprint 3 troubleshooting
 
 | Problem | What to do |
@@ -265,3 +276,4 @@ send another email.
 | 2026-11-21 | Claude | Apply contract Addenda A and B: photo visibility, canceled links, and logout after reset, implemented on `sprint3/integration`, not merged. |
 | 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: sixth-attempt limit and resolved photo message, implemented on `sprint3/integration`, not merged. |
 | 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | IT Capstone Team (B) | Note pending registration, measurement, and comment deletion fixes. |

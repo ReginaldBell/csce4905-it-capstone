@@ -26,12 +26,18 @@ Card IDs are plan IDs, not GitHub issue or PR numbers. The
 | S3-07 | Add password reset | High | R23, NF1 | TC-005, TC-1001 | Implemented; test cases passed November 22, 2026 |
 | S3-08 | Limit repeated sign-in and reset requests | High | NF14 | TC-609, TC-1014 | Sign-in and reset limits implemented and passing; filing and tip limits are in the backlog; TC-609 and TC-1014 stay Not run |
 | S3-09 | Validate the login redirect | High | NF2, R1 | TC-001 to TC-003, TC-1002 | Implemented; test cases passed November 22, 2026 |
-| S3-10 | Fix phone navigation and page overflow | High | NF8 | TC-604 | Overflow fixed; Chrome and Edge passed at 390 and 1280 px; Firefox reported passing; TC-604 stays Not run until Safari is tested |
+| S3-10 | Fix phone navigation and page overflow | High | NF8 | TC-604 | Overflow fixed; Chrome and Edge passed at 390 and 1280 px; Firefox reported passing; latest `main` CI checked 2 of 8 desktop Safari pages and 0 iOS pages; TC-604 stays Not run |
 | S3-11 | Check forms and keyboard use | High | NF5, NF12 | TC-605, TC-607 | Implemented; available checks passed; TC-605 needs report editing and TC-607 needs tips |
 | S3-12 | Run Sprint 3 cases and finalize documents | High | All above | 27 assigned cases | Official run recorded: 22 Pass, 5 Not run |
 
 S3-09 covers only the `next` redirect after login. Registration keeps its visible
 duplicate-email error because TC-002 requires a clear error for a used email.
+
+## Review patches
+
+Review findings P1-P11 are on `sprint3-fix/*` branches, pending integration and
+verification. See [PROJECT_STATE.md](../../PROJECT_STATE.md#sprint-3-review-patches).
+They do not change any recorded test outcome.
 
 ## Backlog
 
@@ -43,7 +49,7 @@ complete and are not Sprint 3 commitments.
 | Real email delivery | Sprint 4, with the first QA deploy | Choose a provider and sending address, set `APP_BASE_URL` and `MAIL_*`, and deliver a reset email to a test inbox. Local reset emails print to the app console until then. |
 | Upgrade the existing local database | Before this build runs on `infra_pgdata` | Back up the database and photos, run `flask init-db`, `flask upgrade-community`, and `flask upgrade-sprint3`, then confirm record counts. |
 | Report-filing and tip request limits | Sprint 4 | Build the limits with their features, then finish TC-609 and TC-1014. |
-| Finish remaining Sprint 3 cases | Safari now; others in Sprint 4 | Run TC-604 in Safari, TC-605 after report editing, and TC-607 after tips. |
+| Finish remaining Sprint 3 cases | Safari now; others in Sprint 4 | Fix and verify Safari CI (P11), run TC-604 in Safari, TC-605 after report editing, and TC-607 after tips. |
 
 ## Sprint 4 bucket
 
@@ -120,3 +126,4 @@ and the team completes the Reflection.
 | 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
 | 2026-11-22 | Claude | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
 | 2026-11-22 | Claude | Move report editing, private tips, the public report page, and filing and tip limits into the Sprint 4 bucket. |
+| 2026-11-22 | IT Capstone Team (B) | Record pending patches P1-P11 and the failing Safari CI result; TC-604 stays Not run. |
