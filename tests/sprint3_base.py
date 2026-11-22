@@ -5,6 +5,7 @@ getattr or model_or_fail so an unbuilt feature reports a clear FAIL, not an impo
 that would hide every other test in the file.
 """
 
+import importlib
 import os
 import re
 import tempfile
@@ -60,16 +61,24 @@ class PageParser(HTMLParser):
         self._label_depth = 0
         self._current = None
         self._select = None
+        self._fieldsets = []
+        self.hidden_ids = set()
 
     def handle_starttag(self, tag, attrs):
         attrs = {key: value or "" for key, value in attrs}
+        if attrs.get("id") and ("hidden" in attrs or attrs.get("aria-hidden") == "true"
+                                or "display:none" in attrs.get("style", "").replace(" ", "")):
+            self.hidden_ids.add(attrs["id"])
+        if tag == "fieldset":
+            self._fieldsets.append(attrs)
         if tag == "label":
             self._label_depth += 1
             if attrs.get("for"):
                 self.label_for.add(attrs["for"])
         if tag in ("input", "select", "textarea") and attrs.get("name"):
             control = {"tag": tag, "attrs": attrs, "wrapped": self._label_depth > 0,
-                       "value": attrs.get("value", "") if tag == "input" else ""}
+                       "value": attrs.get("value", "") if tag == "input" else "",
+                       "fieldset": self._fieldsets[-1] if self._fieldsets else {}}
             self.controls.append(control)
             if tag == "textarea":
                 self._current = control
@@ -85,6 +94,8 @@ class PageParser(HTMLParser):
             self.text_by_id.setdefault(attrs["id"], "")
 
     def handle_endtag(self, tag):
+        if tag == "fieldset" and self._fieldsets:
+            self._fieldsets.pop()
         if tag == "label" and self._label_depth:
             self._label_depth -= 1
         if tag == "textarea":
@@ -274,6 +285,17 @@ class Sprint3TestCase(unittest.TestCase):
             self.fail(f"models.{name} is required by the Sprint 3 contract")
         return model
 
+    def auth_attempt_model(self):
+        """The contract places AuthAttempt in src/rate_limit.py, not models.py."""
+        try:
+            rate_limit = importlib.import_module("rate_limit")
+        except ModuleNotFoundError:
+            self.fail("src/rate_limit.py is required by the Sprint 3 contract")
+        model = getattr(rate_limit, "AuthAttempt", None)
+        if model is None:
+            self.fail("rate_limit.AuthAttempt is required by the Sprint 3 contract")
+        return model
+
     def outbox(self):
         return list(self.app.extensions.get("mail_outbox", []))
 
@@ -289,6 +311,19 @@ class Sprint3TestCase(unittest.TestCase):
                 if page.text_by_id.get(element_id, "").strip():
                     return
         self.fail(f"{field} has no error linked with aria-describedby")
+
+    def assert_group_error(self, response, field, message):
+        """Each control in a group, or its fieldset, points to the visible error."""
+        page = parse_page(response)
+        controls = page.named(field)
+        self.assertTrue(controls, f"no control named {field}")
+        for control in controls:
+            ids = (control["attrs"].get("aria-describedby", "").split()
+                   + control["fieldset"].get("aria-describedby", "").split())
+            visible = [element_id for element_id in ids
+                       if element_id not in page.hidden_ids
+                       and message in page.text_by_id.get(element_id, "")]
+            self.assertTrue(visible, f"{field} is not linked to visible error: {message}")
 
     def control_value(self, response, field):
         controls = parse_page(response).named(field)

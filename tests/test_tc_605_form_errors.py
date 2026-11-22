@@ -126,7 +126,7 @@ class FormErrorTests(Sprint3TestCase):
                                                           "notes": "Kept report note"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.report_count(), 0)
-        self.assert_field_error(response, "pet_ids")
+        self.assert_group_error(response, "pet_ids", "Select at least one pet.")
         self.assertEqual(self.control_value(response, "last_seen_location"), "Synthetic Park")
 
     def test_tc_605_every_form_control_has_a_label(self):
