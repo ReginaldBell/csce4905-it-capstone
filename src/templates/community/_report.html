@@ -3,9 +3,9 @@
 <div class="community-photos">
 {% for pet in report.pets %}
   <div>
-    {% if pet.photo_path %}
+    {% if pet.photo_path and (report.status == 'open' or report.owner_id == current_user.id) %}
     <img class="community-photo" src="{{ url_for('static', filename=pet.photo_path) }}" alt="Photo of {{ pet.name }}" loading="lazy">
-    {% else %}<p class="hint">No photo for {{ pet.name }}</p>{% endif %}
+    {% elif pet.photo_path %}<p class="hint">Photo unavailable because this report is resolved.</p>{% else %}<p class="hint">No photo for {{ pet.name }}</p>{% endif %}
     <p>{{ pet.name }}: {{ pet.species }}{% if pet.breed %}, {{ pet.breed }}{% endif %}</p>
   </div>
 {% endfor %}

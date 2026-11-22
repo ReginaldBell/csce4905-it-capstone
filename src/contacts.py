@@ -26,6 +26,7 @@ CATEGORY_CHOICES = [
 ]
 MAX_NAME_LENGTH = 100
 MAX_EMAIL_LENGTH = 255
+MAX_ADDRESS_LENGTH = 255
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 # Requires at least one digit so punctuation-only input ("-------") can't
@@ -48,6 +49,7 @@ def _validate_contact_form(form):
     name = form.get("name", "").strip()
     phone = form.get("phone", "").strip()
     email = form.get("email", "").strip()
+    address = form.get("address", "").strip()
     notes = form.get("notes", "").strip()
 
     if not category:
@@ -68,6 +70,9 @@ def _validate_contact_form(form):
     elif email and len(email) > MAX_EMAIL_LENGTH:
         errors["email"] = f"Email must be {MAX_EMAIL_LENGTH} characters or fewer."
 
+    if len(address) > MAX_ADDRESS_LENGTH:
+        errors["address"] = f"Address must be {MAX_ADDRESS_LENGTH} characters or fewer."
+
     if not phone and not email:
         errors["form"] = "Enter a phone number or an email address."
 
@@ -76,6 +81,7 @@ def _validate_contact_form(form):
         "name": name,
         "phone": phone or None,
         "email": email or None,
+        "address": address or None,
         "notes": notes or None,
     }
     return errors, cleaned
@@ -103,7 +109,14 @@ def list_contacts():
 @login_required
 def new_contact():
     errors = {}
-    values = {"category": "", "name": "", "phone": "", "email": "", "notes": ""}
+    values = {
+        "category": "",
+        "name": "",
+        "phone": "",
+        "email": "",
+        "address": "",
+        "notes": "",
+    }
 
     if request.method == "POST":
         errors, cleaned = _validate_contact_form(request.form)
@@ -143,6 +156,7 @@ def edit_contact(contact_id):
         "name": contact.name,
         "phone": contact.phone or "",
         "email": contact.email or "",
+        "address": contact.address or "",
         "notes": contact.notes or "",
     }
 
@@ -155,6 +169,7 @@ def edit_contact(contact_id):
             contact.name = cleaned["name"]
             contact.phone = cleaned["phone"]
             contact.email = cleaned["email"]
+            contact.address = cleaned["address"]
             contact.notes = cleaned["notes"]
             db.session.commit()
             flash(f"{contact.name} was updated.", "success")

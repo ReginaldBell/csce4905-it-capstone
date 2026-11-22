@@ -603,6 +603,72 @@ input[role="switch"]:checked::after {
   input[role="switch"]::after { transition: none; }
 }
 
+/* Sprint 3 usability: 390 px layouts, labels, and visible focus */
+
+/* Keep a keyboard-focused control clear of the sticky header and bottom bar. */
+html {
+  scroll-padding-top: calc(var(--app-bar-height) + 8px);
+  scroll-padding-bottom: calc(var(--nav-bar-height) + 8px);
+}
+
+@media (min-width: 768px) {
+  html { scroll-padding-bottom: 8px; }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.form-fieldset { min-width: 0; margin-inline: 0; padding: 0; border: 0; }
+
+.form-fieldset legend {
+  padding: 0;
+  margin-bottom: 0.25rem;
+  color: var(--md-on-surface-variant);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select { min-width: 0; max-width: 100%; }
+
+.checkbox-label { min-width: 0; overflow-wrap: anywhere; }
+
+.contact-row > a { min-width: 0; overflow-wrap: anywhere; }
+
+.contact-meta { min-width: 0; }
+
+.contact-address { display: block; }
+
+.history-list li, .report-list .report-row { flex-wrap: wrap; }
+
+.history-list li > *, .report-row > * { min-width: 0; }
+
+.report-meta { max-width: 100%; overflow-wrap: anywhere; }
+
+.status-form select { max-width: 100%; }
+
+.flyer { width: 100%; min-width: 0; overflow-wrap: anywhere; }
+
+.flyer-heading { font-size: clamp(2rem, 12vw, 3rem); }
+
+.flyer-details { grid-template-columns: minmax(0, 110px) minmax(0, 1fr); column-gap: 0.5rem; }
+
+.flyer-details dd { min-width: 0; }
+
+@media (max-width: 650px) {
+  .flyer { padding: 1rem; }
+}
+
 /* Signed-out pages */
 
 body:not(.has-nav) .container { max-width: 480px; padding-top: 1.5rem; }

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from '_forms.html' import describe, field_error %}
 {% block title %}Settings — Pet Finder{% endblock %}
 {% block content %}
 <h1>Settings</h1>
@@ -41,9 +42,32 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="form-group">
       <label for="display_name">Display name</label>
-      <input type="text" id="display_name" name="display_name" value="{{ display_name }}" maxlength="50" required>
-      <p class="hint">Appears on your community posts and comments.</p>
-      {% if errors.get('display_name') %}<p class="field-error">{{ errors['display_name'] }}</p>{% endif %}
+      <input type="text" id="display_name" name="display_name" value="{{ values.display_name }}" maxlength="50"{{ describe(errors, 'display_name', 'display-name-hint') }}>
+      <p class="hint" id="display-name-hint">Appears on your community posts and comments. Leave empty to remove it.</p>
+      {{ field_error(errors, 'display_name') }}
+    </div>
+    <div class="form-group">
+      <label for="full_name">Full name</label>
+      <input type="text" id="full_name" name="full_name" value="{{ values.full_name }}" maxlength="100" autocomplete="name"{{ describe(errors, 'full_name', 'full-name-hint') }}>
+      <p class="hint" id="full-name-hint">Private to your account.</p>
+      {{ field_error(errors, 'full_name') }}
+    </div>
+    <div class="form-group">
+      <label for="phone">Phone</label>
+      <input type="tel" id="phone" name="phone" value="{{ values.phone }}" maxlength="30" autocomplete="tel"{{ describe(errors, 'phone', 'phone-hint') }}>
+      <p class="hint" id="phone-hint">Added to the emails, scripts, posts, and flyers you generate. Never shown on community pages.</p>
+      {{ field_error(errors, 'phone') }}
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" value="{{ values.email }}" maxlength="255" autocomplete="email" required{{ describe(errors, 'email') }}>
+      {{ field_error(errors, 'email') }}
+    </div>
+    <div class="form-group">
+      <label for="current_password">Current password</label>
+      <input type="password" id="current_password" name="current_password" autocomplete="current-password"{{ describe(errors, 'current_password', 'current-password-hint') }}>
+      <p class="hint" id="current-password-hint">Required only when changing your email.</p>
+      {{ field_error(errors, 'current_password') }}
     </div>
     <button type="submit" class="btn">Save profile</button>
   </form>

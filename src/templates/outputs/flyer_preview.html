@@ -21,6 +21,6 @@
     </dd>
     {% if flyer_notes %}<dt>Notes</dt><dd>{{ flyer_notes }}</dd>{% endif %}
   </dl>
-  <p class="flyer-contact">If found, please contact: {{ current_user.email }}</p>
+  <p class="flyer-contact">If found, please contact: {{ owner_contact }}</p>
 </div>
 {% endblock %}

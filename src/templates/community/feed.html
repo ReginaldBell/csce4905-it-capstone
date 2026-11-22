@@ -30,11 +30,11 @@
     </div>
     <div class="nearby-search-row">
       <label class="nearby-query">Search pets or areas
-        <input type="search" name="q" value="{{ values.q }}" maxlength="100" placeholder="Pet name, breed, or area">
+        <input type="search" name="q" value="{{ values.q }}" maxlength="100" placeholder="Pet name, breed, or area"{% if errors.get('filters') %} aria-describedby="filters-error" aria-invalid="true"{% endif %}>
       </label>
       <button class="btn" type="submit">Find nearby reports</button>
     </div>
-    {% if errors.get('filters') %}<p class="field-error">{{ errors.filters }}</p>{% endif %}
+    {% if errors.get('filters') %}<p class="field-error" id="filters-error">{{ errors.filters }}</p>{% endif %}
   </form>
   <section class="nearby-results" aria-labelledby="nearby-results-title">
     <div class="nearby-results-header">

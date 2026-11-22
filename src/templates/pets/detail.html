@@ -22,6 +22,13 @@
     <dt>Species</dt><dd>{{ pet.species }}</dd>
     <dt>Breed</dt><dd>{{ pet.breed or '—' }}</dd>
     <dt>Birth date</dt><dd>{{ pet.birth_date or '—' }}</dd>
+    <dt>Age</dt><dd>{{ pet.age_display or '—' }}</dd>
+    <dt>Sex</dt><dd>{{ pet.sex_label or '—' }}</dd>
+    <dt>Height</dt><dd>{% if pet.height_inches is not none %}{{ pet.height_display }} in{% else %}—{% endif %}</dd>
+    <dt>Weight</dt><dd>{% if pet.weight_lbs is not none %}{{ pet.weight_display }} lb{% else %}—{% endif %}</dd>
+    <dt>Colors</dt><dd>{{ pet.colors or '—' }}</dd>
+    <dt>Markings</dt><dd>{{ pet.markings or '—' }}</dd>
+    <dt>Microchip</dt><dd>{{ pet.microchip_label }}{% if pet.microchip_number %} · {{ pet.microchip_number }}{% endif %}</dd>
     <dt>Notes</dt><dd>{{ pet.notes or '—' }}</dd>
     <dt>Added</dt><dd>{{ pet.created_at.strftime('%Y-%m-%d') }}</dd>
   </dl>

@@ -10,7 +10,14 @@ from extensions import db
 def upgrade_community():
     inspector = inspect(db.engine)
     additions = {
-        "users": {"display_name": "VARCHAR(50)"},
+        # full_name, phone, and session_version are Sprint 3 columns, added here too because
+        # this command loads User rows, and the model now selects them.
+        "users": {
+            "display_name": "VARCHAR(50)",
+            "full_name": "VARCHAR(100)",
+            "phone": "VARCHAR(30)",
+            "session_version": "INTEGER NOT NULL DEFAULT 1",
+        },
         "reports": {
             "is_shared": "BOOLEAN NOT NULL DEFAULT FALSE",
             "latitude": "FLOAT",
