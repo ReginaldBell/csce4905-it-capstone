@@ -19,7 +19,7 @@ from flask_login import current_user, login_required, login_user, logout_user
 import mailer
 from extensions import db
 from models import PasswordResetToken, Pet, User
-from rate_limit import clear_attempts, is_limited, record_attempt
+from rate_limit import clear_attempts, reserve_attempt
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -117,11 +117,12 @@ def _issue_reset_token(user):
 
 
 def _can_build_reset_link():
-    return bool(
-        current_app.config.get("APP_BASE_URL")
-        or current_app.debug
-        or current_app.testing
-    )
+    """Without APP_BASE_URL the link would trust the request's Host header, so
+    allow that only for local mail that never leaves the machine."""
+    if current_app.config.get("APP_BASE_URL"):
+        return True
+    local_mail = current_app.config.get("MAIL_BACKEND") in ("console", "memory")
+    return bool((current_app.debug or current_app.testing) and local_mail)
 
 
 def _reset_link(token):
@@ -142,7 +143,9 @@ def _send_reset_email(user, token):
         "If you did not ask for this, you can ignore this email."
     )
     try:
-        mailer.send_email(user.email, "Reset your Pet Finder password", body)
+        mailer.send_email_background(
+            user.email, "Reset your Pet Finder password", body
+        )
     except Exception as error:  # Any mail failure must look the same to the user.
         # Only the error type: its text could echo the message with the token.
         current_app.logger.error(
@@ -153,10 +156,7 @@ def _send_reset_email(user, token):
 def _process_reset_request(email):
     """Every outcome renders the same page, so nothing here reveals whether
     the account exists or the limit was reached."""
-    address = request.remote_addr
-    limited = is_limited("reset", email, address)
-    record_attempt("reset", email, address)
-    if limited:
+    if not reserve_attempt("reset", email, request.remote_addr):
         return
     user = User.query.filter_by(email=email).first()
     if user is None:
@@ -213,6 +213,8 @@ def register():
 
         if not email:
             errors["email"] = "Email is required."
+        elif len(email) > MAX_EMAIL_LENGTH:
+            errors["email"] = f"Email must be {MAX_EMAIL_LENGTH} characters or fewer."
         elif not EMAIL_RE.match(email):
             errors["email"] = "Enter a valid email address."
         elif User.query.filter_by(email=email).first() is not None:
@@ -246,13 +248,12 @@ def login():
         password = request.form.get("password", "")
         address = request.remote_addr
 
-        if is_limited("login", email, address):
+        if not reserve_attempt("login", email, address):
             errors["form"] = TOO_MANY_ATTEMPTS
             status = 429
         else:
             user = User.query.filter_by(email=email).first()
             if user is None or not user.check_password(password):
-                record_attempt("login", email, address)
                 errors["form"] = "Invalid email or password."
             else:
                 clear_attempts("login", email, address)
