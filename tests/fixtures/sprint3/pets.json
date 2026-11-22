@@ -1,0 +1,10 @@
+{
+  "pets": [
+    {"key": "full_profile", "owner": "owner", "name": "Juniper", "species": "Dog", "breed": "Synthetic Shepherd", "birth_date": "2021-03-14", "notes": "Synthetic owner note JN-NOTE", "sex": "female", "height_inches": 23.75, "weight_lbs": 61.25, "colors": "Quartz and copper", "markings": "Crescent patch on left shoulder", "microchip_status": "chipped", "microchip_number": "SYNTH90210AB"},
+    {"key": "second_pet", "owner": "owner", "name": "Pepper", "species": "Cat", "breed": null, "birth_date": null, "notes": null, "sex": "unknown", "height_inches": null, "weight_lbs": null, "colors": null, "markings": null, "microchip_status": "unknown", "microchip_number": null},
+    {"key": "other_pet", "owner": "other", "name": "Waffles", "species": "Rabbit", "breed": null, "birth_date": "2023-06-01", "notes": null, "sex": "male", "height_inches": 9.5, "weight_lbs": 4.5, "colors": "White", "markings": null, "microchip_status": "not_chipped", "microchip_number": null},
+    {"key": "special_curly", "owner": "owner", "name": "O’Malley", "species": "Cat", "breed": null, "birth_date": null, "notes": null, "sex": null, "height_inches": null, "weight_lbs": null, "colors": null, "markings": null, "microchip_status": "unknown", "microchip_number": null},
+    {"key": "special_straight", "owner": "owner", "name": "O'Malley", "species": "Cat", "breed": null, "birth_date": null, "notes": null, "sex": null, "height_inches": null, "weight_lbs": null, "colors": null, "markings": null, "microchip_status": "unknown", "microchip_number": null},
+    {"key": "special_sql", "owner": "owner", "name": "Robert'); DROP TABLE pets;--", "species": "Other", "breed": null, "birth_date": null, "notes": null, "sex": null, "height_inches": null, "weight_lbs": null, "colors": null, "markings": null, "microchip_status": "unknown", "microchip_number": null}
+  ]
+}
