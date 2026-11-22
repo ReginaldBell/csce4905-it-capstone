@@ -2,6 +2,8 @@
 
 Lifecycle documents for the CSCE 4905/4925 IT Capstone project use the Unified
 Process. The Sprint 2 application baseline is `4d51cc3` on November 4, 2026.
+Sprint 3 is merged through PRs #24 and #25; `main` was at `8038dc8` when review patches
+P1-P11 began, and those patches are still pending on `sprint3-fix/*`.
 Implemented behavior is documented; sponsor approval, deployment, and formal
 acceptance remain separate pending activities.
 
@@ -55,3 +57,4 @@ acceptance remain separate pending activities.
 |---|---|---|
 | 2026-11-04 | Codex | Index the Sprint 2 documentation set and establish state/decision/traceability conventions. |
 | 2026-11-21 | Claude | Index the Sprint 3 plan. |
+| 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. |

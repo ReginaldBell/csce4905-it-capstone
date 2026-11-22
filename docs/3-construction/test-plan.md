@@ -7,7 +7,8 @@
 This plan records regression procedures and historical review results for Sprint 2,
 delivered through PRs [#12](https://github.com/ReginaldBell/csce4905-it-capstone/pull/12)
 through [#20](https://github.com/ReginaldBell/csce4905-it-capstone/pull/20).
-The completed sprint baseline is merge commit `4d51cc3` on `main`.
+The completed Sprint 2 baseline is merge commit `4d51cc3` on `main`. Sprint 3 later merged
+through PRs #24 and #25; `main` was at `8038dc8` when review patches P1-P11 began.
 
 See the [SRS](../1-inception/requirements-srs.md),
 [Use Case Model](../2-elaboration/use-case-model.md),
@@ -299,8 +300,8 @@ before merging; PR threads retain findings and re-review context.
 ## 8. Validation limits and remaining work
 
 - No committed automated regression suite or CI execution was established by the
-  Sprint 2 review work. `sprint3/integration` has 180 automated tests, but they are not
-  merged and do not cover the manual browser and keyboard cases.
+  Sprint 2 review work. Sprint 3 merged 180 automated tests, recorded passing at
+  `1724829`. They do not cover the manual browser and keyboard cases.
 - Copy handlers were inspected; browser clipboard permission/interaction was not
   exercised. External mail-client behavior and actual delivery were not tested;
   this app generates text/mailto links and does not send mail.
@@ -312,7 +313,8 @@ before merging; PR threads retain findings and re-review context.
 
 ## 9. Sprint 3 test cases
 
-The Sprint 3 work is implemented on `sprint3/integration`, not merged. The 27
+The Sprint 3 work is merged to `main` through PRs #24 and #25. It is not deployed
+or sponsor accepted. Patches P1-P11 are pending, so the known review bugs remain on `main`. The 27
 cases below use the IDs in the course `TestPlanTracker.xlsx`, which holds their full
 preconditions, steps, and expected outcomes. Change an outcome only after that exact
 procedure runs, and record the commit and evidence.
@@ -416,3 +418,4 @@ a manual or browser case as Pass. At commit `1724829`, the suite ran 180 test me
 | 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
 | 2026-11-22 | Claude | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
 | 2026-11-22 | IT Capstone Team (B) | Record the failing Safari CI run; TC-604 stays Not run and the 22 Pass, 5 Not run result is unchanged. |
+| 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. Official results stay 22 Pass and 5 Not run. |

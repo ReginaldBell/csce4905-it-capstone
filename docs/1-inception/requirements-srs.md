@@ -1,6 +1,6 @@
 # Software Requirements Specification (SRS)
 
-**Phase:** Inception | **Status:** Sprint 2 implementation baseline; Sprint 3 requirements implemented on `sprint3/integration`, not merged; sponsor approval _TBD_
+**Phase:** Inception | **Status:** Sprint 2 implementation baseline; Sprint 3 requirements merged to `main` through PRs #24 and #25; not deployed; sponsor approval _TBD_
 
 **Owner:** _TBD_ | **Recorded:** November 4, 2026
 
@@ -72,9 +72,8 @@ All rows are required behavior of the delivered Sprint 2 baseline.
 | NFR-S2-02 | Retain CSRF protection on modifying form submissions, server-side validation, and escaped templates; keep generated-output requests read-only. | Valid/invalid/missing/cross-session token checks, inline-error/no-write tests, escaping and method checks |
 | NFR-S2-03 | Preserve prior users/pets/contacts/reports, routes, templates, styles, and behavior when adding schema/features or resolving conflicts. | Additive database checks, diff review, and relevant combined-code regressions |
 
-This is scoped verification, not an exhaustive security certification. Private
-media delivery is not established on `main`: uploaded photos retain existing static
-URLs there. Section 7 records the Sprint 3 access check; TC-107 passed on November 22, 2026.
+This is scoped verification, not an exhaustive security certification. Sprint 2
+did not establish private media delivery. Section 7 records the Sprint 3 access check now on `main`; TC-107 passed on November 22, 2026.
 
 Performance/load, availability, compliance, retention, accessibility targets,
 production security settings, and recovery objectives remain _TBD_ pending explicit
@@ -114,7 +113,7 @@ remain _TBD_. The [test plan](../3-construction/test-plan.md) states evidence li
 ## 7. Sprint 3 requirements
 
 These rows use the team's R and NF IDs from the Sprint 2 Requirements document. The
-work is implemented on `sprint3/integration`, not merged. All 180 automated tests passed. In the official November 22, 2026 run, 22 of the 27
+work is merged to `main` through PRs #24 and #25. It is not deployed. All 180 automated tests passed at `1724829`. In the official November 22, 2026 run, 22 of the 27
 listed cases passed; TC-604, TC-605, TC-607, TC-609, and TC-1014 remain Not run. Listing a requirement here is not implementation approval, deployment, or
 sponsor acceptance.
 
@@ -174,3 +173,4 @@ and cases are in the [test plan](../3-construction/test-plan.md#9-sprint-3-test-
 | 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
 | 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
 | 2026-11-22 | IT Capstone Team (B) | Note pending patch P1 for the reset link requirement. |
+| 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. |
