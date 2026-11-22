@@ -146,6 +146,7 @@ jobs:
           def exercise(name, capabilities, evidence):
               session = driver("POST", "/session", {"capabilities": {"alwaysMatch": capabilities}})
               root = "/session/" + session["sessionId"]
+              screenshots = set()
               try:
                   def js(script, *args):
                       return driver("POST", root + "/execute/sync", {"script": script, "args": args})
@@ -187,7 +188,13 @@ jobs:
                           };
                       """, expected, heading_text)
                       screenshot = f"{name}-{label}.png"
-                      png = driver("GET", root + "/screenshot")
+
+                      def new_frame():
+                          png = driver("GET", root + "/screenshot")
+                          return png if png not in screenshots else None
+
+                      png = wait_for(f"{name} screenshot for {label}", new_frame, seconds=10)
+                      screenshots.add(png)
                       (artifacts / screenshot).write_bytes(base64.b64decode(png, validate=True))
                       data.update({"page": label, "path": path, "screenshot": screenshot,
                                    "overflowPx": max(0, data["scrollWidth"] - data["layoutWidth"])})
@@ -261,6 +268,9 @@ jobs:
                               evidence.update({"iOSVersion": runtime["version"], "device": device["name"]})
                               if device["state"] != "Booted":
                                   subprocess.run(["xcrun", "simctl", "boot", udid], check=True, timeout=60)
+                              developer_dir = Path(os.environ.get("DEVELOPER_DIR") or output("xcode-select", "-p"))
+                              simulator_app = developer_dir / "Applications" / "Simulator.app"
+                              subprocess.run(["open", "-a", str(simulator_app)], check=True, timeout=30)
                               subprocess.run(["xcrun", "simctl", "bootstatus", udid, "-b"], check=True, timeout=240)
                               capabilities.update({"platformName": "ios", "safari:useSimulator": True,
                                                    "safari:deviceUDID": udid})
