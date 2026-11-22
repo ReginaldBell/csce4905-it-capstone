@@ -1,0 +1,8 @@
+{
+  "contacts": [
+    {"key": "vet_full", "owner": "owner", "category": "Veterinarian", "name": "Sample Valley Vet", "phone": "555-0110", "email": "vet@example.test", "address": "100 Synthetic Way, Testville", "notes": "Synthetic contact note"},
+    {"key": "shelter_phone_only", "owner": "owner", "category": "Animal Shelter", "name": "Sample County Shelter", "phone": "555-0111", "email": null, "address": "200 Fixture Road, Testville", "notes": null},
+    {"key": "control_email_only", "owner": "owner", "category": "Animal Control", "name": "Sample Animal Control", "phone": null, "email": "control@example.test", "address": null, "notes": null},
+    {"key": "other_contact", "owner": "other", "category": "Groomer", "name": "Blake Private Groomer", "phone": "555-0112", "email": null, "address": "300 Private Lane, Testville", "notes": null}
+  ]
+}
