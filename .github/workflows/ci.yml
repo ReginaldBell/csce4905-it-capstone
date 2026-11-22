@@ -62,8 +62,8 @@ jobs:
           artifacts.mkdir(exist_ok=True)
           result = {"commit": os.environ["GITHUB_SHA"], "browsers": {}, "errors": []}
 
-          def output(*command):
-              return subprocess.check_output(command, text=True, timeout=60).strip()
+          def output(*command, timeout=60):
+              return subprocess.check_output(command, text=True, timeout=timeout).strip()
 
           def local_port():
               with socket.socket() as listener:
@@ -127,7 +127,7 @@ jobs:
                   raise RuntimeError(f"Safari WebDriver {method} {path}: {detail['message']}") from error
 
           def simulator():
-              inventory = json.loads(output("xcrun", "simctl", "list", "--json"))
+              inventory = json.loads(output("xcrun", "simctl", "list", "--json", timeout=180))
               # These iPhones have a 1170-pixel-wide display at 3×. Verify 390 CSS px in Safari too.
               models = {"iPhone 12", "iPhone 12 Pro", "iPhone 13", "iPhone 13 Pro",
                         "iPhone 14", "iPhone 16e", "iPhone 17e"}
