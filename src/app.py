@@ -1,3 +1,4 @@
+import posixpath
 from pathlib import Path
 
 from flask import Flask, abort, flash, redirect, request, url_for
@@ -17,6 +18,21 @@ from pets import pets_bp
 from reports import reports_bp
 from settings import settings_bp
 from sprint3_schema import upgrade_sprint3_command
+
+
+def _normalized_upload_path(filename):
+    """Return "uploads/<file>" if a static filename resolves inside uploads/.
+
+    Authorization must use this form: "./uploads/a.png", "x/../uploads/a.png",
+    and backslash or repeated-slash spellings all reach the same file. Case and
+    trailing dots or spaces are ignored on the folder name because some
+    filesystems (Windows, Docker Desktop mounts) treat those as the same folder.
+    """
+    normalized = posixpath.normpath(filename.replace("\\", "/")).lstrip("/")
+    folder, _, rest = normalized.partition("/")
+    if folder.rstrip(". ").casefold() != "uploads":
+        return None
+    return f"uploads/{rest}"
 
 
 def create_app(config_class=Config):
@@ -48,12 +64,16 @@ def create_app(config_class=Config):
 
     @app.before_request
     def protect_uploaded_photos():
-        filename = (request.view_args or {}).get("filename", "")
-        if request.endpoint != "static" or not filename.startswith("uploads/"):
+        if request.endpoint != "static":
+            return None
+        photo_path = _normalized_upload_path(
+            (request.view_args or {}).get("filename", "")
+        )
+        if photo_path is None:
             return None
         if not current_user.is_authenticated:
             return login_manager.unauthorized()
-        pet = Pet.query.filter_by(photo_path=filename).first()
+        pet = Pet.query.filter_by(photo_path=photo_path).first()
         if pet is None:
             abort(404)
         if pet.owner_id != current_user.id:
