@@ -1,4 +1,4 @@
-"""Contract Addendum A (security clarifications) and Addendum B (session_version)."""
+"""Contract Addenda A (security), B (session_version), and C (handoff clarifications)."""
 
 import contextlib
 import hashlib
@@ -26,6 +26,7 @@ FORGED_HOST = "http://evil.example.test"
 ADDR_A = "203.0.113.10"
 ADDR_B = "203.0.113.20"
 WRONG = "WrongPass999!"
+RESOLVED_PHOTO = "Photo unavailable because this report is resolved."
 
 
 class Records(logging.Handler):
@@ -227,12 +228,35 @@ class AddendumASharedPhotoTests(AddendaBase):
             db.session.flush()
             db.session.add(ReportPet(report_id=report.id, pet_id=self.pet_id))
             db.session.commit()
+            return report.id
 
     def status(self, client):
         response = client.get(self.url)
         code = response.status_code
         response.close()
         return code
+
+    def test_addendum_c_resolved_photo_message_for_non_owner(self):
+        for status in ("found", "closed"):
+            with self.subTest(status=status):
+                report_id = self.add_report(status)
+                response = self.other.get(f"/community/reports/{report_id}")
+                self.assertEqual(response.status_code, 200)
+                text = self.page_text(response)
+                self.assertIn(RESOLVED_PHOTO, text)
+                self.assertNotIn(self.url, text)
+
+    def test_addendum_c_resolved_photo_stays_visible_to_owner(self):
+        report_id = self.add_report("found")
+        text = self.page_text(self.owner.get(f"/community/reports/{report_id}"))
+        self.assertIn(self.url, text)
+        self.assertNotIn(RESOLVED_PHOTO, text)
+
+    def test_addendum_c_open_shared_report_shows_photo_without_message(self):
+        report_id = self.add_report("open")
+        text = self.page_text(self.other.get(f"/community/reports/{report_id}"))
+        self.assertIn(self.url, text)
+        self.assertNotIn(RESOLVED_PHOTO, text)
 
     def test_addendum_a_non_owner_can_open_photo_on_open_shared_report(self):
         self.add_report("open")
@@ -367,19 +391,38 @@ class AddendumBUpgradeTests(unittest.TestCase):
         finally:
             connection.close()
 
+    def invoke(self, command):
+        result = self.app.test_cli_runner().invoke(args=[command])
+        self.assertEqual(result.exit_code, 0, f"{command}: {result.output}")
+
+    def columns(self, table):
+        return {row[1] for row in self.query(f"PRAGMA table_info({table})")}
+
     def test_addendum_b_upgrade_adds_session_version_and_keeps_records(self):
-        runner = self.app.test_cli_runner()
-        for attempt in (1, 2):
-            result = runner.invoke(args=["upgrade-sprint3"])
-            self.assertEqual(result.exit_code, 0, f"run {attempt}: {result.output}")
-        columns = {row[1] for row in self.query("PRAGMA table_info(users)")}
-        self.assertLessEqual({"session_version", "full_name", "phone"}, columns)
+        # Documented order, with each command run twice to prove it is repeatable.
+        for command in ("upgrade-community", "upgrade-community",
+                        "upgrade-sprint3", "upgrade-sprint3"):
+            self.invoke(command)
+        self.assertLessEqual({"session_version", "full_name", "phone"}, self.columns("users"))
+        self.assertLessEqual({"sex", "height_inches", "weight_lbs", "colors", "markings",
+                              "microchip_status", "microchip_number"}, self.columns("pets"))
+        self.assertIn("address", self.columns("contacts"))
         self.assertEqual(self.query("SELECT email, session_version FROM users"),
                          [("legacy@example.test", 1)])
         self.assertEqual(self.query("SELECT name FROM pets"), [("Legacy Pet",)])
         self.assertEqual(self.query("SELECT name FROM contacts"), [("Legacy Contact",)])
         tables = {row[0] for row in self.query("SELECT name FROM sqlite_master WHERE type='table'")}
         self.assertLessEqual({"password_reset_tokens", "auth_attempts"}, tables)
+
+    def test_addendum_c_upgrade_community_adds_user_columns_only(self):
+        self.invoke("upgrade-community")
+        self.assertLessEqual({"session_version", "full_name", "phone"}, self.columns("users"))
+        self.assertEqual(self.query("SELECT session_version FROM users"), [(1,)])
+        with self.app.app_context():
+            self.assertEqual(User.query.one().email, "legacy@example.test")
+        self.assertNotIn("sex", self.columns("pets"))
+        self.assertNotIn("microchip_number", self.columns("pets"))
+        self.assertNotIn("address", self.columns("contacts"))
 
 
 if __name__ == "__main__":

@@ -97,6 +97,16 @@ class AccountDetailsTests(Sprint3TestCase):
                 self.assertEqual(self.user_value("owner", "email"), self.owner_row["email"])
                 self.assertIn(self.user_value("owner", "phone"), (None, MISSING))
 
+    def test_tc_004_empty_display_name_stores_null(self):
+        self.assertEqual(self.save(display_name="").status_code, 302)
+        self.assertIsNone(self.user_value("owner", "display_name"))
+
+    def test_tc_004_whitespace_display_name_is_rejected(self):
+        response = self.save(display_name="   ")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.user_value("owner", "display_name"),
+                         self.owner_row["display_name"])
+
     def test_tc_004_generated_outputs_use_saved_phone_and_email(self):
         report_id = self.seed_report()
         contact_id = self.seed_contact("vet_full")
