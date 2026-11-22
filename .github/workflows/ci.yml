@@ -64,7 +64,7 @@ jobs:
           artifacts.mkdir(exist_ok=True)
           result = {"commit": os.environ["GITHUB_SHA"], "browsers": {}, "errors": [], "passed": False}
           expected_pages = ("contacts-new", "contacts", "contact-detail", "report-filing",
-                            "report-detail", "flyer", "agency-email", "phone-script")
+                            "report-filing-populated", "report-detail", "flyer", "agency-email", "phone-script")
 
           def save_result():
               # Written after every page so a step timeout still leaves usable evidence.
@@ -294,8 +294,8 @@ jobs:
               root = "/session/" + session["sessionId"]
               screenshots = set()
               try:
-                  def js(script, *args):
-                      return driver("POST", root + "/execute/sync", {"script": script, "args": args})
+                  def js(script, *args, timeout=90):
+                      return driver("POST", root + "/execute/sync", {"script": script, "args": args}, timeout=timeout)
 
                   def navigate(path):
                       driver("POST", root + "/url", {"url": app_url + path})
@@ -320,25 +320,81 @@ jobs:
 
                       return wait_for(f"{name} form {selector} to reach {destination}", arrived)
 
-                  def check_page(label, path, expected, heading_text=""):
-                      navigate(path)
-                      data = js("""
+                  def read_page(expected, heading_text):
+                      return js("""
                           const html = document.documentElement;
+                          const heading = document.querySelector('main h1')?.textContent.trim() ?? '';
+                          const dateField = document.querySelector('input#last_seen_at');
+                          const inputBox = dateField?.getBoundingClientRect();
+                          const wrapperBox = dateField?.parentElement.getBoundingClientRect();
                           return {
+                              actualUrl: location.href,
+                              actualPath: location.pathname,
+                              title: document.title,
+                              readyState: document.readyState,
+                              heading,
                               expectedContent: document.querySelector(arguments[0]) !== null &&
-                                  document.querySelector('main h1').textContent.includes(arguments[1]),
+                                  heading.length > 0 && heading.includes(arguments[1]),
                               layoutWidth: html.clientWidth,
                               screenWidth: screen.width,
                               scrollWidth: Math.max(html.scrollWidth, document.body.scrollWidth),
-                              innerWidth: innerWidth
+                              innerWidth: innerWidth,
+                              dateField: dateField ? {
+                                  value: dateField.value,
+                                  overflowPx: Math.max(0, Math.round(wrapperBox.left - inputBox.left),
+                                      Math.round(inputBox.right - wrapperBox.right))
+                              } : null
                           };
-                      """, expected, heading_text)
-                      data.update({"page": label, "path": path,
-                                   "overflowPx": max(0, data["scrollWidth"] - data["layoutWidth"])})
-                      if not data["expectedContent"]:
+                      """, expected, heading_text, timeout=5)
+
+                  def check_page(label, path, expected, heading_text="", last_seen_at=None):
+                      data = {}
+                      probe_error = None
+
+                      def ready():
+                          nonlocal data, probe_error
+                          try:
+                              data = read_page(expected, heading_text)
+                              probe_error = None
+                          except RuntimeError as error:
+                              probe_error = str(error)
+                              return None
+                          if data["actualPath"] == path and data["readyState"] == "complete" and data["expectedContent"]:
+                              return data
+                          return None
+
+                      try:
+                          driver("POST", root + "/url", {"url": app_url + path})
+                          wait_for(f"{name} {path} to load {expected}", ready, seconds=20)
+                      except RuntimeError as error:
+                          data.update({"page": label, "path": path, "probeError": probe_error})
+                          if not data.get("actualUrl"):
+                              try:
+                                  data["actualUrl"] = driver("GET", root + "/url", timeout=5)
+                              except RuntimeError as url_error:
+                                  data["urlError"] = str(url_error)
+                          diagnostic = f"{name}-{label}-not-ready.png"
+                          try:
+                              encoded = driver("GET", root + "/screenshot", timeout=5)
+                              (artifacts / diagnostic).write_bytes(base64.b64decode(encoded, validate=True))
+                              data["diagnosticScreenshot"] = diagnostic
+                          except (RuntimeError, ValueError) as screenshot_error:
+                              data["diagnosticScreenshotError"] = str(screenshot_error)
                           evidence["pages"].append(data)
                           save_result()
-                          raise RuntimeError(f"{name} {label} did not render {expected}")
+                          raise RuntimeError(f"{error}; last page state: {data}") from error
+
+                      if last_seen_at is not None:
+                          js("""
+                              const input = document.querySelector('#last_seen_at');
+                              input.value = arguments[0];
+                              input.dispatchEvent(new Event('input', {bubbles: true}));
+                          """, last_seen_at)
+                          data = read_page(expected, heading_text)
+                          if data["dateField"]["value"] != last_seen_at:
+                              raise RuntimeError(f"{name} did not retain the report date input: {data['dateField']}")
+                      data.update({"page": label, "path": path,
+                                   "overflowPx": max(0, data["scrollWidth"] - data["layoutWidth"])})
                       screenshot = f"{name}-{label}.png"
                       last = {}
 
@@ -396,14 +452,18 @@ jobs:
                       evidence["browserVersion"] = version.group(1) if version else "unreported"
                   submit("#email", {"email": "demo01@example.com", "password": "DemoPass123!"}, r"/pets/?")
 
-                  check_page("contacts-new", "/contacts/new", "input#category")
+                  check_page("contacts-new", "/contacts/new", "input#category", "Add a contact")
                   contact_name = "C" * (100 - len(name)) + name
                   contact = submit("#category", {"category": "Shelter", "name": contact_name,
                                                  "phone": "940-555-0100", "email": "shelter@example.test"},
                                    r"/contacts/\d+")
                   check_page("contacts", "/contacts", "a[href^='/contacts/']")
                   check_page("contact-detail", contact, ".pet-details", contact_name)
-                  check_page("report-filing", "/reports/new", "input[name='pet_ids']")
+                  report_heading = "File a missing pet report"
+                  report_date = 'input#last_seen_at[type="datetime-local"]'
+                  check_page("report-filing", "/reports/new", report_date, report_heading, last_seen_at="")
+                  check_page("report-filing-populated", "/reports/new", report_date, report_heading,
+                             last_seen_at="2024-10-15T14:30")
                   report = submit("#last_seen_location", {"last_seen_location": "Fictional park",
                                                         "notes": "Fictional CI missing-pet report."},
                                   r"/reports/\d+", pick_pet=True)
@@ -412,7 +472,8 @@ jobs:
                   contact_id = contact.rsplit("/", 1)[-1]
                   check_page("agency-email", f"{report}/email/{contact_id}", "textarea#email-body", contact_name)
                   check_page("phone-script", f"{report}/phone-script/{contact_id}", "textarea#phone-script", contact_name)
-                  overflowing = [page["page"] for page in evidence["pages"] if page["overflowPx"]]
+                  overflowing = [page["page"] for page in evidence["pages"]
+                                 if page["overflowPx"] or (page["dateField"] or {}).get("overflowPx")]
                   if overflowing:
                       raise RuntimeError(f"{name} horizontal overflow: {', '.join(overflowing)}")
                   checked = [page["page"] for page in evidence["pages"] if page.get("screenshot")]
