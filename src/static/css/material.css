@@ -89,6 +89,7 @@ body.has-nav {
 
 h1 { font-size: 1.75rem; line-height: 2.25rem; font-weight: 400; }
 h2 { font-size: 1.125rem; line-height: 1.5rem; font-weight: 500; margin: 1.5rem 0 0.75rem; }
+h1, h2, .hint { overflow-wrap: anywhere; }
 
 .icon { display: block; flex-shrink: 0; }
 

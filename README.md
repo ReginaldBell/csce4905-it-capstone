@@ -18,9 +18,11 @@ on November 4, 2026. Sponsor acceptance and final delivery remain pending.
 - Reminders: a successful-login message for pets last updated more than 90 days ago.
 - Existing account, pet CRUD, and photo-upload functionality is retained.
 
-Sprint 3 work is on the Sprint 3 integration branch, pending verification. It covers pet
+Sprint 3 work is implemented on `sprint3/integration`. It covers pet
 and contact details, account editing, password reset, sign-in and reset limits, photo
-access checks, and usability fixes. It is not on `main`, and its test cases are Not run.
+access checks, and usability fixes. It is not on `main`. All 180 automated tests passed.
+In the official November 22, 2026 run, 22 of 27 Sprint 3 test cases passed. The other 5
+remain Not run because they need Safari or features from later sprints.
 
 Start with [PROJECT_STATE.md](PROJECT_STATE.md) for the living status, change log,
 decisions, and pending work. The [Sprint 2 record](docs/project-management/sprint-2-record.md)
@@ -41,8 +43,7 @@ no application landing route at `/`; use `/login`, `/pets`, or `/reports`.
 
 `flask init-db` creates missing tables; it does not clear data or migrate existing
 columns. `flask upgrade-community` adds the nearby-feed columns to an older database,
-keeps existing records, and is safe to run again. On the Sprint 3 integration branch,
-pending verification, it also adds `users.full_name`, `users.phone`, and
+keeps existing records, and is safe to run again. On `sprint3/integration`, it also adds `users.full_name`, `users.phone`, and
 `users.session_version`. The database uses a named volume;
 photos live in `src/static/uploads/`.
 See the [maintenance manual](docs/4-transition/maintenance-manual.md) before changing
@@ -62,6 +63,27 @@ docker compose -f infra/docker-compose.yml exec web flask upgrade-sprint3
 With the supplied debug Compose settings, the default `console` mail backend prints reset
 links to the web logs. Outside debug, set `APP_BASE_URL` and use `smtp`; `console` sends
 nothing. To run the automated tests, see the [test plan](docs/3-construction/test-plan.md#how-to-run-the-automated-suite).
+
+### Isolated PostgreSQL for Sprint 3 testing
+
+Run these commands from the repository root to start a separate QA stack with fictional
+records:
+
+```bash
+docker compose -p petfinder-qa -f infra/docker-compose.yml -f infra/docker-compose.qa.yml up --build -d
+docker compose -p petfinder-qa -f infra/docker-compose.yml -f infra/docker-compose.qa.yml exec web flask init-db
+docker compose -p petfinder-qa -f infra/docker-compose.yml -f infra/docker-compose.qa.yml exec web flask upgrade-community
+docker compose -p petfinder-qa -f infra/docker-compose.yml -f infra/docker-compose.qa.yml exec web flask upgrade-sprint3
+docker compose -p petfinder-qa -f infra/docker-compose.yml -f infra/docker-compose.qa.yml exec web flask seed-community-demo
+```
+
+Open [the QA login page](http://127.0.0.1:5001/login) and use a demo login printed by the
+seed command. The QA stack has its own database and photo volumes. Rebuild it after source
+changes. To stop it and keep its test records:
+
+```bash
+docker compose -p petfinder-qa -f infra/docker-compose.yml -f infra/docker-compose.qa.yml stop
+```
 
 ## Documentation
 
@@ -122,6 +144,9 @@ from approved requirements.
 |---|---|---|
 | 2026-11-04 | Reginad Bell | Document delivered Sprint 2 features, local setup, project-state links, and verification scope. |
 | 2026-11-21 | Claude | Add the community upgrade step and link the Sprint 3 plan. |
-| 2026-11-21 | Claude | Add Sprint 3 status and run steps, on the Sprint 3 integration branch, pending verification. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: reset mail run note, on the Sprint 3 integration branch, pending verification. |
-| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: upgrade-community columns, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Add Sprint 3 status and run steps, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: reset mail run note, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: upgrade-community columns, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-22 | Claude | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |

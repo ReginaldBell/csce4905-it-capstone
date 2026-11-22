@@ -1,6 +1,6 @@
 # Architecture and Design
 
-**Phase:** Elaboration | **Status:** Sprint 2 implementation documented; Sprint 3 design on the Sprint 3 integration branch, pending verification
+**Phase:** Elaboration | **Status:** Sprint 2 implementation documented; Sprint 3 design implemented on `sprint3/integration`, not merged
 
 **Owner:** _TBD_ | **Baseline:** `4d51cc3`, November 4, 2026
 
@@ -86,8 +86,7 @@ migrations, or backfill earlier status history. PostgreSQL uses the Compose
 Retention, production backups, and recovery objectives remain _TBD_.
 
 On the nearby feed and UI branches, `flask upgrade-community` adds the feed columns
-to an older database, keeps existing records, and is safe to run again. On the Sprint 3
-integration branch, pending verification, it also adds `users.full_name`, `users.phone`,
+to an older database, keeps existing records, and is safe to run again. On `sprint3/integration`, it also adds `users.full_name`, `users.phone`,
 and `users.session_version`, because existing code loads `User` after that command.
 
 ## 4. Application interfaces
@@ -167,7 +166,7 @@ controls. The browser handles printing; no server PDF service is added.
   security certification or a production configuration.
 - On `main`, uploaded photos retain inherited public static URLs and route
   authorization does not provide private image delivery. On the Sprint 3 branch, they
-  are access-checked pending TC-107; see [section 10](#10-sprint-3-design).
+  are access-checked, and TC-107 passed on November 22, 2026; see [section 10](#10-sprint-3-design).
 
 The successful-login reminder queries only owned pets with
 `updated_at < utcnow - timedelta(days=90)`. It emits one sorted info flash with
@@ -201,8 +200,9 @@ in the [test plan](../3-construction/test-plan.md).
 
 ## 10. Sprint 3 design
 
-This design is on the Sprint 3 integration branch, pending verification. It follows
-the Sprint 3 build contract. Nothing here states that it has been tested or deployed.
+This design is implemented on `sprint3/integration`, not merged. It follows the Sprint 3 build
+contract. All 180 automated tests passed, and 22 of 27 official
+Sprint 3 test cases passed on November 22, 2026. It has not been deployed.
 
 ### New modules
 
@@ -297,7 +297,7 @@ backslashes, and control characters, then falls back to `pets.list_pets`. Regist
 keeps its visible duplicate-email error because TC-002 requires it.
 
 On `main`, uploaded photo URLs are directly accessible. On the Sprint 3 branch, they are
-access-checked pending TC-107. The owner can always open their current photo. A non-owner
+access-checked, and TC-107 passed on November 22, 2026. The owner can always open their current photo. A non-owner
 can open it only when it belongs to a report that is shared and has status `open`. On a
 resolved shared report, non-owners see `Photo unavailable because this report is resolved.`
 
@@ -327,6 +327,8 @@ and `flask upgrade-community`. See the
 | _TBD_ | _TBD_ | Initial draft template |
 | 2026-11-04 | Codex | Document implemented Sprint 2 components, schema, routes, lifecycle, security, UTC rules, and decisions. |
 | 2026-11-21 | Claude | Add Material 3 UI components, Settings route, report preselect, and the community upgrade command for the unmerged UI branch. |
-| 2026-11-21 | Claude | Add Sprint 3 fields, tables, modules, routes, mail backends, limits, and upgrade command, on the Sprint 3 integration branch, pending verification. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: reset link, console mail, token, session, and shared photo design, on the Sprint 3 integration branch, pending verification. |
-| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: upgrade columns, sixth-attempt limit, photo path guard, and fieldset errors, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Add Sprint 3 fields, tables, modules, routes, mail backends, limits, and upgrade command, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: reset link, console mail, token, session, and shared photo design, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: upgrade columns, sixth-attempt limit, photo path guard, and fieldset errors, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |

@@ -1,6 +1,6 @@
 # User Manual
 
-**Phase:** Transition | **Status:** Sprint 2 implementation documented; Sprint 3 tasks on the Sprint 3 integration branch, pending verification; sponsor acceptance _TBD_ | **Owner:** _TBD_ | **Audience:** end users
+**Phase:** Transition | **Status:** Sprint 2 implementation documented; Sprint 3 tasks implemented on `sprint3/integration`, not merged; sponsor acceptance _TBD_ | **Owner:** _TBD_ | **Audience:** end users
 
 This manual describes Pet Finder as delivered through Sprint 2 at commit `4d51cc3` on
 November 4, 2026. The [Sprint 2 record](../project-management/sprint-2-record.md)
@@ -193,7 +193,7 @@ time of the problem. Do not include your password.
 
 ## 14. Sprint 3 tasks
 
-The tasks in this section are on the Sprint 3 integration branch, pending verification.
+The tasks in this section are implemented on `sprint3/integration`, not merged.
 They are not available on `main` yet.
 
 ### Add more pet details
@@ -261,6 +261,7 @@ send another email.
 | _TBD_ | _TBD_ | Initial draft template |
 | 2026-11-04 | Codex | Documented delivered Sprint 2 workflows, validation, UTC behavior, generated outputs, flyer excerpt, stale reminder, and troubleshooting. |
 | 2026-11-21 | Claude | Documented the Material 3 navigation, Settings, and Report missing shortcut on the unmerged UI branch. |
-| 2026-11-21 | Claude | Add pet detail, contact address, account, password reset, and sign-in limit tasks, on the Sprint 3 integration branch, pending verification. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: photo visibility, canceled links, and logout after reset, on the Sprint 3 integration branch, pending verification. |
-| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: sixth-attempt limit and resolved photo message, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Add pet detail, contact address, account, password reset, and sign-in limit tasks, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: photo visibility, canceled links, and logout after reset, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: sixth-attempt limit and resolved photo message, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |

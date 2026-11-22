@@ -1,6 +1,6 @@
 # Software Requirements Specification (SRS)
 
-**Phase:** Inception | **Status:** Sprint 2 implementation baseline; Sprint 3 requirements on the Sprint 3 integration branch, pending verification; sponsor approval _TBD_
+**Phase:** Inception | **Status:** Sprint 2 implementation baseline; Sprint 3 requirements implemented on `sprint3/integration`, not merged; sponsor approval _TBD_
 
 **Owner:** _TBD_ | **Recorded:** November 4, 2026
 
@@ -74,7 +74,7 @@ All rows are required behavior of the delivered Sprint 2 baseline.
 
 This is scoped verification, not an exhaustive security certification. Private
 media delivery is not established on `main`: uploaded photos retain existing static
-URLs there. Section 7 records the Sprint 3 access check, pending TC-107.
+URLs there. Section 7 records the Sprint 3 access check; TC-107 passed on November 22, 2026.
 
 Performance/load, availability, compliance, retention, accessibility targets,
 production security settings, and recovery objectives remain _TBD_ pending explicit
@@ -114,8 +114,8 @@ remain _TBD_. The [test plan](../3-construction/test-plan.md) states evidence li
 ## 7. Sprint 3 requirements
 
 These rows use the team's R and NF IDs from the Sprint 2 Requirements document. The
-work is on the Sprint 3 integration branch, pending verification. Every listed case is
-Not run. Listing a requirement here is not implementation approval, deployment, or
+work is implemented on `sprint3/integration`, not merged. All 180 automated tests passed. In the official November 22, 2026 run, 22 of the 27
+listed cases passed; TC-604, TC-605, TC-607, TC-609, and TC-1014 remain Not run. Listing a requirement here is not implementation approval, deployment, or
 sponsor acceptance.
 
 | ID | Sprint 3 requirement | Test cases |
@@ -164,6 +164,8 @@ and cases are in the [test plan](../3-construction/test-plan.md#9-sprint-3-test-
 |---|---|---|
 | _TBD_ | _TBD_ | Initial draft template |
 | 2026-11-04 | Codex | Replace placeholder requirements with the delivered Sprint 2 baseline and traceability; retain unapproved scope as pending. |
-| 2026-11-21 | Claude | Add Sprint 3 R and NF requirements, field rules, and test mapping, on the Sprint 3 integration branch, pending verification. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: reset, session, photo, and partial-case requirements, on the Sprint 3 integration branch, pending verification. |
-| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: display name, photo path, and fieldset rules, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Add Sprint 3 R and NF requirements, field rules, and test mapping, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: reset, session, photo, and partial-case requirements, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: display name, photo path, and fieldset rules, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |

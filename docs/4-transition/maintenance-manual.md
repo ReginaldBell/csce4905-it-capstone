@@ -1,6 +1,6 @@
 # Maintenance Manual
 
-**Phase:** Transition | **Status:** Sprint 2 implementation documented; Sprint 3 operations on the Sprint 3 integration branch, pending verification; production handover _TBD_
+**Phase:** Transition | **Status:** Sprint 2 implementation documented; Sprint 3 operations implemented on `sprint3/integration`, not merged; production handover _TBD_
 
 **Owner:** _TBD_ | **Audience:** maintainers | **Baseline:** `4d51cc3`, November 4, 2026
 
@@ -224,7 +224,7 @@ Temporary review harnesses are not a committed test suite or CI pipeline.
 
 - On `main`, uploaded photo URLs are directly accessible, and owned application routes
   do not constitute private media delivery. On the Sprint 3 branch, they are
-  access-checked pending TC-107.
+  access-checked, and TC-107 passed on November 22, 2026.
 - Clipboard handlers were inspected, but browser permission/failure cases and
   a formal browser support matrix were not fully tested.
 - Missing/non-numeric timezone offset means UTC; automatic local conversion needs JS.
@@ -240,8 +240,9 @@ once one exists.
 
 ## 9. Sprint 3 upgrade and operations
 
-This section applies to work on the Sprint 3 integration branch, pending verification.
-The upgrade has not been recorded as run on any shared or deployed database.
+This section applies to work implemented on `sprint3/integration`, not merged. The upgrade ran on the
+isolated `petfinder-qa` database on November 22, 2026 with record counts unchanged. It has
+not run on `infra_pgdata` or any deployed database.
 
 ### Upgrade order
 
@@ -300,7 +301,7 @@ saved under another checkout will not appear unless they are copied.
 | `LOGIN_LIMIT`, `LOGIN_WINDOW_SECONDS` | `5`, `900` | Failed sign-in limit |
 | `RESET_LIMIT`, `RESET_WINDOW_SECONDS` | `3`, `3600` | Reset request limit |
 
-The approved Sprint 3 Compose change, pending verification, passes `APP_BASE_URL` and the
+The approved Sprint 3 Compose change passes `APP_BASE_URL` and the
 `MAIL_*` settings to the web service using `${NAME:-default}`, so no secret is written to
 the file. Set real values in your shell or in an untracked `infra/.env` file.
 
@@ -337,7 +338,7 @@ effect on that stack, so the defaults above apply. Forwarding them needs an appr
 | Users are logged out after a password reset | Expected: `session_version` changed. They must sign in again. |
 | Reset link returns 400 | The link is invalid, expired, used, replaced by a newer request, or canceled by an email change or reset. Request a new one. |
 | Valid users get status 429 | Check the failed-attempt window and whether users share one `remote_addr`. |
-| Photo returns 404 or redirects to login | Confirm the stored `photo_path` and the viewer. Non-owners need a report that is shared and `open`. Rewritten paths such as `/static/./uploads/<file>` get the same check. Access behavior is pending TC-107. |
+| Photo returns 404 or redirects to login | Confirm the stored `photo_path` and the viewer. Non-owners need a report that is shared and `open`. Rewritten paths such as `/static/./uploads/<file>` get the same check. TC-107 passed on November 22, 2026. |
 
 ## Revision history
 
@@ -347,6 +348,8 @@ effect on that stack, so the defaults above apply. Forwarding them needs an appr
 | 2026-11-04 | Codex | Document Sprint 2 setup, data lifecycle, configuration, preservation rules, verification, and operational limits. |
 | 2026-11-21 | Claude | Add the community upgrade step and Material 3 UI files for the unmerged UI branch. |
 | 2026-11-21 | Claude | Add the manual pre-upgrade backup procedure and its limits. |
-| 2026-11-21 | Claude | Add Sprint 3 upgrade order, backup, environment, and troubleshooting; correct the photo access statement, on the Sprint 3 integration branch, pending verification. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: mail settings, console behavior, sessions, and troubleshooting, on the Sprint 3 integration branch, pending verification. |
-| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: mail fallbacks, unforwarded limit settings, upgrade columns, and photo paths, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Add Sprint 3 upgrade order, backup, environment, and troubleshooting; correct the photo access statement, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: mail settings, console behavior, sessions, and troubleshooting, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: mail fallbacks, unforwarded limit settings, upgrade columns, and photo paths, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |

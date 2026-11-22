@@ -1,6 +1,6 @@
 # Use Case Model
 
-**Phase:** Elaboration | **Status:** Sprint 2 implementation documented; Sprint 3 flows on the Sprint 3 integration branch, pending verification; acceptance _TBD_
+**Phase:** Elaboration | **Status:** Sprint 2 implementation documented; Sprint 3 flows implemented on `sprint3/integration`, not merged; acceptance _TBD_
 
 **Owner:** _TBD_ | **Baseline:** `4d51cc3`, November 4, 2026
 
@@ -139,7 +139,7 @@ available for manual posting elsewhere.
 **Alternates:** pets without photos are named in a fallback note. A missing
 physical file retains the existing static-file 404 behavior. The route is owned.
 On `main`, inherited static photo URLs are directly accessible. On the Sprint 3 branch,
-they are access-checked pending TC-107.
+they are access-checked, and TC-107 passed on November 22, 2026.
 
 ### UC-S2-07 — Print a flyer
 
@@ -179,8 +179,8 @@ requirements outside this recorded increment remain _TBD_.
 
 ## 5. Sprint 3 use cases
 
-These flows are on the Sprint 3 integration branch, pending verification. Their test
-cases are Not run.
+These flows are implemented on `sprint3/integration`, not merged. Official results are in
+[test plan section 9](../3-construction/test-plan.md#9-sprint-3-test-cases).
 
 | ID | Name | Requirement | Test cases |
 |---|---|---|---|
@@ -264,6 +264,8 @@ Absolute URLs, `//host`, backslashes, and control characters in `next` are rejec
 |---|---|---|
 | _TBD_ | _TBD_ | Initial draft template |
 | 2026-11-04 | Codex | Document eight implemented Sprint 2 use cases, alternate flows, ownership, and output limits. |
-| 2026-11-21 | Claude | Add account editing, password reset, and rate-limited sign-in flows, on the Sprint 3 integration branch, pending verification. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: token invalidation, reset link, attempt clearing, and session flows, on the Sprint 3 integration branch, pending verification. |
-| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: sixth-attempt limit and display name rule, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Add account editing, password reset, and rate-limited sign-in flows, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: token invalidation, reset link, attempt clearing, and session flows, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: sixth-attempt limit and display name rule, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |

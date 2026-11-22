@@ -1,6 +1,6 @@
 # Test Plan
 
-**Phase:** Construction | **Status:** Sprint 2 review results recorded; Sprint 3 cases Not run | **Owner:** _TBD_
+**Phase:** Construction | **Status:** Sprint 2 review results recorded; Sprint 3 official run recorded: 22 Pass, 5 Not run | **Owner:** _TBD_
 
 ## 1. Scope and evidence
 
@@ -283,6 +283,13 @@ passed. Independent #17/#18/#20 merged while #19's print defect was being fixed.
 | 2026-11-21 | Uncommitted `feature/material3-ui` | `tests/` suite; UI smoke checks | 26 unit tests passed. Disposable PostgreSQL upgrade from `4d51cc3` kept records. Chrome checked photos, map, settings persistence, 412/768 px layouts, and a one-page flyer |
 | 2026-11-21 | Uncommitted `feature/material3-ui`, local `infra_pgdata` | Upgrade and read-only page checks | Dump created first; record counts matched after `init-db` and `upgrade-community`; signed-in list, form, pet, report, and Settings pages returned 200 |
 | 2026-11-21 | Uncommitted `feature/material3-ui`, local app | Project-owner manual test | Owner reported everything working; individual cases were not itemized |
+| 2026-11-21 | Uncommitted `feature/material3-ui`, isolated `petfinder-qa_pgdata` | Schema initialization and demo sign-in | `flask upgrade-community` completed on the QA volume. Verified 12 demo users, 25 pets, 24 reports, and 8 comments. Demo sign-in reached `/pets`. |
+| 2026-11-21 | `sprint3/integration` at `1724829` | Automated suite | 180 test methods and 413 subtests passed, with no failures, errors, or skips. No formal TC outcome changed |
+| 2026-11-21 | `sprint3/integration` at `1724829` | Photo authorization probe | On a real server with raw paths, 27 URL forms returned no private photo bytes to guests or unauthorized users. TC-107 remains Not run |
+| 2026-11-22 | `sprint3/integration` at `1724829`, isolated `petfinder-qa` | Upgrade and smoke check | Backup taken; `init-db`, `upgrade-community`, and `upgrade-sprint3` ran with record counts unchanged. Demo sign-in and main pages returned 200 |
+| 2026-11-22 | `1724829` plus heading-wrap patch | Official Sprint 3 run | 180 automated tests passed. 22 cases Pass and 5 Not run. See section 9 |
+| 2026-11-22 | `1724829` plus heading-wrap patch | Project-owner browser report | Owner reported that a team member's Chrome and Firefox run was good. Browser versions and page details were not provided. TC-604 stays Not run until Safari is tested |
+| 2026-11-22 | `sprint3/integration` at `1724829`, isolated `petfinder-qa` | Project-owner accessibility check | Owner reported a manual accessibility check. Individual cases, browsers, and results were not itemized, so TC-604 and TC-607 remain Not run |
 
 Rows summarize coverage, not assertion counts or a claim that every case was
 re-run on every merge commit. Reviews used relevant PR heads/reconciled trees
@@ -291,8 +298,8 @@ before merging; PR threads retain findings and re-review context.
 ## 8. Validation limits and remaining work
 
 - No committed automated regression suite or CI execution was established by the
-  Sprint 2 review work. The `feature/material3-ui` working tree has unit tests, but
-  they are not merged and do not yet cover every case above.
+  Sprint 2 review work. `sprint3/integration` has 180 automated tests, but they are not
+  merged and do not cover the manual browser and keyboard cases.
 - Copy handlers were inspected; browser clipboard permission/interaction was not
   exercised. External mail-client behavior and actual delivery were not tested;
   this app generates text/mailto links and does not send mail.
@@ -304,40 +311,59 @@ before merging; PR threads retain findings and re-review context.
 
 ## 9. Sprint 3 test cases
 
-The Sprint 3 work is on the Sprint 3 integration branch, pending verification. The 27
+The Sprint 3 work is implemented on `sprint3/integration`, not merged. The 27
 cases below use the IDs in the course `TestPlanTracker.xlsx`, which holds their full
-preconditions, steps, and expected outcomes. **All Sprint 3 outcomes are Not run.** Change
-an outcome only after that exact procedure runs, and record the commit and evidence.
+preconditions, steps, and expected outcomes. Change an outcome only after that exact
+procedure runs, and record the commit and evidence.
 
 | Case | Requirement | Test | Sprint 3 outcome |
 |---|---|---|---|
-| TC-001 | R1 | Register a household | Not run |
-| TC-002 | R1, NF5 | Reject invalid account entries, including a used email | Not run |
-| TC-003 | R1, NF2 | Log out and check private pages | Not run |
-| TC-004 | R17, NF5, NF10 | Edit account details; outputs use saved phone | Not run |
-| TC-005 | R23 | Reset a forgotten password | Not run |
-| TC-101 | R2 | Add and save a pet with all identifiers | Not run |
-| TC-102 | R2, NF5 | Require pet name and species | Not run |
-| TC-103 | R3, NF2 | View pets and details | Not run |
-| TC-104 | NF2 | Block another household's pets | Not run |
-| TC-105 | R4 | Edit pet details | Not run |
-| TC-106 | R5 | Confirm pet deletion | Not run |
-| TC-107 | NF2, R20 | Keep photo links private | Not run |
-| TC-108 | R2, NF5 | Reject a future birth date | Not run |
-| TC-301 | R8, R9 | Add and view contacts, including address | Not run |
-| TC-302 | R9, NF5 | Edit and delete contacts | Not run |
-| TC-303 | NF2 | Keep contacts private | Not run |
+| TC-001 | R1 | Register a household | Pass |
+| TC-002 | R1, NF5 | Reject invalid account entries, including a used email | Pass |
+| TC-003 | R1, NF2 | Log out and check private pages | Pass |
+| TC-004 | R17, NF5, NF10 | Edit account details; outputs use saved phone | Pass |
+| TC-005 | R23 | Reset a forgotten password | Pass |
+| TC-101 | R2 | Add and save a pet with all identifiers | Pass |
+| TC-102 | R2, NF5 | Require pet name and species | Pass |
+| TC-103 | R3, NF2 | View pets and details | Pass |
+| TC-104 | NF2 | Block another household's pets | Pass |
+| TC-105 | R4 | Edit pet details | Pass |
+| TC-106 | R5 | Confirm pet deletion | Pass |
+| TC-107 | NF2, R20 | Keep photo links private | Pass |
+| TC-108 | R2, NF5 | Reject a future birth date | Pass |
+| TC-301 | R8, R9 | Add and view contacts, including address | Pass |
+| TC-302 | R9, NF5 | Edit and delete contacts | Pass |
+| TC-303 | NF2 | Keep contacts private | Pass |
 | TC-604 | NF8 | Check supported screens and browsers | Not run |
 | TC-605 | NF5 | Check form errors throughout the app | Not run |
 | TC-607 | NF12 | Use a keyboard | Not run |
 | TC-609 | NF14 | Limit repeated requests | Not run |
-| TC-1001 | R1, NF1 | Password storage | Not run |
-| TC-1002 | R1, NF2 | Session checks | Not run |
-| TC-1003 | R2-R3, NF2 | Pet ownership | Not run |
-| TC-1004 | R2, NF5 | Pet form checks | Not run |
-| TC-1005 | R2-R3 | Saving and listing pets | Not run |
-| TC-1006 | R2, NF5 | Special characters | Not run |
+| TC-1001 | R1, NF1 | Password storage | Pass |
+| TC-1002 | R1, NF2 | Session checks | Pass |
+| TC-1003 | R2-R3, NF2 | Pet ownership | Pass |
+| TC-1004 | R2, NF5 | Pet form checks | Pass |
+| TC-1005 | R2-R3 | Saving and listing pets | Pass |
+| TC-1006 | R2, NF5 | Special characters | Pass |
 | TC-1014 | NF14 | Request limits | Not run |
+
+### Official Sprint 3 run
+
+Run on November 22, 2026 against `1724829` plus the heading-wrap CSS patch, using a real
+Flask server, disposable PostgreSQL 16, Chrome 157.0.8103.79, and Edge 157.0.4341.46.
+Reset mail used the local console backend.
+
+**Result: 22 Pass, 0 open failures, 5 Not run.** The first run failed TC-604 because the
+email and phone script pages scrolled sideways at 390 px with a long unbroken contact name.
+Headings and hints now wrap. After the patch, all 42 page views per browser fit at 390 and
+1280 px, and the flyer printed on one US Letter page in both browsers.
+
+| Case | Passed so far | Still needed |
+|---|---|---|
+| TC-604 | Chrome and Edge at phone and desktop widths; Firefox reported passing by the project owner | Safari |
+| TC-605 | Form errors on every available form | Report editing (R22) |
+| TC-607 | Filing, error correction, Nearby, and opening a report by keyboard in Chrome | Sending a tip (R21) |
+| TC-609 | Normal use and sign-in and reset limits | Report-filing and tip limits |
+| TC-1014 | Sign-in limit, key hashing, expiry, and account separation | Report-filing and tip limits |
 
 ### Scope limits for this sprint
 
@@ -354,7 +380,7 @@ an outcome only after that exact procedure runs, and record the commit and evide
   unauthorized requests with `/static/./uploads/<file>`, `/static/x/../uploads/<file>`,
   `/static/%2e/uploads/<file>`, `/static/x/%2e%2e/uploads/<file>`, and backslash and
   repeated-slash forms; none may return photo bytes. Confirm other static assets still load.
-  Until then, photo privacy on the Sprint 3 branch is unverified.
+  The November 22, 2026 official run recorded this procedure as Pass.
 - **TC-605** treats the `pet_ids` checkbox group as one control. `aria-describedby` on its
   enclosing `fieldset` satisfies the field-error rule.
 
@@ -371,7 +397,7 @@ MSYS_NO_PATHCONV=1 docker run --rm --network none -v "$(pwd -W):/app" -w /app \
 The command needs an existing `infra-web` image. Use synthetic data only: emails at
 `@example.test` and phones in the `555-01xx` range. Any PostgreSQL check uses disposable
 resources named `pfs3-*`, removed afterward. A passing unit test does not by itself mark
-a manual or browser case as Pass. Sprint 3 suite totals are _TBD_.
+a manual or browser case as Pass. At commit `1724829`, the suite ran 180 test methods and 413 subtests with no failures, errors, or skips.
 
 ## Revision history
 
@@ -381,5 +407,8 @@ a manual or browser case as Pass. Sprint 3 suite totals are _TBD_.
 | 2026-11-04 | Codex | Recorded Sprint 2 regression procedures, traceability, historical evidence, resolved defects and validation limits through `4d51cc3` |
 | 2026-11-21 | Claude | Recorded Material 3 UI, local database upgrade, and project-owner test evidence |
 | 2026-11-21 | Claude | Add the Sprint 3 case list, scope limits, and suite instructions; all Sprint 3 outcomes remain Not run. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: partial-case rule and shared photo checks, on the Sprint 3 integration branch, pending verification. |
-| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: photo path and fieldset checks, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: partial-case rule and shared photo checks, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: photo path and fieldset checks, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-22 | Claude | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
