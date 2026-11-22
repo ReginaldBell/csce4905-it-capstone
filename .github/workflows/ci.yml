@@ -48,22 +48,27 @@ jobs:
           from pathlib import Path
           import re
           import secrets
+          import socket
           import subprocess
           import sys
           import tempfile
           import time
           from urllib.error import HTTPError, URLError
           from urllib.parse import urlsplit
-          from urllib.request import Request, urlopen
+          from urllib.request import ProxyHandler, Request, build_opener
 
-          app_url = "http://127.0.0.1:5000"
-          driver_url = "http://127.0.0.1:4444"
+          local_http = build_opener(ProxyHandler({}))
           artifacts = Path(os.environ["RUNNER_TEMP"]) / "safari-render"
           artifacts.mkdir(exist_ok=True)
           result = {"commit": os.environ["GITHUB_SHA"], "browsers": {}, "errors": []}
 
           def output(*command):
               return subprocess.check_output(command, text=True, timeout=60).strip()
+
+          def local_port():
+              with socket.socket() as listener:
+                  listener.bind(("127.0.0.1", 0))
+                  return listener.getsockname()[1]
 
           def wait_for(description, check, seconds=30):
               deadline = time.monotonic() + seconds
@@ -73,13 +78,6 @@ jobs:
                       return value
                   time.sleep(0.25)
               raise RuntimeError(f"Timed out waiting for {description}")
-
-          def healthy(url):
-              try:
-                  with urlopen(url, timeout=2) as response:
-                      return response.status == 200
-              except (URLError, TimeoutError):
-                  return False
 
           def stop(process):
               if process.poll() is None:
@@ -94,13 +92,35 @@ jobs:
               log = stack.enter_context((artifacts / filename).open("w"))
               process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, env=env)
               stack.callback(stop, process)
+              return process
+
+          def wait_for_server(url, process, filename):
+              log_path = artifacts / filename
+              last_error = None
+
+              def ready():
+                  nonlocal last_error
+                  if process.poll() is not None:
+                      raise RuntimeError(f"{filename} exited with code {process.returncode}")
+                  try:
+                      with local_http.open(url, timeout=2) as response:
+                          return response.status == 200
+                  except (URLError, TimeoutError) as error:
+                      last_error = str(error)
+                      return False
+
+              try:
+                  wait_for(url, ready, seconds=45)
+              except RuntimeError as error:
+                  tail = log_path.read_text(encoding="utf-8", errors="replace")[-2000:]
+                  raise RuntimeError(f"{error}; last HTTP error: {last_error}; {filename}:\n{tail}") from error
 
           def driver(method, path, payload=None):
               data = json.dumps(payload).encode() if payload is not None else None
               request = Request(driver_url + path, data=data, method=method,
                                 headers={"Content-Type": "application/json"})
               try:
-                  with urlopen(request, timeout=90) as response:
+                  with local_http.open(request, timeout=90) as response:
                       return json.load(response)["value"]
               except HTTPError as error:
                   detail = json.load(error)["value"]
@@ -216,16 +236,20 @@ jobs:
               result["xcodeVersion"] = output("xcodebuild", "-version")
               subprocess.run(["sudo", "safaridriver", "--enable"], check=True, timeout=60)
               with tempfile.TemporaryDirectory(dir=os.environ["RUNNER_TEMP"]) as work, ExitStack() as stack:
+                  app_port = local_port()
+                  app_url = f"http://127.0.0.1:{app_port}"
                   env = {**os.environ, "PYTHONPATH": "src", "SECRET_KEY": secrets.token_hex(32),
                          "DATABASE_URL": f"sqlite:///{Path(work) / 'petfinder.sqlite3'}",
                          "MAIL_BACKEND": "memory", "APP_BASE_URL": app_url}
-                  flask = [sys.executable, "-m", "flask", "--app", "src/app.py"]
+                  flask = [sys.executable, "-u", "-m", "flask", "--app", "src/app.py"]
                   for command in ("init-db", "upgrade-community", "upgrade-sprint3", "seed-community-demo"):
                       subprocess.run(flask + [command], env=env, check=True, timeout=60)
-                  launch(stack, "flask.log", flask + ["run", "--host", "127.0.0.1", "--port", "5000"], env)
-                  wait_for("the Pet Finder login page", lambda: healthy(app_url + "/login"))
-                  launch(stack, "safaridriver.log", ["safaridriver", "--port", "4444"])
-                  wait_for("Safari WebDriver", lambda: healthy(driver_url + "/status"))
+                  flask_server = launch(stack, "flask.log", flask + ["run", "--host", "127.0.0.1", "--port", str(app_port)], env)
+                  wait_for_server(app_url + "/login", flask_server, "flask.log")
+                  driver_port = local_port()
+                  driver_url = f"http://127.0.0.1:{driver_port}"
+                  safari_driver = launch(stack, "safaridriver.log", ["safaridriver", "--port", str(driver_port)])
+                  wait_for_server(driver_url + "/status", safari_driver, "safaridriver.log")
 
                   for name in ("desktop", "ios"):
                       evidence = result["browsers"][name] = {"pages": []}
