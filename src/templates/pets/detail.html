@@ -1,25 +1,38 @@
 {% extends "base.html" %}
+{% from '_icons.html' import icon %}
 {% block title %}{{ pet.name }} — Pet Finder{% endblock %}
 {% block content %}
 <div class="page-header">
   <h1>{{ pet.name }}</h1>
   <div class="actions">
-    <a class="btn" href="{{ url_for('pets.edit_pet', pet_id=pet.id) }}">Edit</a>
+    <a class="btn" href="{{ url_for('reports.new_report', pet_id=pet.id) }}">Report missing</a>
+    <a class="btn btn-secondary" href="{{ url_for('pets.edit_pet', pet_id=pet.id) }}">Edit</a>
     <a class="btn btn-danger" href="{{ url_for('pets.confirm_delete_pet', pet_id=pet.id) }}">Delete</a>
   </div>
 </div>
 
-{% if pet.photo_path %}
-  <img class="pet-photo-large" src="{{ url_for('static', filename=pet.photo_path) }}" alt="Photo of {{ pet.name }}">
-{% endif %}
+<div class="detail-layout">
+  {% if pet.photo_path %}
+    <img class="hero-photo" src="{{ url_for('static', filename=pet.photo_path) }}" alt="Photo of {{ pet.name }}">
+  {% else %}
+    <div class="hero-photo">{{ icon('pets', 48) }}</div>
+  {% endif %}
 
-<dl class="pet-details">
-  <dt>Species</dt><dd>{{ pet.species }}</dd>
-  <dt>Breed</dt><dd>{{ pet.breed or '—' }}</dd>
-  <dt>Birth date</dt><dd>{{ pet.birth_date or '—' }}</dd>
-  <dt>Notes</dt><dd>{{ pet.notes or '—' }}</dd>
-  <dt>Added</dt><dd>{{ pet.created_at.strftime('%Y-%m-%d') }}</dd>
-</dl>
+  <dl class="pet-details">
+    <dt>Species</dt><dd>{{ pet.species }}</dd>
+    <dt>Breed</dt><dd>{{ pet.breed or '—' }}</dd>
+    <dt>Birth date</dt><dd>{{ pet.birth_date or '—' }}</dd>
+    <dt>Age</dt><dd>{{ pet.age_display or '—' }}</dd>
+    <dt>Sex</dt><dd>{{ pet.sex_label or '—' }}</dd>
+    <dt>Height</dt><dd>{% if pet.height_inches is not none %}{{ pet.height_display }} in{% else %}—{% endif %}</dd>
+    <dt>Weight</dt><dd>{% if pet.weight_lbs is not none %}{{ pet.weight_display }} lb{% else %}—{% endif %}</dd>
+    <dt>Colors</dt><dd>{{ pet.colors or '—' }}</dd>
+    <dt>Markings</dt><dd>{{ pet.markings or '—' }}</dd>
+    <dt>Microchip</dt><dd>{{ pet.microchip_label }}{% if pet.microchip_number %} · {{ pet.microchip_number }}{% endif %}</dd>
+    <dt>Notes</dt><dd>{{ pet.notes or '—' }}</dd>
+    <dt>Added</dt><dd>{{ pet.created_at.strftime('%Y-%m-%d') }}</dd>
+  </dl>
+</div>
 
-<p><a href="{{ url_for('pets.list_pets') }}">&larr; Back to my pets</a></p>
+<p class="back-link"><a href="{{ url_for('pets.list_pets') }}">&larr; Back to my pets</a></p>
 {% endblock %}

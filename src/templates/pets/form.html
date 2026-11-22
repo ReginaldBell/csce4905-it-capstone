@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from '_forms.html' import describe, field_error %}
 {% block title %}{{ 'Edit' if pet else 'Add' }} Pet — Pet Finder{% endblock %}
 {% block content %}
 <h1>{{ 'Edit' if pet else 'Add a' }} pet</h1>
@@ -8,17 +9,17 @@
 
   <div class="form-group">
     <label for="name">Name</label>
-    <input type="text" id="name" name="name" value="{{ values.name }}" required maxlength="100" autofocus>
-    {% if errors.get('name') %}<p class="field-error">{{ errors['name'] }}</p>{% endif %}
+    <input type="text" id="name" name="name" value="{{ values.name }}" required maxlength="100" autofocus{{ describe(errors, 'name') }}>
+    {{ field_error(errors, 'name') }}
   </div>
 
   <div class="form-group">
     <label for="species">Species</label>
-    <input type="text" id="species" name="species" value="{{ values.species }}" list="species-list" required>
+    <input type="text" id="species" name="species" value="{{ values.species }}" list="species-list" required{{ describe(errors, 'species') }}>
     <datalist id="species-list">
       {% for choice in species_choices %}<option value="{{ choice }}">{% endfor %}
     </datalist>
-    {% if errors.get('species') %}<p class="field-error">{{ errors['species'] }}</p>{% endif %}
+    {{ field_error(errors, 'species') }}
   </div>
 
   <div class="form-group">
@@ -28,8 +29,60 @@
 
   <div class="form-group">
     <label for="birth_date">Birth date</label>
-    <input type="date" id="birth_date" name="birth_date" value="{{ values.birth_date }}">
-    {% if errors.get('birth_date') %}<p class="field-error">{{ errors['birth_date'] }}</p>{% endif %}
+    <input type="date" id="birth_date" name="birth_date" value="{{ values.birth_date }}"{{ describe(errors, 'birth_date') }}>
+    {{ field_error(errors, 'birth_date') }}
+  </div>
+
+  <div class="form-group">
+    <label for="sex">Sex</label>
+    <select id="sex" name="sex"{{ describe(errors, 'sex') }}>
+      <option value="">Not specified</option>
+      {% for value, label in sex_choices %}
+      <option value="{{ value }}" {% if values.sex == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    {{ field_error(errors, 'sex') }}
+  </div>
+
+  <div class="form-group">
+    <label for="height_inches">Height (inches)</label>
+    <input type="text" inputmode="decimal" id="height_inches" name="height_inches" value="{{ values.height_inches }}"{{ describe(errors, 'height_inches') }}>
+    {{ field_error(errors, 'height_inches') }}
+  </div>
+
+  <div class="form-group">
+    <label for="weight_lbs">Weight (pounds)</label>
+    <input type="text" inputmode="decimal" id="weight_lbs" name="weight_lbs" value="{{ values.weight_lbs }}"{{ describe(errors, 'weight_lbs') }}>
+    {{ field_error(errors, 'weight_lbs') }}
+  </div>
+
+  <div class="form-group">
+    <label for="colors">Colors</label>
+    <input type="text" id="colors" name="colors" value="{{ values.colors }}" maxlength="100"{{ describe(errors, 'colors') }}>
+    {{ field_error(errors, 'colors') }}
+  </div>
+
+  <div class="form-group">
+    <label for="markings">Markings</label>
+    <input type="text" id="markings" name="markings" value="{{ values.markings }}" maxlength="255"{{ describe(errors, 'markings') }}>
+    {{ field_error(errors, 'markings') }}
+  </div>
+
+  <div class="form-group">
+    <label for="microchip_status">Microchip status</label>
+    <select id="microchip_status" name="microchip_status"{{ describe(errors, 'microchip_status') }}>
+      {% for value, label in microchip_choices %}
+      <option value="{{ value }}" {% if values.microchip_status == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    {{ field_error(errors, 'microchip_status') }}
+  </div>
+
+  <div class="form-group">
+    <label for="microchip_number">Microchip number</label>
+    <input type="text" id="microchip_number" name="microchip_number" value="{{ values.microchip_number }}" maxlength="15" autocomplete="off"{{ describe(errors, 'microchip_number', 'microchip-hint') }}>
+    <p class="hint" id="microchip-hint">Required if chipped: 9-15 letters or digits. Private to you.</p>
+    {{ field_error(errors, 'microchip_number') }}
   </div>
 
   <div class="form-group">
@@ -39,10 +92,10 @@
 
   <div class="form-group">
     <label for="photo">Photo (JPG or PNG, up to 5 MB)</label>
-    <input type="file" id="photo" name="photo" accept=".jpg,.jpeg,.png,image/jpeg,image/png">
-    {% if errors.get('photo') %}<p class="field-error">{{ errors['photo'] }}</p>{% endif %}
+    <input type="file" id="photo" name="photo" accept=".jpg,.jpeg,.png,image/jpeg,image/png"{{ describe(errors, 'photo', 'photo-hint' if pet and pet.photo_path else None) }}>
+    {{ field_error(errors, 'photo') }}
     {% if pet and pet.photo_path %}
-      <p class="hint">Uploading a new photo replaces the current one.</p>
+      <p class="hint" id="photo-hint">Uploading a new photo replaces the current one.</p>
     {% endif %}
   </div>
 

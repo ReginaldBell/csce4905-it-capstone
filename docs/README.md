@@ -30,6 +30,7 @@ acceptance remain separate pending activities.
 
 - [Kanban conventions](project-management/kanban.md): board columns, card rules, definition of done.
 - [Sprint 2 record](project-management/sprint-2-record.md): preserve this as historical context.
+- [Sprint 3 plan](project-management/sprint-3-plan.md): official Sprint 3 scope and later MVP work by target sprint.
 - [PROJECT_STATE.md](../PROJECT_STATE.md): update when behavior, decisions, or project status changes.
 
 ## Conventions
@@ -53,3 +54,4 @@ acceptance remain separate pending activities.
 | Date | Author | Summary |
 |---|---|---|
 | 2026-11-04 | Codex | Index the Sprint 2 documentation set and establish state/decision/traceability conventions. |
+| 2026-11-21 | Claude | Index the Sprint 3 plan. |

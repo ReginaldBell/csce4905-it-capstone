@@ -1,6 +1,6 @@
 # User Manual
 
-**Phase:** Transition | **Status:** Sprint 2 implementation documented; sponsor acceptance _TBD_ | **Owner:** _TBD_ | **Audience:** end users
+**Phase:** Transition | **Status:** Sprint 2 implementation documented; Sprint 3 tasks implemented on `sprint3/integration`, not merged; sponsor acceptance _TBD_ | **Owner:** _TBD_ | **Audience:** end users
 
 This manual describes Pet Finder as delivered through Sprint 2 at commit `4d51cc3` on
 November 4, 2026. The [Sprint 2 record](../project-management/sprint-2-record.md)
@@ -27,11 +27,18 @@ the address is `http://localhost:5000` after following the
 2. Enter an email address, a password of at least eight characters, and the same password
    again to confirm it.
 3. On later visits, open **Log in** and enter your email and password.
-4. Use **Log out** in the navigation when you finish.
+4. Use the **Log out** icon at the top of the page, or **Log out** in **Settings**, when
+   you finish.
 
-The navigation provides **My Pets**, **Reports**, and **Contacts**. Messages above the
-page explain completed actions or errors. A submitted form with invalid information
-stays open and shows the fields to correct.
+The navigation provides **Nearby**, **My Pets**, **Reports**, **Contacts**, and
+**Settings**. It appears along the bottom on phones and along the left side on larger
+screens. Messages above the page explain completed actions or errors. A submitted form
+with invalid information stays open and shows the fields to correct.
+
+In **Settings**, **Dark theme**, **Larger text**, and **Search radius** are saved in the
+current browser and do not follow you to another device. **Display name** is saved to
+your account and appears on your community posts and comments. Printed flyers always
+use their standard light layout.
 
 ## 3. Maintain pet profiles
 
@@ -65,7 +72,8 @@ must be present.
 
 ## 5. File a missing-pet report
 
-1. Open **Reports**, then **File a report**.
+1. Open **Reports**, then **File a report**. You can also choose **Report missing** on
+   a pet's page, which selects that pet for you.
 2. Select one or more of your pets. If you have none, Pet Finder takes you to the
    add-pet form first.
 3. Enter the required last-seen location, using no more than 255 characters.
@@ -183,9 +191,77 @@ Pet Finder do not update copies you already pasted, printed, downloaded, or sent
 Support contact and hours: _TBD_. Include the page, action, message shown, and approximate
 time of the problem. Do not include your password.
 
+## 14. Sprint 3 tasks
+
+The tasks in this section are implemented on `sprint3/integration`, not merged.
+They are not available on `main` yet.
+
+### Add more pet details
+
+When you add or edit a pet, you can also enter sex, height in inches, weight in pounds,
+colors, markings, and microchip status. If you choose **Chipped**, enter the microchip
+number using 9-15 letters or digits. Pet Finder shows the pet's age when a birth date is
+saved. Microchip numbers do not appear on community pages.
+
+You can always open your own current pet photo. Another signed-in user can open it only
+while it belongs to a report you shared that is still **Open**. After the report is
+resolved, other users see *Photo unavailable because this report is resolved.*
+
+### Add a contact address
+
+Add or edit a contact and enter an address of up to 255 characters. You still need a
+phone number or email address.
+
+### Edit your account
+
+1. Open **Settings**.
+2. Change your display name, full name, phone, or email.
+3. If you change your email, enter your current password.
+4. Save your changes.
+
+Generated emails, phone scripts, social posts, and flyers show your saved phone along
+with your email. Review them before sharing, because anyone who receives them can see
+that information. Your phone does not appear on community pages.
+
+### Reset a forgotten password
+
+1. On the login page, choose the forgot-password link.
+2. Enter your account email and submit.
+3. The page says: *If an account exists for that email, we sent a reset link.*
+4. Open the link in the email. It works once and expires after 60 minutes by default.
+5. Enter and confirm a new password of at least eight characters, then log in.
+
+If you request another link, use the newest one. Earlier unused links stop working.
+Changing your email or finishing a reset also cancels unused links. After a reset, any
+other device or browser that was signed in is logged out and must sign in again.
+
+### If sign-in is limited
+
+You can make 5 failed sign-ins for the same email and connection within 15 minutes. The
+6th attempt shows *Too many attempts. Try again later.*, even if the password is correct.
+Wait 15 minutes and try again. Password reset
+requests are limited to 3 per hour; extra requests show the normal message but do not
+send another email.
+
+### Sprint 3 troubleshooting
+
+| Problem | What to do |
+|---|---|
+| No reset email arrives | Check spam and the address you entered. Wait before trying again, because extra requests do not send email. Contact the operator if it still does not arrive. |
+| *This reset link is invalid or has expired.* | Request a new link and use the newest email. |
+| *Too many attempts. Try again later.* | Wait up to 15 minutes, or reset your password from the same connection. |
+| You were logged out on another device | This is expected after a password reset. Sign in with the new password. If you did not reset it, reset it now and contact the operator. |
+| Email change is rejected | Check the current password, the email format, and whether another account uses that email. |
+| Microchip number is rejected | Choose **Chipped** and use 9-15 letters or digits. |
+
 ## Revision history
 
 | Date | Author | Summary |
 |---|---|---|
 | _TBD_ | _TBD_ | Initial draft template |
 | 2026-11-04 | Codex | Documented delivered Sprint 2 workflows, validation, UTC behavior, generated outputs, flyer excerpt, stale reminder, and troubleshooting. |
+| 2026-11-21 | Claude | Documented the Material 3 navigation, Settings, and Report missing shortcut on the unmerged UI branch. |
+| 2026-11-21 | Claude | Add pet detail, contact address, account, password reset, and sign-in limit tasks, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: photo visibility, canceled links, and logout after reset, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: sixth-attempt limit and resolved photo message, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |

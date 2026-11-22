@@ -18,6 +18,7 @@
           {% if contact.phone %}{{ contact.phone }}{% endif %}
           {% if contact.phone and contact.email %} · {% endif %}
           {% if contact.email %}{{ contact.email }}{% endif %}
+          {% if contact.address %}<span class="contact-address">{{ contact.address }}</span>{% endif %}
         </span>
       </li>
       {% endfor %}

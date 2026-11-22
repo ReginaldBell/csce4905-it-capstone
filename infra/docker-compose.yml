@@ -26,6 +26,14 @@ services:
       DATABASE_URL: postgresql+psycopg2://petfinder:petfinder@db:5432/petfinder
       SECRET_KEY: dev-secret-key-change-me
       FLASK_DEBUG: "1"
+      APP_BASE_URL: ${APP_BASE_URL:-}
+      MAIL_BACKEND: ${MAIL_BACKEND:-console}
+      MAIL_HOST: ${MAIL_HOST:-}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-}
+      MAIL_USE_TLS: ${MAIL_USE_TLS:-true}
     ports:
       - "5000:5000"
     volumes:

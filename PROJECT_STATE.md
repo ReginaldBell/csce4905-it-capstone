@@ -1,6 +1,6 @@
 # Project State and Change Record
 
-**Updated:** November 4, 2026
+**Updated:** November 22, 2026
 
 **Application baseline:** [`main` at `4d51cc3`](https://github.com/ReginaldBell/csce4905-it-capstone/commit/4d51cc3848699165b77513cad5ea797fc35f97e7)
 
@@ -19,6 +19,10 @@ acceptance or production deployment.
 | Source branches for PRs #12–#20 | Deleted after merge | Recorded in the review/merge sessions |
 | Documentation | Sprint 2 catch-up recorded | Requirements, use cases, design, results, manuals, and this file |
 | Verification | Focused review cases passed | [Test plan](docs/3-construction/test-plan.md); no committed CI suite claimed |
+| Material 3 UI | Included in `sprint3/integration`; not merged or peer reviewed | Figma-based reskin of the missing-pet app, built on the nearby feed branch |
+| Local database | Community upgrade only | `flask upgrade-community` ran on `infra_pgdata` on November 21, 2026 after a `pg_dump` backup, with record counts unchanged. The Sprint 3 upgrade is in the backlog. |
+| Sprint 3 QA database | Upgraded November 22, 2026 | Isolated `petfinder-qa` PostgreSQL 16 database and photo volume. A backup was taken, `flask upgrade-sprint3` ran twice, and record counts stayed at 12 users, 25 pets, 24 reports, and 8 comments. Demo sign-in and the main Sprint 3 pages loaded at `http://127.0.0.1:5001`. |
+| Sprint 3 (November 7 to December 3, 2026) | Implemented on `sprint3/integration`, not merged; 180 automated tests passed; 22 of 27 Sprint 3 test cases passed on November 22, 2026; TC-604, TC-605, TC-607, TC-609, and TC-1014 remain Not run | [Sprint 3 plan](docs/project-management/sprint-3-plan.md): photo privacy, pet and contact details, account updates and recovery, usability; backlog holds real email delivery, the existing database upgrade, and filing and tip limits; later MVP work is mapped to Sprints 4-6; owners and board entries are _TBD_ |
 | Sponsor acceptance / final course delivery | _TBD_ | No acceptance sign-off established in the review record |
 | Production hosting, operating owner, support | _TBD_ | Local development configuration exists |
 
@@ -85,13 +89,21 @@ evidence; these entries describe the delivered baseline, not unapproved future w
 
 | Item | Next action | Current evidence |
 |---|---|---|
-| Repeatable tests / CI | Turn recorded cases into a maintained suite and pipeline | Review harnesses were temporary; no committed suite in this baseline |
+| Repeatable tests / CI | Turn recorded cases into a maintained suite and pipeline | No suite on `main`. `sprint3/integration` has 180 automated tests, all passing at `1724829`; CI is not set up |
 | Sponsor-facing scope / approval | Complete vision, confirm requirements, record acceptance | _TBD_ |
 | Production operation | Choose hosting, secrets, backup/restore owner, support, and deployment process | _TBD_; local Compose only |
 | Browser coverage | Exercise clipboard permission/failure paths and a defined browser matrix | Handlers inspected; not a browser certification |
 | Print coverage | Retest supported page/printer settings and representative content | Specific Chrome long-notes repro is one page; arbitrary layouts not certified |
 | Time fallback | Decide whether missing/non-numeric offsets should continue to mean UTC | Currently zero offset; JavaScript needed for automatic local conversion |
-| Uploaded media policy | Confirm future access and retention requirements | Static photo URLs remain directly accessible, inherited from earlier code |
+| Uploaded media policy | Confirm future access and retention requirements | On `main`, uploaded photo URLs are directly accessible. On the Sprint 3 branch, they are access-checked, and TC-107 passed on November 22, 2026: owners keep access, and non-owners need a shared, open report |
+| Sprint 3 verification | Finish the 5 remaining cases | November 22, 2026: 22 Pass, 0 open failures, 5 Not run. TC-604 needs Safari; the project owner reported Firefox passing. TC-605, TC-607, TC-609, and TC-1014 depend on features now in the Sprint 4 bucket. See the [test plan](docs/3-construction/test-plan.md#9-sprint-3-test-cases) |
+| Sprint 3 schema upgrade | Back up, then run `flask upgrade-sprint3` on the intended database | Not recorded as run on a shared or deployed database |
+| Sprint 3 mail configuration | Choose provider and sending address; set `APP_BASE_URL` and SMTP values outside the repository | Provider _TBD_; Compose passes `APP_BASE_URL` and `MAIL_*`; real email delivery is untested and in the backlog |
+| Sprint 3 partial cases | Keep TC-607, TC-609, and TC-1014 open until tips and filing limits exist | Project owner approved November 21, 2026; outcomes stay Not run until each full procedure runs |
+| Material 3 design fidelity | Compare against exact Figma specs when plan limits allow | Built from Figma layout sizes, an overview screenshot, dialog specs, and Material 3 baseline tokens; not a verified pixel match |
+| Material 3 UI verification | Commit, review, and merge the branch, then repeat on the target environment | November 21, 2026: 26 unit tests passed; disposable PostgreSQL upgrade from `4d51cc3` kept records; Chrome checked photos, map, settings, and a one-page flyer; signed-in pages loaded on the upgraded local database; the project owner reported a hands-on local test with no problems (individual cases not itemized) |
+| Backup restore | Test restoring the November 21, 2026 local dump in an isolated database | Dump created and checked as complete; restore not tested; uploaded photos are not in the dump |
+| Adoption alerts | Decide whether notifications are in scope | Design-only setting; omitted because the app has no notification system |
 
 These are follow-up work or recorded limits, not unresolved blockers left on the
 merged Sprint 2 PRs. Assignees, deadlines, production status, and sponsor decisions
@@ -111,3 +123,13 @@ remain unassigned unless explicitly established.
 | Date | Author | Summary |
 |---|---|---|
 | 2026-11-04 | Codex | Establish living project state, Sprint 2 change/decision index, and pending-work register. |
+| 2026-11-21 | Claude | Record the unmerged Material 3 UI branch, its verification evidence, and remaining design and scope items. |
+| 2026-11-21 | Claude | Record the local database upgrade, backup limits, and the project owner's local test. |
+| 2026-11-21 | Claude | Add the planned Sprint 3 MVP production-readiness work. |
+| 2026-11-21 | Claude | Align Sprint 3 status to the team's official requirements. |
+| 2026-11-21 | Claude | Record Sprint 3 work implemented on `sprint3/integration`, not merged, its open items, and the corrected photo access statement. |
+| 2026-11-21 | Claude | Apply contract Addenda A and B: mail status, photo rule, and partial cases, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-22 | Claude | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
+| 2026-11-22 | Claude | Move report editing, private tips, the public report page, and filing and tip limits into the Sprint 4 bucket. |

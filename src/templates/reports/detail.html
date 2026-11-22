@@ -22,7 +22,8 @@
 <h2>Change status</h2>
 <form class="inline-form status-form" method="post" action="{{ url_for('reports.update_report_status', report_id=report.id) }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-  <select name="status">
+  <label class="visually-hidden" for="report-status">Report status</label>
+  <select id="report-status" name="status">
     {% for choice in statuses %}
     <option value="{{ choice }}" {% if choice == report.status %}selected{% endif %}>{{ choice | capitalize }}</option>
     {% endfor %}
@@ -45,12 +46,27 @@
 </ul>
 
 <h2>Outputs</h2>
-<p>
+<div class="action-grid">
   <a class="btn btn-secondary" href="{{ url_for('outputs.pick_email_contact', report_id=report.id) }}">Email an agency</a>
   <a class="btn btn-secondary" href="{{ url_for('outputs.pick_phone_contact', report_id=report.id) }}">Generate phone script</a>
   <a class="btn btn-secondary" href="{{ url_for('outputs.social_post_preview', report_id=report.id) }}">Generate social post</a>
   <a class="btn btn-secondary" href="{{ url_for('outputs.flyer_preview', report_id=report.id) }}">Printable flyer</a>
-</p>
+</div>
+
+<h2>Community</h2>
+{% if report.is_shared %}
+<p>This report is shared. Only open reports appear in the Nearby feed.</p>
+<p><a href="{{ url_for('community.view_post', report_id=report.id) }}">View community post and comments</a></p>
+{% endif %}
+{% if report.status == 'open' and report.pets %}
+<p><a class="btn btn-secondary" href="{{ url_for('community.share_report', report_id=report.id) }}">{{ 'Edit community post' if report.is_shared else 'Share with community' }}</a></p>
+{% endif %}
+{% if report.is_shared %}
+<form method="post" action="{{ url_for('community.unshare_report', report_id=report.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <button class="btn btn-secondary" type="submit">Stop sharing</button>
+</form>
+{% endif %}
 
 <p><a href="{{ url_for('reports.list_reports') }}">&larr; Back to reports</a></p>
 {% endblock %}

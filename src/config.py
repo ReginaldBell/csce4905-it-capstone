@@ -1,6 +1,13 @@
 import os
 
 
+def _env_int(name, default):
+    try:
+        return int(os.environ.get(name, default))
+    except ValueError:
+        return default
+
+
 class Config:
     """Application configuration, read from environment variables so the
     same image runs in dev (docker compose) and later environments without
@@ -28,3 +35,27 @@ class Config:
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024
     ALLOWED_PHOTO_EXTENSIONS = {"jpg", "jpeg", "png"}
     ALLOWED_PHOTO_MIMETYPES = {"image/jpeg", "image/png"}
+
+    # Password reset. APP_BASE_URL (for example https://pets.example.test) is
+    # required outside debug/testing, so links never trust the Host header.
+    PASSWORD_RESET_TTL_MINUTES = _env_int("PASSWORD_RESET_TTL_MINUTES", 60)
+    APP_BASE_URL = os.environ.get("APP_BASE_URL", "")
+
+    # Mail: console (default, debug/testing only), memory (tests), or smtp.
+    MAIL_BACKEND = os.environ.get("MAIL_BACKEND") or "console"
+    MAIL_HOST = os.environ.get("MAIL_HOST") or "localhost"
+    MAIL_PORT = _env_int("MAIL_PORT", 587)
+    MAIL_USERNAME = os.environ.get("MAIL_USERNAME", "")
+    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD", "")
+    MAIL_FROM = os.environ.get("MAIL_FROM") or "no-reply@petfinder.example.test"
+    MAIL_USE_TLS = (os.environ.get("MAIL_USE_TLS") or "true").lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+
+    # Request limits (NF14).
+    LOGIN_LIMIT = _env_int("LOGIN_LIMIT", 5)
+    LOGIN_WINDOW_SECONDS = _env_int("LOGIN_WINDOW_SECONDS", 900)
+    RESET_LIMIT = _env_int("RESET_LIMIT", 3)
+    RESET_WINDOW_SECONDS = _env_int("RESET_WINDOW_SECONDS", 3600)

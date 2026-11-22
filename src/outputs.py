@@ -35,6 +35,14 @@ def _owned_contacts():
     )
 
 
+def _owner_contact_text():
+    """The owner's email, plus their phone when saved. Used only in private
+    generated outputs, never on community pages."""
+    if current_user.phone:
+        return f"{current_user.email} or {current_user.phone}"
+    return current_user.email
+
+
 def _pet_list_text(report):
     pets = report.pets
     if not pets:
@@ -80,7 +88,7 @@ def build_agency_email(report):
         lines.append(f"Additional details: {report.notes}")
     lines += [
         "",
-        f"Please contact me at {current_user.email} with any information.",
+        f"Please contact me at {_owner_contact_text()} with any information.",
         "",
         "Thank you for your help.",
     ]
@@ -114,7 +122,7 @@ def build_phone_script(report, contact):
         "Could you let me know if you have anything on file matching this "
         "description, or what steps I should take next?",
         "",
-        f"You can reach me at {current_user.email} if you need to follow up.",
+        f"You can reach me at {_owner_contact_text()} if you need to follow up.",
         "",
         "Thank you for your time.",
     ]
@@ -144,7 +152,7 @@ def build_social_post(report):
         lines.append(report.notes)
     lines += [
         "",
-        f"If you have any information, please contact {current_user.email}.",
+        f"If you have any information, please contact {_owner_contact_text()}.",
         "",
         "#MissingPet #LostAndFound #PetFinder",
     ]
@@ -304,4 +312,5 @@ def flyer_preview(report_id):
         pet_names=pet_names,
         species_text=species_text,
         flyer_notes=flyer_notes,
+        owner_contact=_owner_contact_text(),
     )

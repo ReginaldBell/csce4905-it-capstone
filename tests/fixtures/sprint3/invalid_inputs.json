@@ -1,0 +1,45 @@
+{
+  "pet": [
+    {"id": "sex_not_allowed", "field": "sex", "value": "other"},
+    {"id": "height_zero", "field": "height_inches", "value": "0"},
+    {"id": "height_negative", "field": "height_inches", "value": "-1"},
+    {"id": "height_over_max", "field": "height_inches", "value": "120.5"},
+    {"id": "height_text", "field": "height_inches", "value": "tall"},
+    {"id": "height_nan", "field": "height_inches", "value": "nan"},
+    {"id": "height_inf", "field": "height_inches", "value": "inf"},
+    {"id": "weight_zero", "field": "weight_lbs", "value": "0"},
+    {"id": "weight_over_max", "field": "weight_lbs", "value": "500.1"},
+    {"id": "weight_nan", "field": "weight_lbs", "value": "nan"},
+    {"id": "colors_too_long", "field": "colors", "value": {"repeat": "c", "times": 101}},
+    {"id": "markings_too_long", "field": "markings", "value": {"repeat": "m", "times": 256}},
+    {"id": "chip_status_not_allowed", "field": "microchip_status", "value": "maybe"},
+    {"id": "chip_required", "field": "microchip_number", "value": "", "extra": {"microchip_status": "chipped"}},
+    {"id": "chip_too_short", "field": "microchip_number", "value": "ABC12345", "extra": {"microchip_status": "chipped"}},
+    {"id": "chip_too_long", "field": "microchip_number", "value": "ABCDEFGH12345678", "extra": {"microchip_status": "chipped"}},
+    {"id": "chip_punctuation", "field": "microchip_number", "value": "ABC-12345", "extra": {"microchip_status": "chipped"}}
+  ],
+  "contact": [
+    {"id": "name_blank", "field": "name", "value": ""},
+    {"id": "phone_invalid", "field": "phone", "value": "not-a-phone"},
+    {"id": "email_invalid", "field": "email", "value": "not-an-email"},
+    {"id": "address_too_long", "field": "address", "value": {"repeat": "a", "times": 256}}
+  ],
+  "account": [
+    {"id": "email_invalid", "field": "email", "value": "not-an-email"},
+    {"id": "phone_invalid", "field": "phone", "value": "not-a-phone"},
+    {"id": "display_name_too_long", "field": "display_name", "value": {"repeat": "d", "times": 51}}
+  ],
+  "unsafe_next": [
+    "https://evil.example.test/",
+    "http://evil.example.test/pets",
+    "//evil.example.test/pets",
+    "/\\evil.example.test",
+    "\\\\evil.example.test",
+    "/pets\\..\\evil",
+    "/pets\nSet-Cookie: x=1",
+    "/pets\r\nLocation: https://evil.example.test",
+    "/pets\tx",
+    "javascript:alert(1)"
+  ],
+  "safe_next": ["/contacts", "/settings", "/reports?status=open"]
+}

@@ -1,0 +1,7 @@
+{
+  "users": [
+    {"key": "owner", "email": "avery.owner@example.test", "password": "SyntheticPass101!", "display_name": "Avery", "full_name": "Avery Sample", "phone": "555-0101"},
+    {"key": "other", "email": "blake.other@example.test", "password": "SyntheticPass102!", "display_name": "Blake", "full_name": "Blake Sample", "phone": "555-0102"}
+  ],
+  "account_update": {"display_name": "Avery Updated", "full_name": "Avery Q. Sample", "phone": "555-0103", "email": "avery.updated@example.test"}
+}

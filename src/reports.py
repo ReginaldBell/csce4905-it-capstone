@@ -127,6 +127,12 @@ def new_report():
     values = {"last_seen_location": "", "last_seen_at": "", "notes": ""}
     selected_pet_ids = set()
 
+    if request.method == "GET":
+        # "Report missing" on a pet page; only the user's own pets can match.
+        requested_pet_id = request.args.get("pet_id", type=int)
+        if requested_pet_id in {pet.id for pet in pets}:
+            selected_pet_ids = {requested_pet_id}
+
     if request.method == "POST":
         errors, cleaned = _validate_report_form(request.form)
         values.update(request.form)

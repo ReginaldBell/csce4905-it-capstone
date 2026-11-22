@@ -1,0 +1,18 @@
+name: petfinder-qa
+
+services:
+  db:
+    ports: !reset []
+
+  web:
+    ports: !override
+      - "127.0.0.1:5001:5000"
+    volumes: !override
+      - type: volume
+        source: qa_uploads
+        target: /app/src/static/uploads
+        volume:
+          nocopy: true
+
+volumes:
+  qa_uploads:
