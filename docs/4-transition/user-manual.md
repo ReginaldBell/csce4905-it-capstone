@@ -27,11 +27,18 @@ the address is `http://localhost:5000` after following the
 2. Enter an email address, a password of at least eight characters, and the same password
    again to confirm it.
 3. On later visits, open **Log in** and enter your email and password.
-4. Use **Log out** in the navigation when you finish.
+4. Use the **Log out** icon at the top of the page, or **Log out** in **Settings**, when
+   you finish.
 
-The navigation provides **My Pets**, **Reports**, and **Contacts**. Messages above the
-page explain completed actions or errors. A submitted form with invalid information
-stays open and shows the fields to correct.
+The navigation provides **Nearby**, **My Pets**, **Reports**, **Contacts**, and
+**Settings**. It appears along the bottom on phones and along the left side on larger
+screens. Messages above the page explain completed actions or errors. A submitted form
+with invalid information stays open and shows the fields to correct.
+
+In **Settings**, **Dark theme**, **Larger text**, and **Search radius** are saved in the
+current browser and do not follow you to another device. **Display name** is saved to
+your account and appears on your community posts and comments. Printed flyers always
+use their standard light layout.
 
 ## 3. Maintain pet profiles
 
@@ -65,7 +72,8 @@ must be present.
 
 ## 5. File a missing-pet report
 
-1. Open **Reports**, then **File a report**.
+1. Open **Reports**, then **File a report**. You can also choose **Report missing** on
+   a pet's page, which selects that pet for you.
 2. Select one or more of your pets. If you have none, Pet Finder takes you to the
    add-pet form first.
 3. Enter the required last-seen location, using no more than 255 characters.
@@ -189,3 +197,4 @@ time of the problem. Do not include your password.
 |---|---|---|
 | _TBD_ | _TBD_ | Initial draft template |
 | 2026-11-04 | Codex | Documented delivered Sprint 2 workflows, validation, UTC behavior, generated outputs, flyer excerpt, stale reminder, and troubleshooting. |
+| 2026-11-21 | Claude | Documented the Material 3 navigation, Settings, and Report missing shortcut on the unmerged UI branch. |

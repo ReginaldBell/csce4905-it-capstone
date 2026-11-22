@@ -42,7 +42,10 @@ of latest package releases. Docker/Compose are required for the documented setup
 | `src/reports.py` | Report creation, timezone normalization, status/history |
 | `src/outputs.py` | Email, phone, social, flyer; shared guards and contact picker |
 | `src/templates/` | Jinja pages extending base.html |
+| `src/settings.py` | Settings page and display-name updates |
 | `src/static/css/app.css` | Shared screen styles and flyer print rules |
+| `src/static/css/material.css` | Material 3 tokens, app shell, dark theme, and larger text |
+| `src/static/js/preferences.js` | Browser-saved theme, text size, and default search radius |
 | `src/static/uploads/` | Runtime photos, ignored by Git except .gitkeep |
 | `infra/docker-compose.yml` | Local database/web services and persistence |
 
@@ -53,8 +56,13 @@ From the repository root:
 ```bash
 docker compose -f infra/docker-compose.yml up --build -d
 docker compose -f infra/docker-compose.yml exec web flask init-db
+docker compose -f infra/docker-compose.yml exec web flask upgrade-community
 docker compose -f infra/docker-compose.yml ps
 ```
+
+`flask upgrade-community` is required for a database created before the nearby feed.
+It adds the missing columns, keeps existing records, and is safe to run again. Back up
+any database holding data you need before running a schema change.
 
 Open `http://localhost:5000/login` and register a test account. The application
 has no `/` landing route. The web container starts Flask with `FLASK_APP=app.py`.
@@ -115,6 +123,19 @@ Backup frequency, responsible owner, retention period, restore target, and teste
 restore procedure are _TBD_. A future procedure should capture a PostgreSQL dump
 and the matching upload files, then verify restoration in an isolated environment.
 Do not claim a backup exists or is restorable without testing it.
+
+To take a manual database dump before a schema change, run this from the repository
+root while the services are up:
+
+```bash
+docker compose -f infra/docker-compose.yml exec db pg_dump -U petfinder -f /tmp/petfinder-backup.sql petfinder
+docker compose -f infra/docker-compose.yml cp db:/tmp/petfinder-backup.sql ../petfinder-backup.sql
+```
+
+In Git Bash on Windows, run `export MSYS_NO_PATHCONV=1` first so `/tmp` is not
+rewritten to a Windows path. Confirm the file ends with `PostgreSQL database dump
+complete`. The dump holds account data, so keep it out of the repository. It does
+not include uploaded photos, and restoring it has not been tested.
 
 ## 5. Configuration
 
@@ -190,6 +211,7 @@ Temporary review harnesses are not a committed test suite or CI pipeline.
 | Symptom | Check / action |
 |---|---|
 | Relation/table missing after upgrade | Verify database target and run additive init-db; investigate migrations if existing columns changed. |
+| Login or pages fail with a missing-column error | Run `flask upgrade-community` against the intended database. |
 | Photo URL 404 | Check stored photo_path and corresponding upload file; database restoration alone is insufficient. |
 | Wrong report time | Check selected-date timezone script, offset sign/bounds, browser timezone, and zero-offset fallback. |
 | Empty report output redirects | Expected after all linked pets were deleted; retain report/history and shared guard. |
@@ -221,3 +243,5 @@ once one exists.
 |---|---|---|
 | _TBD_ | _TBD_ | Initial draft template |
 | 2026-11-04 | Codex | Document Sprint 2 setup, data lifecycle, configuration, preservation rules, verification, and operational limits. |
+| 2026-11-21 | Claude | Add the community upgrade step and Material 3 UI files for the unmerged UI branch. |
+| 2026-11-21 | Claude | Add the manual pre-upgrade backup procedure and its limits. |

@@ -280,6 +280,9 @@ passed. Independent #17/#18/#20 merged while #19's print defect was being fixed.
 | 2026-11-04 | #18 / `f2615b1` | TC-S2-08, 11, 12 | Passed SQLite/Flask text/download/isolation checks and combined-tree recheck |
 | 2026-11-04 | #20 / `a6e6783` | TC-S2-10, 11, 12 | Passed SQLite/Flask exact-cutoff, login and CSRF checks |
 | 2026-11-04 | #19 / `4d51cc3` | TC-S2-09, 11, 12 | Final SQLite/Flask and Chrome PDFs passed; full notes retained outside flyer |
+| 2026-11-21 | Uncommitted `feature/material3-ui` | `tests/` suite; UI smoke checks | 26 unit tests passed. Disposable PostgreSQL upgrade from `4d51cc3` kept records. Chrome checked photos, map, settings persistence, 412/768 px layouts, and a one-page flyer |
+| 2026-11-21 | Uncommitted `feature/material3-ui`, local `infra_pgdata` | Upgrade and read-only page checks | Dump created first; record counts matched after `init-db` and `upgrade-community`; signed-in list, form, pet, report, and Settings pages returned 200 |
+| 2026-11-21 | Uncommitted `feature/material3-ui`, local app | Project-owner manual test | Owner reported everything working; individual cases were not itemized |
 
 Rows summarize coverage, not assertion counts or a claim that every case was
 re-run on every merge commit. Reviews used relevant PR heads/reconciled trees
@@ -287,8 +290,9 @@ before merging; PR threads retain findings and re-review context.
 
 ## 8. Validation limits and remaining work
 
-- No committed automated regression suite or CI execution was established by this
-  review work. Convert these cases to maintained tests in a later change.
+- No committed automated regression suite or CI execution was established by the
+  Sprint 2 review work. The `feature/material3-ui` working tree has unit tests, but
+  they are not merged and do not yet cover every case above.
 - Copy handlers were inspected; browser clipboard permission/interaction was not
   exercised. External mail-client behavior and actual delivery were not tested;
   this app generates text/mailto links and does not send mail.
@@ -304,3 +308,4 @@ before merging; PR threads retain findings and re-review context.
 |---|---|---|
 | _TBD_ | _TBD_ | Initial draft template |
 | 2026-11-04 | Codex | Recorded Sprint 2 regression procedures, traceability, historical evidence, resolved defects and validation limits through `4d51cc3` |
+| 2026-11-21 | Claude | Recorded Material 3 UI, local database upgrade, and project-owner test evidence |

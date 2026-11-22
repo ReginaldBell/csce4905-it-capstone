@@ -1,34 +1,52 @@
+{% from '_icons.html' import icon %}
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Pet Finder{% endblock %}</title>
+  <script src="{{ url_for('static', filename='js/preferences.js') }}"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/material.css') }}">
   {% block styles %}{% endblock %}
 </head>
-<body>
+<body{% if current_user.is_authenticated %} class="has-nav"{% endif %}>
+  <a class="skip-link" href="#main-content">Skip to content</a>
   <header class="site-header">
-    <a class="brand" href="{{ url_for('pets.list_pets') if current_user.is_authenticated else url_for('auth.login') }}">Pet Finder</a>
-    <nav class="site-nav">
+    <a class="brand" href="{{ url_for('community.feed') if current_user.is_authenticated else url_for('auth.login') }}">{{ icon('pets') }}Pet Finder</a>
+    <div class="site-nav">
       {% if current_user.is_authenticated %}
-        <a href="{{ url_for('pets.list_pets') }}">My Pets</a>
-        <a href="{{ url_for('reports.list_reports') }}">Reports</a>
-        <a href="{{ url_for('community.feed') }}">Nearby</a>
-        <a href="{{ url_for('contacts.list_contacts') }}">Contacts</a>
         <span class="user-email">{{ current_user.email }}</span>
         <form class="inline-form" method="post" action="{{ url_for('auth.logout') }}">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" class="link-button">Log out</button>
+          <button type="submit" class="icon-button" aria-label="Log out" title="Log out">{{ icon('logout') }}</button>
         </form>
       {% else %}
         <a href="{{ url_for('auth.login') }}">Log in</a>
         <a href="{{ url_for('auth.register') }}">Register</a>
       {% endif %}
-    </nav>
+    </div>
   </header>
 
-  <main class="container">
+  {% if current_user.is_authenticated %}
+  {% set section = 'reports' if request.blueprint == 'outputs' else request.blueprint %}
+  <nav class="nav-bar" aria-label="Main">
+    {% for key, endpoint, label, icon_name in [
+      ('community', 'community.feed', 'Nearby', 'home'),
+      ('pets', 'pets.list_pets', 'My Pets', 'pets'),
+      ('reports', 'reports.list_reports', 'Reports', 'report'),
+      ('contacts', 'contacts.list_contacts', 'Contacts', 'call'),
+      ('settings', 'settings.view_settings', 'Settings', 'settings')
+    ] %}
+    <a class="nav-item" href="{{ url_for(endpoint) }}"{% if section == key %} aria-current="page"{% endif %}>
+      <span class="nav-indicator">{{ icon(icon_name) }}</span>
+      <span>{{ label }}</span>
+    </a>
+    {% endfor %}
+  </nav>
+  {% endif %}
+
+  <main class="container" id="main-content" tabindex="-1">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         <ul class="flash-messages">

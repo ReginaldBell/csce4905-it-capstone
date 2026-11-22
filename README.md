@@ -29,13 +29,16 @@ Install Docker with Compose, then run from the repository root:
 ```bash
 docker compose -f infra/docker-compose.yml up --build -d
 docker compose -f infra/docker-compose.yml exec web flask init-db
+docker compose -f infra/docker-compose.yml exec web flask upgrade-community
 ```
 
 Open [the login page](http://localhost:5000/login) and register an account. There is
 no application landing route at `/`; use `/login`, `/pets`, or `/reports`.
 
 `flask init-db` creates missing tables; it does not clear data or migrate existing
-columns. The database uses a named volume; photos live in `src/static/uploads/`.
+columns. `flask upgrade-community` adds the nearby-feed columns to an older database,
+keeps existing records, and is safe to run again. The database uses a named volume;
+photos live in `src/static/uploads/`.
 See the [maintenance manual](docs/4-transition/maintenance-manual.md) before changing
 the environment. The supplied Compose configuration is for local development.
 
@@ -45,6 +48,7 @@ the environment. The supplied Compose configuration is for local development.
 |---|---|
 | [Project state](PROJECT_STATE.md) | Living status, change/decision index, pending work, and update rules |
 | [Sprint 2 record](docs/project-management/sprint-2-record.md) | Delivery ledger, design decisions, dependencies, fixes, and verification limits |
+| [Sprint 3 plan](docs/project-management/sprint-3-plan.md) | Official Sprint 3 scope, later MVP work by target sprint, and open decisions |
 | [Documentation index](docs/README.md) | Lifecycle document map |
 | [Requirements](docs/1-inception/requirements-srs.md) | Delivered requirements and traceability; sponsor approval pending |
 | [Use cases](docs/2-elaboration/use-case-model.md) | User workflows and alternate flows |
@@ -96,3 +100,4 @@ from approved requirements.
 | Date | Author | Summary |
 |---|---|---|
 | 2026-11-04 | Reginad Bell | Document delivered Sprint 2 features, local setup, project-state links, and verification scope. |
+| 2026-11-21 | Claude | Add the community upgrade step and link the Sprint 3 plan. |

@@ -29,7 +29,9 @@ See [requirements](../1-inception/requirements-srs.md),
 | `contacts.py` | Owned contact CRUD, grouping, inline validation |
 | `reports.py` | Owned reports, selected-pet filtering, UTC normalization, status/history |
 | `outputs.py` | On-demand email/phone/social/flyer content; shared owned-contact picker and empty-pets guard |
+| `settings.py` | Unmerged UI branch: Settings page and validated display-name updates |
 | `templates/` and `static/css/app.css` | Server-rendered screens, shared navigation, output copy/print styles |
+| `static/css/material.css`, `static/js/preferences.js` | Unmerged UI branch: Material 3 shell, screen-only dark and larger-text themes, and browser-saved theme, text, and radius preferences |
 | `static/uploads/` | Runtime pet photos served by Flask static URLs |
 
 Flask-WTF CSRF protection is initialized for the application. Output GETs are
@@ -83,6 +85,9 @@ migrations, or backfill earlier status history. PostgreSQL uses the Compose
 `pgdata` volume; image files live separately under `src/static/uploads/`.
 Retention, production backups, and recovery objectives remain _TBD_.
 
+On the nearby feed and UI branches, `flask upgrade-community` adds the feed columns
+to an older database, keeps existing records, and is safe to run again.
+
 ## 4. Application interfaces
 
 `<id>` below denotes an integer path ID. All routes in these tables require login.
@@ -95,7 +100,7 @@ Retention, production backups, and recovery objectives remain _TBD_.
 | `/contacts/<id>/edit` | GET, POST | Form / validated update |
 | `/contacts/<id>/delete` | GET, POST | Confirmation / deletion |
 | `/reports` | GET | Owned reports, newest creation first |
-| `/reports/new` | GET, POST | Form / create report, links, initial event; zero-pets redirect |
+| `/reports/new` | GET, POST | Form / create report, links, initial event; zero-pets redirect; on the UI branch, GET `?pet_id=` preselects an owned pet |
 | `/reports/<id>` | GET | Detail, history, status form, output links |
 | `/reports/<id>/status` | POST | Validated transition or no-op |
 | `/reports/<id>/email` | GET | Owned-contact picker |
@@ -104,6 +109,7 @@ Retention, production backups, and recovery objectives remain _TBD_.
 | `/reports/<id>/phone-script/<contact_id>` | GET | Phone script and number/fallback |
 | `/reports/<id>/social-post` | GET | Caption and photo download links |
 | `/reports/<id>/flyer` | GET | Printable flyer with notes excerpt |
+| `/settings` | GET, POST | Unmerged UI branch: preferences page / display-name update |
 
 Existing `/register` and `/login` are GET/POST; `/logout` is a protected POST.
 Existing pet CRUD remains under `/pets`. There is no new application root route
@@ -196,3 +202,4 @@ in the [test plan](../3-construction/test-plan.md).
 |---|---|---|
 | _TBD_ | _TBD_ | Initial draft template |
 | 2026-11-04 | Codex | Document implemented Sprint 2 components, schema, routes, lifecycle, security, UTC rules, and decisions. |
+| 2026-11-21 | Claude | Add Material 3 UI components, Settings route, report preselect, and the community upgrade command for the unmerged UI branch. |

@@ -1,6 +1,6 @@
 # Project State and Change Record
 
-**Updated:** November 4, 2026
+**Updated:** November 21, 2026
 
 **Application baseline:** [`main` at `4d51cc3`](https://github.com/ReginaldBell/csce4905-it-capstone/commit/4d51cc3848699165b77513cad5ea797fc35f97e7)
 
@@ -19,6 +19,9 @@ acceptance or production deployment.
 | Source branches for PRs #12–#20 | Deleted after merge | Recorded in the review/merge sessions |
 | Documentation | Sprint 2 catch-up recorded | Requirements, use cases, design, results, manuals, and this file |
 | Verification | Focused review cases passed | [Test plan](docs/3-construction/test-plan.md); no committed CI suite claimed |
+| Material 3 UI | Implemented on `feature/material3-ui` and tested locally by the project owner; uncommitted, not merged or peer reviewed | Figma-based reskin of the missing-pet app, built on the nearby feed branch |
+| Local database | Upgraded November 21, 2026 | `flask upgrade-community` ran on the local `infra_pgdata` database after a `pg_dump` backup; record counts matched before and after |
+| Sprint 3 (November 7 to December 3, 2026) | In progress; 27 assigned test cases Not run | [Sprint 3 plan](docs/project-management/sprint-3-plan.md): photo privacy, pet and contact details, account updates and recovery, usability; later MVP work is mapped to Sprints 4-6; owners and board entries are _TBD_ |
 | Sponsor acceptance / final course delivery | _TBD_ | No acceptance sign-off established in the review record |
 | Production hosting, operating owner, support | _TBD_ | Local development configuration exists |
 
@@ -92,6 +95,10 @@ evidence; these entries describe the delivered baseline, not unapproved future w
 | Print coverage | Retest supported page/printer settings and representative content | Specific Chrome long-notes repro is one page; arbitrary layouts not certified |
 | Time fallback | Decide whether missing/non-numeric offsets should continue to mean UTC | Currently zero offset; JavaScript needed for automatic local conversion |
 | Uploaded media policy | Confirm future access and retention requirements | Static photo URLs remain directly accessible, inherited from earlier code |
+| Material 3 design fidelity | Compare against exact Figma specs when plan limits allow | Built from Figma layout sizes, an overview screenshot, dialog specs, and Material 3 baseline tokens; not a verified pixel match |
+| Material 3 UI verification | Commit, review, and merge the branch, then repeat on the target environment | November 21, 2026: 26 unit tests passed; disposable PostgreSQL upgrade from `4d51cc3` kept records; Chrome checked photos, map, settings, and a one-page flyer; signed-in pages loaded on the upgraded local database; the project owner reported a hands-on local test with no problems (individual cases not itemized) |
+| Backup restore | Test restoring the November 21, 2026 local dump in an isolated database | Dump created and checked as complete; restore not tested; uploaded photos are not in the dump |
+| Adoption alerts | Decide whether notifications are in scope | Design-only setting; omitted because the app has no notification system |
 
 These are follow-up work or recorded limits, not unresolved blockers left on the
 merged Sprint 2 PRs. Assignees, deadlines, production status, and sponsor decisions
@@ -111,3 +118,7 @@ remain unassigned unless explicitly established.
 | Date | Author | Summary |
 |---|---|---|
 | 2026-11-04 | Codex | Establish living project state, Sprint 2 change/decision index, and pending-work register. |
+| 2026-11-21 | Claude | Record the unmerged Material 3 UI branch, its verification evidence, and remaining design and scope items. |
+| 2026-11-21 | Claude | Record the local database upgrade, backup limits, and the project owner's local test. |
+| 2026-11-21 | Claude | Add the planned Sprint 3 MVP production-readiness work. |
+| 2026-11-21 | Claude | Align Sprint 3 status to the team's official requirements. |

@@ -15,6 +15,7 @@ from models import Pet, Report, ReportPet, User
 from outputs import outputs_bp
 from pets import pets_bp
 from reports import reports_bp
+from settings import settings_bp
 
 
 def create_app(config_class=Config):
@@ -38,6 +39,7 @@ def create_app(config_class=Config):
     app.register_blueprint(contacts_bp)
     app.register_blueprint(outputs_bp)
     app.register_blueprint(community_bp)
+    app.register_blueprint(settings_bp)
     app.cli.add_command(upgrade_community_command)
     app.cli.add_command(seed_community_demo_command)
 
