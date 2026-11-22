@@ -15,6 +15,7 @@ from community import _distance_miles
 from config import Config
 from extensions import db
 from models import Contact, Pet, Report, ReportComment, ReportPet, User
+from signing_clock import use_stable_signing_clock
 
 
 class TestConfig(Config):
@@ -27,6 +28,7 @@ class TestConfig(Config):
 
 class CommunityTests(unittest.TestCase):
     def setUp(self):
+        use_stable_signing_clock(self)
         self.files = tempfile.TemporaryDirectory()
         self.app = create_app(TestConfig)
         self.app.static_folder = self.files.name
@@ -370,6 +372,7 @@ class CommunityTests(unittest.TestCase):
 
 class CommunityDemoTests(unittest.TestCase):
     def setUp(self):
+        use_stable_signing_clock(self)
         self.files = tempfile.TemporaryDirectory()
         self.app = create_app(TestConfig)
         self.app.static_folder = self.files.name

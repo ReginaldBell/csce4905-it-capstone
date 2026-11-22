@@ -24,6 +24,7 @@ from extensions import db
 from models import Contact, Pet, User
 
 import sprint3_data
+from signing_clock import use_stable_signing_clock
 
 PNG_BYTES = b"\x89PNG\r\n\x1a\n" + b"sprint3 synthetic image"
 MISSING = object()
@@ -157,6 +158,7 @@ class Sprint3TestCase(unittest.TestCase):
         cls.reset_cases = cls.fixtures["password_reset_cases"]
 
     def setUp(self):
+        use_stable_signing_clock(self)
         self.files = tempfile.TemporaryDirectory()
         self.app = create_app(Sprint3Config)
         self.app.static_folder = self.files.name

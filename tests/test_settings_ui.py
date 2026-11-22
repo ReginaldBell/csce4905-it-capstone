@@ -13,6 +13,7 @@ from app import create_app
 from config import Config
 from extensions import db
 from models import Pet, User
+from signing_clock import use_stable_signing_clock
 
 
 class TestConfig(Config):
@@ -23,6 +24,7 @@ class TestConfig(Config):
 
 class SettingsUiTests(unittest.TestCase):
     def setUp(self):
+        use_stable_signing_clock(self)
         self.files = tempfile.TemporaryDirectory()
         self.app = create_app(TestConfig)
         self.app.config["UPLOAD_FOLDER"] = str(Path(self.files.name) / "uploads")
