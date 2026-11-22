@@ -1,9 +1,9 @@
 # User Manual
 
-**Phase:** Transition | **Status:** Sprint 2 implementation documented; Sprint 3 tasks implemented on `sprint3/integration`, not merged; sponsor acceptance _TBD_ | **Owner:** _TBD_ | **Audience:** end users
+**Phase:** Transition | **Status:** Sprint 2 implementation documented; Sprint 3 tasks merged to `main` through PRs #24 and #25; not deployed; sponsor acceptance _TBD_ | **Owner:** _TBD_ | **Audience:** end users
 
-This manual describes Pet Finder as delivered through Sprint 2 at commit `4d51cc3` on
-November 4, 2026. The [Sprint 2 record](../project-management/sprint-2-record.md)
+Sections 1-13 describe Pet Finder as delivered through Sprint 2 at commit `4d51cc3` on
+November 4, 2026. Section 14 covers Sprint 3 tasks. The [Sprint 2 record](../project-management/sprint-2-record.md)
 contains the implementation decisions, review fixes, and merged pull requests.
 
 ## 1. What Pet Finder does
@@ -193,8 +193,8 @@ time of the problem. Do not include your password.
 
 ## 14. Sprint 3 tasks
 
-The tasks in this section are implemented on `sprint3/integration`, not merged.
-They are not available on `main` yet.
+The tasks in this section are merged to `main` through PRs #24 and #25.
+The app is not deployed or sponsor accepted.
 
 ### Add more pet details
 
@@ -243,6 +243,17 @@ Wait 15 minutes and try again. Password reset
 requests are limited to 3 per hour; extra requests show the normal message but do not
 send another email.
 
+### Pending account and comment fixes
+
+These fixes are awaiting integration and verification, so they may not be in the version
+you are using:
+
+- Registration will show a field error for an email address that is too long.
+- A very small pet measurement will keep its exact decimal value when you edit the pet.
+- If a report stops being shared, you will be able to delete your own comment from
+  **Your comments on unshared reports** on the community page. Other people still cannot
+  see that post or its comments.
+
 ### Sprint 3 troubleshooting
 
 | Problem | What to do |
@@ -265,3 +276,5 @@ send another email.
 | 2026-11-21 | Claude | Apply contract Addenda A and B: photo visibility, canceled links, and logout after reset, implemented on `sprint3/integration`, not merged. |
 | 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: sixth-attempt limit and resolved photo message, implemented on `sprint3/integration`, not merged. |
 | 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | IT Capstone Team (B) | Note pending registration, measurement, and comment deletion fixes. |
+| 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. Add the P7 entry point. |

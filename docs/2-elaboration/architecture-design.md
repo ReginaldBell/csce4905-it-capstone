@@ -1,8 +1,8 @@
 # Architecture and Design
 
-**Phase:** Elaboration | **Status:** Sprint 2 implementation documented; Sprint 3 design implemented on `sprint3/integration`, not merged
+**Phase:** Elaboration | **Status:** Sprint 2 implementation documented; Sprint 3 design merged to `main` through PRs #24 and #25; not deployed
 
-**Owner:** _TBD_ | **Baseline:** `4d51cc3`, November 4, 2026
+**Owner:** _TBD_ | **Baseline:** Sprint 2 at `4d51cc3`, November 4, 2026; current `main` reviewed at `8038dc8`, including Sprint 3
 
 ## 1. Scope and structure
 
@@ -29,9 +29,9 @@ See [requirements](../1-inception/requirements-srs.md),
 | `contacts.py` | Owned contact CRUD, grouping, inline validation |
 | `reports.py` | Owned reports, selected-pet filtering, UTC normalization, status/history |
 | `outputs.py` | On-demand email/phone/social/flyer content; shared owned-contact picker and empty-pets guard |
-| `settings.py` | Unmerged UI branch: Settings page and validated display-name updates |
+| `settings.py` | Settings page and validated display-name updates |
 | `templates/` and `static/css/app.css` | Server-rendered screens, shared navigation, output copy/print styles |
-| `static/css/material.css`, `static/js/preferences.js` | Unmerged UI branch: Material 3 shell, screen-only dark and larger-text themes, and browser-saved theme, text, and radius preferences |
+| `static/css/material.css`, `static/js/preferences.js` | Material 3 shell, screen-only dark and larger-text themes, and browser-saved theme, text, and radius preferences |
 | `static/uploads/` | Runtime pet photos served by Flask static URLs |
 
 Flask-WTF CSRF protection is initialized for the application. Output GETs are
@@ -85,8 +85,8 @@ migrations, or backfill earlier status history. PostgreSQL uses the Compose
 `pgdata` volume; image files live separately under `src/static/uploads/`.
 Retention, production backups, and recovery objectives remain _TBD_.
 
-On the nearby feed and UI branches, `flask upgrade-community` adds the feed columns
-to an older database, keeps existing records, and is safe to run again. On `sprint3/integration`, it also adds `users.full_name`, `users.phone`,
+`flask upgrade-community` adds the feed columns
+to an older database, keeps existing records, and is safe to run again. For Sprint 3, it also adds `users.full_name`, `users.phone`,
 and `users.session_version`, because existing code loads `User` after that command.
 
 ## 4. Application interfaces
@@ -110,7 +110,7 @@ and `users.session_version`, because existing code loads `User` after that comma
 | `/reports/<id>/phone-script/<contact_id>` | GET | Phone script and number/fallback |
 | `/reports/<id>/social-post` | GET | Caption and photo download links |
 | `/reports/<id>/flyer` | GET | Printable flyer with notes excerpt |
-| `/settings` | GET, POST | Unmerged UI branch: preferences page / display-name update |
+| `/settings` | GET, POST | Preferences page / display-name update |
 
 Existing `/register` and `/login` are GET/POST; `/logout` is a protected POST.
 Existing pet CRUD remains under `/pets`. There is no new application root route
@@ -164,8 +164,7 @@ controls. The browser handles printing; no server PDF service is added.
 - Flask-WTF validates POST tokens; generated-output routes are GET-only.
 - Jinja escapes user content in templates. This does not establish exhaustive
   security certification or a production configuration.
-- On `main`, uploaded photos retain inherited public static URLs and route
-  authorization does not provide private image delivery. On the Sprint 3 branch, they
+- Since Sprint 3 merged to `main`, uploaded photos
   are access-checked, and TC-107 passed on November 22, 2026; see [section 10](#10-sprint-3-design).
 
 The successful-login reminder queries only owned pets with
@@ -200,9 +199,9 @@ in the [test plan](../3-construction/test-plan.md).
 
 ## 10. Sprint 3 design
 
-This design is implemented on `sprint3/integration`, not merged. It follows the Sprint 3 build
-contract. All 180 automated tests passed, and 22 of 27 official
-Sprint 3 test cases passed on November 22, 2026. It has not been deployed.
+This design is merged to `main` through PRs #24 and #25. It follows the Sprint 3 build
+contract. All 180 automated tests passed at `1724829`, and 22 of 27 official
+Sprint 3 test cases passed on November 22, 2026. It has not been deployed or sponsor accepted.
 
 ### New modules
 
@@ -296,7 +295,7 @@ Login accepts only a same-site relative `next` path. It rejects absolute URLs, `
 backslashes, and control characters, then falls back to `pets.list_pets`. Registration
 keeps its visible duplicate-email error because TC-002 requires it.
 
-On `main`, uploaded photo URLs are directly accessible. On the Sprint 3 branch, they are
+Since Sprint 3 merged to `main`, uploaded photo URLs are
 access-checked, and TC-107 passed on November 22, 2026. The owner can always open their current photo. A non-owner
 can open it only when it belongs to a report that is shared and has status `open`. On a
 resolved shared report, non-owners see `Photo unavailable because this report is resolved.`
@@ -320,6 +319,25 @@ at default 1 for existing users, keeps all records, and is designed to be safe t
 and `flask upgrade-community`. See the
 [maintenance manual](../4-transition/maintenance-manual.md#9-sprint-3-upgrade-and-operations).
 
+### Pending review patches
+
+These design changes are on `sprint3-fix/*` branches, pending integration and verification.
+Sections above describe the current code, and the known review bugs remain on `main` until
+these patches merge.
+
+| Patch | Design change |
+|---|---|
+| P1 | `_can_build_reset_link()` is true when `APP_BASE_URL` is set. Without it, it is true only in debug or testing with `MAIL_BACKEND` set to `console` or `memory` |
+| P2 | `server.starttls(context=ssl.create_default_context())` verifies the SMTP certificate and hostname |
+| P3, P4 | `reserve_attempt(scope, email, address)` removes expired rows for the scope, inserts and commits an `AuthAttempt`, then counts the key. Over the limit, it deletes that row, commits, and returns `False`. Login and reset call it before password checking or sending |
+| P5 | An `IntegrityError` during an email change returns the inline `EMAIL_TAKEN` error with status 200 and a rolled-back session |
+| P6 | `format_measure` never emits exponent notation |
+| P7 | Comment deletion looks up comment ID, report ID, and author ID, whether or not the report is shared. Anything else returns 404. `/community` lists the signed-in author's retained comments under `Your comments on unshared reports`, with only comment text, date, and a CSRF-protected Delete button |
+| P8 | `send_email_background(to, subject, body)` uses a daemon thread in a copied app context for `smtp`. `console` and `memory` stay synchronous |
+| P9 | `register()` applies `MAX_EMAIL_LENGTH` with a field error on `email` |
+| P10 | The seed command names both upgrade commands and exits nonzero without a partial seed when Sprint 3 pet columns are missing |
+| P11 | `safari-render` adds bounded waits, Simulator readiness checks, retries, and diagnostics, and must check all 8 pages in desktop and 390 px iOS Safari |
+
 ## Revision history
 
 | Date | Author | Summary |
@@ -332,3 +350,5 @@ and `flask upgrade-community`. See the
 | 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: upgrade columns, sixth-attempt limit, photo path guard, and fieldset errors, implemented on `sprint3/integration`, not merged. |
 | 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
 | 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-22 | IT Capstone Team (B) | Add the design of pending patches P1-P11 on `sprint3-fix/*`. |
+| 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. Add the P7 entry point. |

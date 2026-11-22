@@ -1,8 +1,8 @@
 # Use Case Model
 
-**Phase:** Elaboration | **Status:** Sprint 2 implementation documented; Sprint 3 flows implemented on `sprint3/integration`, not merged; acceptance _TBD_
+**Phase:** Elaboration | **Status:** Sprint 2 implementation documented; Sprint 3 flows merged to `main` through PRs #24 and #25; not deployed; acceptance _TBD_
 
-**Owner:** _TBD_ | **Baseline:** `4d51cc3`, November 4, 2026
+**Owner:** _TBD_ | **Baseline:** Sprint 2 at `4d51cc3`, November 4, 2026; current `main` reviewed at `8038dc8`, including Sprint 3
 
 ## 1. Actors and scope
 
@@ -138,8 +138,8 @@ available for manual posting elsewhere.
 
 **Alternates:** pets without photos are named in a fallback note. A missing
 physical file retains the existing static-file 404 behavior. The route is owned.
-On `main`, inherited static photo URLs are directly accessible. On the Sprint 3 branch,
-they are access-checked, and TC-107 passed on November 22, 2026.
+Since Sprint 3 merged to `main`, photo URLs
+are access-checked, and TC-107 passed on November 22, 2026.
 
 ### UC-S2-07 — Print a flyer
 
@@ -179,7 +179,7 @@ requirements outside this recorded increment remain _TBD_.
 
 ## 5. Sprint 3 use cases
 
-These flows are implemented on `sprint3/integration`, not merged. Official results are in
+These flows are merged to `main` through PRs #24 and #25. They are not deployed. Official results are in
 [test plan section 9](../3-construction/test-plan.md#9-sprint-3-test-cases).
 
 | ID | Name | Requirement | Test cases |
@@ -258,6 +258,19 @@ normal login error. The 6th attempt returns status 429 with
 is not checked. Different emails or client addresses are counted separately.
 Absolute URLs, `//host`, backslashes, and control characters in `next` are rejected.
 
+### Pending changes to these flows
+
+Patches on `sprint3-fix/*`, pending integration and verification, change these flows. The
+known review bugs remain on `main` until they merge:
+
+- **UC-S3-02:** each accepted request is reserved atomically. A blocked retry sends nothing
+  and does not extend the block. With `smtp`, the email sends in the background, and
+  without `APP_BASE_URL` nothing is sent, even in debug.
+- **UC-S3-04:** an attempt is reserved before the password check. A correct password within
+  the limit clears that key. The 6th attempt still returns status 429.
+- **Comments:** an author can delete their own comment after the report is unshared, from
+  `Your comments on unshared reports` on `/community`. Other requests return 404, and the post and comments stay hidden from everyone else.
+
 ## Revision history
 
 | Date | Author | Summary |
@@ -269,3 +282,5 @@ Absolute URLs, `//host`, backslashes, and control characters in `next` are rejec
 | 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: sixth-attempt limit and display name rule, implemented on `sprint3/integration`, not merged. |
 | 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
 | 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-22 | IT Capstone Team (B) | Note pending patch changes to reset, sign-in, and comment deletion flows. |
+| 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. Add the P7 entry point. |

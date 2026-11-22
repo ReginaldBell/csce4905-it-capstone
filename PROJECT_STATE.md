@@ -2,7 +2,7 @@
 
 **Updated:** November 22, 2026
 
-**Application baseline:** [`main` at `4d51cc3`](https://github.com/ReginaldBell/csce4905-it-capstone/commit/4d51cc3848699165b77513cad5ea797fc35f97e7)
+**Application baseline:** [`main` at `8038dc8`](https://github.com/ReginaldBell/csce4905-it-capstone/commit/8038dc808c46704ac34570afe436d81c1f55bf99), which includes Sprint 3. The Sprint 2 baseline was `4d51cc3`.
 
 This is the living record of what exists, what changed, which decisions apply,
 and what still needs a decision or verification. The application baseline is
@@ -17,12 +17,14 @@ acceptance or production deployment.
 | Sprint 2 cards 3–11 | Merged and reviewed | PRs #12–#20; [delivery ledger](docs/project-management/sprint-2-record.md#delivery-ledger) |
 | Final Sprint 2 fix | Merged | Flyer-only notes excerpt; one-page long-notes repro verified in Chrome |
 | Source branches for PRs #12–#20 | Deleted after merge | Recorded in the review/merge sessions |
-| Documentation | Sprint 2 catch-up recorded | Requirements, use cases, design, results, manuals, and this file |
-| Verification | Focused review cases passed | [Test plan](docs/3-construction/test-plan.md); no committed CI suite claimed |
-| Material 3 UI | Included in `sprint3/integration`; not merged or peer reviewed | Figma-based reskin of the missing-pet app, built on the nearby feed branch |
+| Documentation | Sprint 2 and Sprint 3 recorded | Requirements, use cases, design, results, manuals, and this file |
+| Verification | Focused review cases passed | [Test plan](docs/3-construction/test-plan.md); CI exists on `main`, and its Safari job currently fails |
+| Material 3 UI | Merged to `main` through PR #24; no GitHub review recorded on that PR | Figma-based reskin of the missing-pet app, built on the nearby feed branch |
 | Local database | Community upgrade only | `flask upgrade-community` ran on `infra_pgdata` on November 21, 2026 after a `pg_dump` backup, with record counts unchanged. The Sprint 3 upgrade is in the backlog. |
 | Sprint 3 QA database | Upgraded November 22, 2026 | Isolated `petfinder-qa` PostgreSQL 16 database and photo volume. A backup was taken, `flask upgrade-sprint3` ran twice, and record counts stayed at 12 users, 25 pets, 24 reports, and 8 comments. Demo sign-in and the main Sprint 3 pages loaded at `http://127.0.0.1:5001`. |
-| Sprint 3 (November 7 to December 3, 2026) | Implemented on `sprint3/integration`, not merged; 180 automated tests passed; 22 of 27 Sprint 3 test cases passed on November 22, 2026; TC-604, TC-605, TC-607, TC-609, and TC-1014 remain Not run | [Sprint 3 plan](docs/project-management/sprint-3-plan.md): photo privacy, pet and contact details, account updates and recovery, usability; backlog holds real email delivery, the existing database upgrade, and filing and tip limits; later MVP work is mapped to Sprints 4-6; owners and board entries are _TBD_ |
+| Sprint 3 (November 7 to December 3, 2026) | Merged to `main` through [PR #24](https://github.com/ReginaldBell/csce4905-it-capstone/pull/24) and [PR #25](https://github.com/ReginaldBell/csce4905-it-capstone/pull/25); `main` was at `8038dc8` when the review patches began; not deployed or sponsor accepted; 180 automated tests passed at `1724829`; 22 of 27 Sprint 3 test cases passed on November 22, 2026; TC-604, TC-605, TC-607, TC-609, and TC-1014 remain Not run | [Sprint 3 plan](docs/project-management/sprint-3-plan.md): photo privacy, pet and contact details, account updates and recovery, usability; backlog holds real email delivery, the existing database upgrade, and filing and tip limits; later MVP work is mapped to Sprints 4-6; owners and board entries are _TBD_ |
+| Sprint 3 review patches | On `sprint3-fix/*`; pending integration and verification | [P1-P11](#sprint-3-review-patches); none recorded as passed, merged, or deployed |
+| Safari CI | Failing on latest `main` run | [Run 45063727705](https://github.com/ReginaldBell/csce4905-it-capstone/actions/runs/45063727705) at `8038dc8`: `unit-tests` passed; `safari-render` checked 2 of 8 desktop pages and 0 iOS pages |
 | Sponsor acceptance / final course delivery | _TBD_ | No acceptance sign-off established in the review record |
 | Production hosting, operating owner, support | _TBD_ | Local development configuration exists |
 
@@ -45,7 +47,16 @@ The [user manual](docs/4-transition/user-manual.md) describes the workflows;
 
 ## Change log
 
-All entries below belong to the November 4, 2026 Sprint 2 implementation review.
+### Sprint 3 merges
+
+| Change | PR | Merge | Result |
+|---|---|---|---|
+| Sprint 3 application and documentation | [#24](https://github.com/ReginaldBell/csce4905-it-capstone/pull/24) | `385b4ff` | Delivered Sprint 3 work to `main`; not deployed or sponsor accepted |
+| CI workflow | [#25](https://github.com/ReginaldBell/csce4905-it-capstone/pull/25) | `fc28d7d` | Added unit-test and Safari jobs; the latest `main` Safari job fails |
+
+### Sprint 2 implementation review
+
+The entries below belong to the November 4, 2026 Sprint 2 implementation review.
 Plan card numbers are different from PR numbers.
 
 | Change | PR | Merge | Result |
@@ -89,25 +100,50 @@ evidence; these entries describe the delivered baseline, not unapproved future w
 
 | Item | Next action | Current evidence |
 |---|---|---|
-| Repeatable tests / CI | Turn recorded cases into a maintained suite and pipeline | No suite on `main`. `sprint3/integration` has 180 automated tests, all passing at `1724829`; CI is not set up |
+| Repeatable tests / CI | Integrate and verify the P11 Safari CI patch, then get a passing `main` run | `main` at `8038dc8` has a CI workflow. In [run 45063727705](https://github.com/ReginaldBell/csce4905-it-capstone/actions/runs/45063727705), `unit-tests` passed and `safari-render` failed |
 | Sponsor-facing scope / approval | Complete vision, confirm requirements, record acceptance | _TBD_ |
 | Production operation | Choose hosting, secrets, backup/restore owner, support, and deployment process | _TBD_; local Compose only |
 | Browser coverage | Exercise clipboard permission/failure paths and a defined browser matrix | Handlers inspected; not a browser certification |
 | Print coverage | Retest supported page/printer settings and representative content | Specific Chrome long-notes repro is one page; arbitrary layouts not certified |
 | Time fallback | Decide whether missing/non-numeric offsets should continue to mean UTC | Currently zero offset; JavaScript needed for automatic local conversion |
-| Uploaded media policy | Confirm future access and retention requirements | On `main`, uploaded photo URLs are directly accessible. On the Sprint 3 branch, they are access-checked, and TC-107 passed on November 22, 2026: owners keep access, and non-owners need a shared, open report |
-| Sprint 3 verification | Finish the 5 remaining cases | November 22, 2026: 22 Pass, 0 open failures, 5 Not run. TC-604 needs Safari; the project owner reported Firefox passing. TC-605, TC-607, TC-609, and TC-1014 depend on features now in the Sprint 4 bucket. See the [test plan](docs/3-construction/test-plan.md#9-sprint-3-test-cases) |
+| Uploaded media policy | Confirm future access and retention requirements | Since Sprint 3 merged to `main`, uploaded photo URLs are access-checked, and TC-107 passed on November 22, 2026: owners keep access, and non-owners need a shared, open report |
+| Sprint 3 verification | Finish the 5 remaining cases | November 22, 2026: 22 Pass, 0 open failures, 5 Not run. TC-604 needs Safari: the latest `main` CI run checked 2 of 8 desktop Safari pages and 0 iOS Safari pages. The project owner reported Firefox passing. TC-605, TC-607, TC-609, and TC-1014 depend on features now in the Sprint 4 bucket. See the [test plan](docs/3-construction/test-plan.md#9-sprint-3-test-cases) |
 | Sprint 3 schema upgrade | Back up, then run `flask upgrade-sprint3` on the intended database | Not recorded as run on a shared or deployed database |
 | Sprint 3 mail configuration | Choose provider and sending address; set `APP_BASE_URL` and SMTP values outside the repository | Provider _TBD_; Compose passes `APP_BASE_URL` and `MAIL_*`; real email delivery is untested and in the backlog |
 | Sprint 3 partial cases | Keep TC-607, TC-609, and TC-1014 open until tips and filing limits exist | Project owner approved November 21, 2026; outcomes stay Not run until each full procedure runs |
 | Material 3 design fidelity | Compare against exact Figma specs when plan limits allow | Built from Figma layout sizes, an overview screenshot, dialog specs, and Material 3 baseline tokens; not a verified pixel match |
-| Material 3 UI verification | Commit, review, and merge the branch, then repeat on the target environment | November 21, 2026: 26 unit tests passed; disposable PostgreSQL upgrade from `4d51cc3` kept records; Chrome checked photos, map, settings, and a one-page flyer; signed-in pages loaded on the upgraded local database; the project owner reported a hands-on local test with no problems (individual cases not itemized) |
+| Material 3 UI verification | Repeat on the target environment | November 21, 2026: 26 unit tests passed; disposable PostgreSQL upgrade from `4d51cc3` kept records; Chrome checked photos, map, settings, and a one-page flyer; signed-in pages loaded on the upgraded local database; the project owner reported a hands-on local test with no problems (individual cases not itemized) |
 | Backup restore | Test restoring the November 21, 2026 local dump in an isolated database | Dump created and checked as complete; restore not tested; uploaded photos are not in the dump |
 | Adoption alerts | Decide whether notifications are in scope | Design-only setting; omitted because the app has no notification system |
 
 These are follow-up work or recorded limits, not unresolved blockers left on the
 merged Sprint 2 PRs. Assignees, deadlines, production status, and sponsor decisions
 remain unassigned unless explicitly established.
+
+## Sprint 3 review patches
+
+These findings came from the Sprint 3 review of `main` at `8038dc8`. Each fix is assigned
+to a `sprint3-fix/*` branch. **None is recorded as passed, merged, or deployed.** Until a
+row has linked evidence, **the known review bugs remain on `main`**.
+
+| ID | Finding | Intended behavior | Branch | State |
+|---|---|---|---|---|
+| P1 | Reset links could use an untrusted request host | Use `APP_BASE_URL`. Without it, only debug or testing with `console` or `memory` may build a link. `smtp` without it sends nothing, even in debug | `sprint3-fix/auth` | Pending integration and verification |
+| P2 | SMTP TLS did not verify the server | STARTTLS uses the default certificate and hostname checks | `sprint3-fix/auth` | Pending integration and verification |
+| P3 | Concurrent sign-ins could pass the limit | Reserve an attempt atomically before any password check | `sprint3-fix/auth` | Pending integration and verification |
+| P4 | Concurrent reset requests could pass the limit | Reserve an attempt atomically. Blocked retries send nothing and do not extend the block | `sprint3-fix/auth` | Pending integration and verification |
+| P5 | A concurrent email change could return a 500 | Show the inline email-taken error and roll back | `sprint3-fix/data` | Pending integration and verification |
+| P6 | Very small measurements could display in exponent notation | A saved `0.00001` prefills as `0.00001` and survives an unrelated edit | `sprint3-fix/data` | Pending integration and verification |
+| P7 | Authors could not delete a comment after unsharing | The author can delete their own comment. Other requests get 404, and unsharing still hides the post and comments from others. `/community` shows the author a `Your comments on unshared reports` section with only their comment text, date, and Delete button | `sprint3-fix/data` | Pending integration and verification |
+| P8 | A slow SMTP server could delay reset responses and reveal whether an account exists | SMTP reset mail sends in the background. Failures log only the error type | `sprint3-fix/auth` | Pending integration and verification |
+| P9 | Registration did not apply the email length limit | Show a field error on `email`, with no 500 | `sprint3-fix/auth` | Pending integration and verification |
+| P10 | Seeding could fail without naming the upgrade steps | Name `flask upgrade-community` and `flask upgrade-sprint3`. Exit nonzero without a partial seed if Sprint 3 pet columns are missing | `sprint3-fix/data` | Pending integration and verification |
+| P11 | The Safari CI job failed before checking every page | Use bounded waits, Simulator readiness checks, retries, and diagnostics. Fail if any of the 8 pages is unchecked in either browser | `sprint3-fix/ci` | Pending integration and verification |
+
+Operating details are in the
+[maintenance manual](docs/4-transition/maintenance-manual.md#pending-review-patches).
+A passing Safari CI job would be evidence for TC-604, but the case stays **Not run** until
+its full written procedure runs. The recorded Sprint 3 result remains 22 Pass and 5 Not run.
 
 ## Update procedure
 
@@ -133,3 +169,5 @@ remain unassigned unless explicitly established.
 | 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
 | 2026-11-22 | Claude | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
 | 2026-11-22 | Claude | Move report editing, private tips, the public report page, and filing and tip limits into the Sprint 4 bucket. |
+| 2026-11-22 | IT Capstone Team (B) | Record review patches P1-P11 on `sprint3-fix/*`, pending integration and verification, and the failing Safari CI result; TC-604 stays Not run. |
+| 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. Add the P7 entry point. |
