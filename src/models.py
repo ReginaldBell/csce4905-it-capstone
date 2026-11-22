@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from decimal import Decimal
 
 from flask_login import UserMixin
 from sqlalchemy import false
@@ -71,7 +72,11 @@ def format_measure(value):
     """Show 12.0 as "12" without rounding a value the owner entered."""
     if value is None:
         return ""
-    return str(int(value)) if float(value).is_integer() else str(value)
+    if float(value).is_integer():
+        return str(int(value))
+    text = str(value)
+    # The pet form rejects exponents, so 1e-05 must be written as 0.00001.
+    return format(Decimal(text), "f") if "e" in text else text
 
 
 class Pet(db.Model):
