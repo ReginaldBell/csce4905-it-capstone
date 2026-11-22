@@ -294,7 +294,10 @@ class CommunityTests(unittest.TestCase):
         )
         self.assertEqual(self.neighbor.get(self.post_url).status_code, 404)
         self.assertEqual(self.comment().status_code, 404)
-        self.assertNotIn(b"Luna", self.search().data)
+        self.assertNotIn(b"Luna", self.search(self.stranger).data)
+        author_page = self.search(self.neighbor).data
+        self.assertIn(b"Your comments on unshared reports", author_page)
+        self.assertNotIn(b"North Park", author_page)
         self.assertEqual(self.neighbor.get("/static/uploads/luna.png").status_code, 404)
 
     def test_photo_access_follows_owner_and_sharing(self):
