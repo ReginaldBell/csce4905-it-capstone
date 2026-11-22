@@ -143,10 +143,10 @@ from approved requirements.
 | Date | Author | Summary |
 |---|---|---|
 | 2026-11-04 | Reginad Bell | Document delivered Sprint 2 features, local setup, project-state links, and verification scope. |
-| 2026-11-21 | Claude | Add the community upgrade step and link the Sprint 3 plan. |
-| 2026-11-21 | Claude | Add Sprint 3 status and run steps, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: reset mail run note, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: upgrade-community columns, implemented on `sprint3/integration`, not merged. |
-| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
-| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
-| 2026-11-22 | Claude | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
+| 2026-11-21 | Reginald Bell | Add the community upgrade step and link the Sprint 3 plan. |
+| 2026-11-21 | Reginald Bell | Add Sprint 3 status and run steps, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Reginald Bell | Apply contract Addenda A and B: reset mail run note, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | Reginald Bell | Apply integration corrections and contract Addenda C and D: upgrade-community columns, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | Reginald Bell | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | Reginald Bell | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-22 | Reginald Bell | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
