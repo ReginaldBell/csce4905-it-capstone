@@ -22,7 +22,8 @@
 <h2>Change status</h2>
 <form class="inline-form status-form" method="post" action="{{ url_for('reports.update_report_status', report_id=report.id) }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-  <select name="status">
+  <label class="visually-hidden" for="report-status">Report status</label>
+  <select id="report-status" name="status">
     {% for choice in statuses %}
     <option value="{{ choice }}" {% if choice == report.status %}selected{% endif %}>{{ choice | capitalize }}</option>
     {% endfor %}

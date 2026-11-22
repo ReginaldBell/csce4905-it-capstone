@@ -16,6 +16,7 @@ from outputs import outputs_bp
 from pets import pets_bp
 from reports import reports_bp
 from settings import settings_bp
+from sprint3_schema import upgrade_sprint3_command
 
 
 def create_app(config_class=Config):
@@ -25,6 +26,7 @@ def create_app(config_class=Config):
     Path(app.config["UPLOAD_FOLDER"]).mkdir(parents=True, exist_ok=True)
 
     db.init_app(app)
+    app.extensions.setdefault("mail_outbox", [])
 
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
@@ -42,6 +44,7 @@ def create_app(config_class=Config):
     app.register_blueprint(settings_bp)
     app.cli.add_command(upgrade_community_command)
     app.cli.add_command(seed_community_demo_command)
+    app.cli.add_command(upgrade_sprint3_command)
 
     @app.before_request
     def protect_uploaded_photos():
@@ -60,6 +63,7 @@ def create_app(config_class=Config):
                     ReportPet.pet_id == pet.id,
                     Report.owner_id == pet.owner_id,
                     Report.is_shared.is_(True),
+                    Report.status == "open",
                 )
                 .first()
             )
@@ -68,7 +72,16 @@ def create_app(config_class=Config):
 
     @login_manager.user_loader
     def load_user(user_id):
-        return db.session.get(User, int(user_id))
+        # "<id>:<version>", or a legacy "<id>" session, which counts as version 1.
+        raw_id, _, raw_version = str(user_id).partition(":")
+        try:
+            user = db.session.get(User, int(raw_id))
+            version = int(raw_version) if raw_version else 1
+        except ValueError:
+            return None
+        if user is None or user.session_version != version:
+            return None
+        return user
 
     @app.errorhandler(413)
     def photo_too_large(_error):

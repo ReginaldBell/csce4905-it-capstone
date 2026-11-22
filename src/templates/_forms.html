@@ -1,0 +1,17 @@
+{# Ties a control to its hint and error text for screen readers. #}
+{% macro describe(errors, key, hint=None, form_error=False) -%}
+  {%- set ids = [] -%}
+  {%- if hint %}{% set _ = ids.append(hint) %}{% endif -%}
+  {%- if errors.get(key) %}{% set _ = ids.append(key ~ '-error') %}{% endif -%}
+  {%- if form_error and errors.get('form') %}{% set _ = ids.append('form-error') %}{% endif -%}
+  {%- if ids %} aria-describedby="{{ ids | join(' ') }}"{% endif -%}
+  {%- if errors.get(key) or (form_error and errors.get('form')) %} aria-invalid="true"{% endif -%}
+{%- endmacro %}
+
+{% macro field_error(errors, key) -%}
+  {%- if errors.get(key) %}<p class="field-error" id="{{ key }}-error">{{ errors[key] }}</p>{% endif -%}
+{%- endmacro %}
+
+{% macro form_error(errors) -%}
+  {%- if errors.get('form') %}<p class="form-error" id="form-error" role="alert">{{ errors['form'] }}</p>{% endif -%}
+{%- endmacro %}
