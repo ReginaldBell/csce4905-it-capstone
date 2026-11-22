@@ -55,6 +55,6 @@ acceptance remain separate pending activities.
 
 | Date | Author | Summary |
 |---|---|---|
-| 2026-11-04 | Codex | Index the Sprint 2 documentation set and establish state/decision/traceability conventions. |
-| 2026-11-21 | Claude | Index the Sprint 3 plan. |
+| 2026-11-04 | IT Capstone Team (B) | Index the Sprint 2 documentation set and establish state/decision/traceability conventions. |
+| 2026-11-21 | IT Capstone Team (B) | Index the Sprint 3 plan. |
 | 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. |

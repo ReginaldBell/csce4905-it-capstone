@@ -276,11 +276,11 @@ known review bugs remain on `main` until they merge:
 | Date | Author | Summary |
 |---|---|---|
 | _TBD_ | _TBD_ | Initial draft template |
-| 2026-11-04 | Codex | Document eight implemented Sprint 2 use cases, alternate flows, ownership, and output limits. |
-| 2026-11-21 | Claude | Add account editing, password reset, and rate-limited sign-in flows, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: token invalidation, reset link, attempt clearing, and session flows, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: sixth-attempt limit and display name rule, implemented on `sprint3/integration`, not merged. |
-| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
-| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-04 | IT Capstone Team (B) | Document eight implemented Sprint 2 use cases, alternate flows, ownership, and output limits. |
+| 2026-11-21 | IT Capstone Team (B) | Add account editing, password reset, and rate-limited sign-in flows, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | IT Capstone Team (B) | Apply contract Addenda A and B: token invalidation, reset link, attempt clearing, and session flows, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | IT Capstone Team (B) | Apply integration corrections and contract Addenda C and D: sixth-attempt limit and display name rule, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | IT Capstone Team (B) | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | IT Capstone Team (B) | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
 | 2026-11-22 | IT Capstone Team (B) | Note pending patch changes to reset, sign-in, and comment deletion flows. |
 | 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. Add the P7 entry point. |

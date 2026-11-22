@@ -270,11 +270,11 @@ you are using:
 | Date | Author | Summary |
 |---|---|---|
 | _TBD_ | _TBD_ | Initial draft template |
-| 2026-11-04 | Codex | Documented delivered Sprint 2 workflows, validation, UTC behavior, generated outputs, flyer excerpt, stale reminder, and troubleshooting. |
-| 2026-11-21 | Claude | Documented the Material 3 navigation, Settings, and Report missing shortcut on the unmerged UI branch. |
-| 2026-11-21 | Claude | Add pet detail, contact address, account, password reset, and sign-in limit tasks, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: photo visibility, canceled links, and logout after reset, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: sixth-attempt limit and resolved photo message, implemented on `sprint3/integration`, not merged. |
-| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-04 | IT Capstone Team (B) | Documented delivered Sprint 2 workflows, validation, UTC behavior, generated outputs, flyer excerpt, stale reminder, and troubleshooting. |
+| 2026-11-21 | IT Capstone Team (B) | Documented the Material 3 navigation, Settings, and Report missing shortcut on the unmerged UI branch. |
+| 2026-11-21 | IT Capstone Team (B) | Add pet detail, contact address, account, password reset, and sign-in limit tasks, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | IT Capstone Team (B) | Apply contract Addenda A and B: photo visibility, canceled links, and logout after reset, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | IT Capstone Team (B) | Apply integration corrections and contract Addenda C and D: sixth-attempt limit and resolved photo message, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | IT Capstone Team (B) | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
 | 2026-11-22 | IT Capstone Team (B) | Note pending registration, measurement, and comment deletion fixes. |
 | 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. Add the P7 entry point. |

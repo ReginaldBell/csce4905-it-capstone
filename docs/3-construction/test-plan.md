@@ -409,13 +409,13 @@ a manual or browser case as Pass. At commit `1724829`, the suite ran 180 test me
 | Date | Author | Summary |
 |---|---|---|
 | _TBD_ | _TBD_ | Initial draft template |
-| 2026-11-04 | Codex | Recorded Sprint 2 regression procedures, traceability, historical evidence, resolved defects and validation limits through `4d51cc3` |
-| 2026-11-21 | Claude | Recorded Material 3 UI, local database upgrade, and project-owner test evidence |
-| 2026-11-21 | Claude | Add the Sprint 3 case list, scope limits, and suite instructions; all Sprint 3 outcomes remain Not run. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: partial-case rule and shared photo checks, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: photo path and fieldset checks, implemented on `sprint3/integration`, not merged. |
-| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
-| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
-| 2026-11-22 | Claude | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
+| 2026-11-04 | IT Capstone Team (B) | Recorded Sprint 2 regression procedures, traceability, historical evidence, resolved defects and validation limits through `4d51cc3` |
+| 2026-11-21 | IT Capstone Team (B) | Recorded Material 3 UI, local database upgrade, and project-owner test evidence |
+| 2026-11-21 | IT Capstone Team (B) | Add the Sprint 3 case list, scope limits, and suite instructions; all Sprint 3 outcomes remain Not run. |
+| 2026-11-21 | IT Capstone Team (B) | Apply contract Addenda A and B: partial-case rule and shared photo checks, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | IT Capstone Team (B) | Apply integration corrections and contract Addenda C and D: photo path and fieldset checks, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | IT Capstone Team (B) | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | IT Capstone Team (B) | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-22 | IT Capstone Team (B) | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
 | 2026-11-22 | IT Capstone Team (B) | Record the failing Safari CI run; TC-604 stays Not run and the 22 Pass, 5 Not run result is unchanged. |
 | 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. Official results stay 22 Pass and 5 Not run. |

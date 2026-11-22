@@ -117,15 +117,15 @@ and the team completes the Reflection.
 
 | Date | Author | Summary |
 |---|---|---|
-| 2026-11-21 | Claude | Create the Sprint 3 MVP production-readiness plan. |
-| 2026-11-21 | Claude | Apply the project owner's priorities: security and product gaps High, all other cards Lower. |
-| 2026-11-21 | Claude | Align Sprint 3 to the team's official scope and move remaining MVP work to its target sprints. |
-| 2026-11-21 | Claude | Narrow S3-09 to login redirect validation, record the registration decision, and update card states to pending verification. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: approved decisions, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Add real email delivery, the existing database upgrade, and filing and tip limits to the backlog. |
-| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
-| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
-| 2026-11-22 | Claude | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
-| 2026-11-22 | Claude | Move report editing, private tips, the public report page, and filing and tip limits into the Sprint 4 bucket. |
+| 2026-11-21 | IT Capstone Team (B) | Create the Sprint 3 MVP production-readiness plan. |
+| 2026-11-21 | IT Capstone Team (B) | Apply the project owner's priorities: security and product gaps High, all other cards Lower. |
+| 2026-11-21 | IT Capstone Team (B) | Align Sprint 3 to the team's official scope and move remaining MVP work to its target sprints. |
+| 2026-11-21 | IT Capstone Team (B) | Narrow S3-09 to login redirect validation, record the registration decision, and update card states to pending verification. |
+| 2026-11-21 | IT Capstone Team (B) | Apply contract Addenda A and B: approved decisions, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | IT Capstone Team (B) | Add real email delivery, the existing database upgrade, and filing and tip limits to the backlog. |
+| 2026-11-22 | IT Capstone Team (B) | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | IT Capstone Team (B) | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-22 | IT Capstone Team (B) | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
+| 2026-11-22 | IT Capstone Team (B) | Move report editing, private tips, the public report page, and filing and tip limits into the Sprint 4 bucket. |
 | 2026-11-22 | IT Capstone Team (B) | Record pending patches P1-P11 and the failing Safari CI result; TC-604 stays Not run. |
 | 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. |

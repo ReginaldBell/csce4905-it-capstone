@@ -158,16 +158,16 @@ its full written procedure runs. The recorded Sprint 3 result remains 22 Pass an
 
 | Date | Author | Summary |
 |---|---|---|
-| 2026-11-04 | Codex | Establish living project state, Sprint 2 change/decision index, and pending-work register. |
-| 2026-11-21 | Claude | Record the unmerged Material 3 UI branch, its verification evidence, and remaining design and scope items. |
-| 2026-11-21 | Claude | Record the local database upgrade, backup limits, and the project owner's local test. |
-| 2026-11-21 | Claude | Add the planned Sprint 3 MVP production-readiness work. |
-| 2026-11-21 | Claude | Align Sprint 3 status to the team's official requirements. |
-| 2026-11-21 | Claude | Record Sprint 3 work implemented on `sprint3/integration`, not merged, its open items, and the corrected photo access statement. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: mail status, photo rule, and partial cases, implemented on `sprint3/integration`, not merged. |
-| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
-| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
-| 2026-11-22 | Claude | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
-| 2026-11-22 | Claude | Move report editing, private tips, the public report page, and filing and tip limits into the Sprint 4 bucket. |
+| 2026-11-04 | IT Capstone Team (B) | Establish living project state, Sprint 2 change/decision index, and pending-work register. |
+| 2026-11-21 | IT Capstone Team (B) | Record the unmerged Material 3 UI branch, its verification evidence, and remaining design and scope items. |
+| 2026-11-21 | IT Capstone Team (B) | Record the local database upgrade, backup limits, and the project owner's local test. |
+| 2026-11-21 | IT Capstone Team (B) | Add the planned Sprint 3 MVP production-readiness work. |
+| 2026-11-21 | IT Capstone Team (B) | Align Sprint 3 status to the team's official requirements. |
+| 2026-11-21 | IT Capstone Team (B) | Record Sprint 3 work implemented on `sprint3/integration`, not merged, its open items, and the corrected photo access statement. |
+| 2026-11-21 | IT Capstone Team (B) | Apply contract Addenda A and B: mail status, photo rule, and partial cases, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | IT Capstone Team (B) | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | IT Capstone Team (B) | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-22 | IT Capstone Team (B) | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
+| 2026-11-22 | IT Capstone Team (B) | Move report editing, private tips, the public report page, and filing and tip limits into the Sprint 4 bucket. |
 | 2026-11-22 | IT Capstone Team (B) | Record review patches P1-P11 on `sprint3-fix/*`, pending integration and verification, and the failing Safari CI result; TC-604 stays Not run. |
 | 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. Add the P7 entry point. |

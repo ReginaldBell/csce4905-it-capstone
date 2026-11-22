@@ -368,13 +368,13 @@ for that case, not a replacement for its full written procedure.
 | Date | Author | Summary |
 |---|---|---|
 | _TBD_ | _TBD_ | Initial draft template |
-| 2026-11-04 | Codex | Document Sprint 2 setup, data lifecycle, configuration, preservation rules, verification, and operational limits. |
-| 2026-11-21 | Claude | Add the community upgrade step and Material 3 UI files for the unmerged UI branch. |
-| 2026-11-21 | Claude | Add the manual pre-upgrade backup procedure and its limits. |
-| 2026-11-21 | Claude | Add Sprint 3 upgrade order, backup, environment, and troubleshooting; correct the photo access statement, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: mail settings, console behavior, sessions, and troubleshooting, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: mail fallbacks, unforwarded limit settings, upgrade columns, and photo paths, implemented on `sprint3/integration`, not merged. |
-| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
-| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-04 | IT Capstone Team (B) | Document Sprint 2 setup, data lifecycle, configuration, preservation rules, verification, and operational limits. |
+| 2026-11-21 | IT Capstone Team (B) | Add the community upgrade step and Material 3 UI files for the unmerged UI branch. |
+| 2026-11-21 | IT Capstone Team (B) | Add the manual pre-upgrade backup procedure and its limits. |
+| 2026-11-21 | IT Capstone Team (B) | Add Sprint 3 upgrade order, backup, environment, and troubleshooting; correct the photo access statement, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | IT Capstone Team (B) | Apply contract Addenda A and B: mail settings, console behavior, sessions, and troubleshooting, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | IT Capstone Team (B) | Apply integration corrections and contract Addenda C and D: mail fallbacks, unforwarded limit settings, upgrade columns, and photo paths, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | IT Capstone Team (B) | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | IT Capstone Team (B) | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
 | 2026-11-22 | IT Capstone Team (B) | Document pending patches P1-P11: reset mail, verified TLS, background SMTP, atomic limits, comments, measurements, seed prerequisite, and Safari CI. |
 | 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. Add the P7 entry point. |

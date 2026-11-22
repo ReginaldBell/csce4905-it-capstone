@@ -166,11 +166,11 @@ and cases are in the [test plan](../3-construction/test-plan.md#9-sprint-3-test-
 | Date | Author | Summary |
 |---|---|---|
 | _TBD_ | _TBD_ | Initial draft template |
-| 2026-11-04 | Codex | Replace placeholder requirements with the delivered Sprint 2 baseline and traceability; retain unapproved scope as pending. |
-| 2026-11-21 | Claude | Add Sprint 3 R and NF requirements, field rules, and test mapping, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: reset, session, photo, and partial-case requirements, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: display name, photo path, and fieldset rules, implemented on `sprint3/integration`, not merged. |
-| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
-| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-04 | IT Capstone Team (B) | Replace placeholder requirements with the delivered Sprint 2 baseline and traceability; retain unapproved scope as pending. |
+| 2026-11-21 | IT Capstone Team (B) | Add Sprint 3 R and NF requirements, field rules, and test mapping, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | IT Capstone Team (B) | Apply contract Addenda A and B: reset, session, photo, and partial-case requirements, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | IT Capstone Team (B) | Apply integration corrections and contract Addenda C and D: display name, photo path, and fieldset rules, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | IT Capstone Team (B) | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | IT Capstone Team (B) | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
 | 2026-11-22 | IT Capstone Team (B) | Note pending patch P1 for the reset link requirement. |
 | 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. |

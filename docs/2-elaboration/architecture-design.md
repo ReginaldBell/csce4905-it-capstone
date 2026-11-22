@@ -343,12 +343,12 @@ these patches merge.
 | Date | Author | Summary |
 |---|---|---|
 | _TBD_ | _TBD_ | Initial draft template |
-| 2026-11-04 | Codex | Document implemented Sprint 2 components, schema, routes, lifecycle, security, UTC rules, and decisions. |
-| 2026-11-21 | Claude | Add Material 3 UI components, Settings route, report preselect, and the community upgrade command for the unmerged UI branch. |
-| 2026-11-21 | Claude | Add Sprint 3 fields, tables, modules, routes, mail backends, limits, and upgrade command, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: reset link, console mail, token, session, and shared photo design, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: upgrade columns, sixth-attempt limit, photo path guard, and fieldset errors, implemented on `sprint3/integration`, not merged. |
-| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
-| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-04 | IT Capstone Team (B) | Document implemented Sprint 2 components, schema, routes, lifecycle, security, UTC rules, and decisions. |
+| 2026-11-21 | IT Capstone Team (B) | Add Material 3 UI components, Settings route, report preselect, and the community upgrade command for the unmerged UI branch. |
+| 2026-11-21 | IT Capstone Team (B) | Add Sprint 3 fields, tables, modules, routes, mail backends, limits, and upgrade command, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | IT Capstone Team (B) | Apply contract Addenda A and B: reset link, console mail, token, session, and shared photo design, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | IT Capstone Team (B) | Apply integration corrections and contract Addenda C and D: upgrade columns, sixth-attempt limit, photo path guard, and fieldset errors, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | IT Capstone Team (B) | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | IT Capstone Team (B) | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
 | 2026-11-22 | IT Capstone Team (B) | Add the design of pending patches P1-P11 on `sprint3-fix/*`. |
 | 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. Add the P7 entry point. |
