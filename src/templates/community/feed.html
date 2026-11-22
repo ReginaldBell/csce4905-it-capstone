@@ -58,5 +58,20 @@
     {% endif %}
   </section>
 </div>
+{% if retained_comments %}
+<section id="retained-comments" aria-labelledby="retained-comments-title">
+  <h2 id="retained-comments-title">Your comments on unshared reports</h2>
+  {% for comment in retained_comments %}
+  <article class="community-comment">
+    <p class="hint">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }} UTC</p>
+    <p class="community-text">{{ comment.body }}</p>
+    <form method="post" action="{{ url_for('community.delete_comment', report_id=comment.report_id, comment_id=comment.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="link-button" type="submit" aria-label="Delete your comment from {{ comment.created_at.strftime('%Y-%m-%d %H:%M') }} UTC">Delete</button>
+    </form>
+  </article>
+  {% endfor %}
+</section>
+{% endif %}
 {% endblock %}
 {% block scripts %}{% include 'community/_map_scripts.html' %}{% endblock %}

@@ -9,6 +9,7 @@ from uuid import uuid4
 import click
 from flask import current_app
 from flask.cli import with_appcontext
+from sqlalchemy import inspect
 
 from extensions import db
 from models import Pet, Report, ReportComment, ReportPet, ReportStatusEvent, User
@@ -17,7 +18,32 @@ SAMPLE_FOLDER = Path(__file__).parent / "sample_data"
 DEMO_PASSWORD = "DemoPass123!"
 
 
+def _missing_schema():
+    """Tables or columns the seed writes that this database does not have yet."""
+    inspector = inspect(db.engine)
+    missing = []
+    for model in (User, Pet, Report, ReportPet, ReportStatusEvent, ReportComment):
+        table = model.__table__
+        if not inspector.has_table(table.name):
+            missing.append(table.name)
+            continue
+        existing = {column["name"] for column in inspector.get_columns(table.name)}
+        missing += [
+            f"{table.name}.{column.name}"
+            for column in table.columns
+            if column.name not in existing
+        ]
+    return missing
+
+
 def load_demo_data():
+    missing = _missing_schema()
+    if missing:
+        raise click.ClickException(
+            f"Database schema is out of date (missing: {', '.join(missing)}). "
+            "No records were changed. Run flask upgrade-community, then "
+            "flask upgrade-sprint3, and try again."
+        )
     data = json.loads(
         (SAMPLE_FOLDER / "community_demo.json").read_text(encoding="utf-8")
     )
@@ -128,8 +154,9 @@ def load_demo_data():
 def seed_community_demo_command():
     """Add fictional users/pets/reports to a development DB, with known demo logins.
 
-    Run upgrade-community first. Re-running keeps existing demo changes and adds
-    no duplicates. This command never runs automatically when the app starts.
+    Run flask upgrade-community and flask upgrade-sprint3 first. Re-running keeps
+    existing demo changes and adds no duplicates. This command never runs
+    automatically when the app starts.
     """
     if load_demo_data():
         click.echo("Added 12 fictional users, 25 pets, 24 reports, and 8 comments.")

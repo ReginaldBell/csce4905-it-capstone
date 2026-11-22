@@ -89,10 +89,11 @@ def view_settings():
             user_id = current_user.id
             for field, value in cleaned.items():
                 setattr(current_user, field, value)
-            if email_changed:
-                # A link mailed to the old address must not outlive the change.
-                invalidate_reset_tokens(user_id)
             try:
+                if email_changed:
+                    # A link mailed to the old address must not outlive the change.
+                    # This query autoflushes, so it can raise on a concurrent signup.
+                    invalidate_reset_tokens(user_id)
                 db.session.commit()
             except IntegrityError:
                 db.session.rollback()
