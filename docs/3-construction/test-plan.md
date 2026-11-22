@@ -350,8 +350,13 @@ an outcome only after that exact procedure runs, and record the commit and evide
   separately.
 - **TC-107** must be run as owner, another account, and guest, and with a replaced photo
   and a known old link. Also check that a non-owner can open a photo on a shared open
-  report but not after that report is unshared, Found, or Closed. Until then, photo privacy
-  on the Sprint 3 branch is unverified.
+  report but not after that report is unshared, Found, or Closed. Repeat guest and
+  unauthorized requests with `/static/./uploads/<file>`, `/static/x/../uploads/<file>`,
+  `/static/%2e/uploads/<file>`, `/static/x/%2e%2e/uploads/<file>`, and backslash and
+  repeated-slash forms; none may return photo bytes. Confirm other static assets still load.
+  Until then, photo privacy on the Sprint 3 branch is unverified.
+- **TC-605** treats the `pet_ids` checkbox group as one control. `aria-describedby` on its
+  enclosing `fieldset` satisfies the field-error rule.
 
 ### How to run the automated suite
 
@@ -377,3 +382,4 @@ a manual or browser case as Pass. Sprint 3 suite totals are _TBD_.
 | 2026-11-21 | Claude | Recorded Material 3 UI, local database upgrade, and project-owner test evidence |
 | 2026-11-21 | Claude | Add the Sprint 3 case list, scope limits, and suite instructions; all Sprint 3 outcomes remain Not run. |
 | 2026-11-21 | Claude | Apply contract Addenda A and B: partial-case rule and shared photo checks, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: photo path and fieldset checks, on the Sprint 3 integration branch, pending verification. |

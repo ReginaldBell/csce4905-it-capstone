@@ -201,7 +201,8 @@ saved owner phone.
 4. The server validates the values, stores email in lowercase, and saves the changes.
 5. If the email changed, the server invalidates that user's unused reset tokens.
 
-**Alternates:** a blank display name stores `NULL`. An invalid value or used email shows
+**Alternates:** an exactly empty display name stores `NULL`; a whitespace-only value is
+rejected. A POST that omits `email` is not an email change. An invalid value or used email shows
 a field error and saves nothing. A missing or wrong current password during an email
 change shows an error on `current_password`. Owner phone does not appear on community
 pages.
@@ -251,9 +252,10 @@ and do not use the token.
 3. A successful login clears that key's login attempts.
 4. The user goes to a same-site relative `next` path, or to the pet list.
 
-**Alternates:** a failed password adds one attempt. At the limit of 5 failed attempts in
-15 minutes, the response is status 429 with `Too many attempts. Try again later.` and the
-password is not checked. Different emails or client addresses are counted separately.
+**Alternates:** a failed password adds one attempt. Failures 1-5 in 15 minutes return the
+normal login error. The 6th attempt returns status 429 with
+`Too many attempts. Try again later.`, even with a correct password, because the password
+is not checked. Different emails or client addresses are counted separately.
 Absolute URLs, `//host`, backslashes, and control characters in `next` are rejected.
 
 ## Revision history
@@ -264,3 +266,4 @@ Absolute URLs, `//host`, backslashes, and control characters in `next` are rejec
 | 2026-11-04 | Codex | Document eight implemented Sprint 2 use cases, alternate flows, ownership, and output limits. |
 | 2026-11-21 | Claude | Add account editing, password reset, and rate-limited sign-in flows, on the Sprint 3 integration branch, pending verification. |
 | 2026-11-21 | Claude | Apply contract Addenda A and B: token invalidation, reset link, attempt clearing, and session flows, on the Sprint 3 integration branch, pending verification. |
+| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: sixth-attempt limit and display name rule, on the Sprint 3 integration branch, pending verification. |
