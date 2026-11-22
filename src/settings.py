@@ -42,8 +42,11 @@ def _validate_account_form(form):
     if phone and not PHONE_RE.match(phone):
         errors["phone"] = "Enter a valid phone number."
 
-    email = form.get("email", current_user.email).strip().lower()
-    if not email:
+    raw_email = form.get("email")
+    email = current_user.email if raw_email is None else raw_email.strip().lower()
+    if raw_email is None:
+        pass  # Omitted: never an email change, whatever the stored value looks like.
+    elif not email:
         errors["email"] = "Email is required."
     elif len(email) > MAX_EMAIL_LENGTH or not EMAIL_RE.match(email):
         errors["email"] = "Enter a valid email address."
