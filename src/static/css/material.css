@@ -296,14 +296,33 @@ a { text-underline-offset: 2px; }
 
 .form-group input[type="file"] { width: 100%; padding: 0.5rem 0; font: inherit; }
 
+/* iOS Safari can add inline padding and borders outside a full-width date input. */
+.report-datetime {
+  padding-inline: 1rem;
+  border: 1px solid var(--md-outline);
+  border-radius: 4px;
+  background: var(--md-surface);
+}
+
+.form-group .report-datetime input[type="datetime-local"] {
+  min-height: 54px;
+  padding-inline: 0;
+  border: 0;
+  background: transparent;
+  vertical-align: middle;
+}
+
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus,
-.status-form select:focus {
+.status-form select:focus,
+.report-datetime:focus-within {
   border-color: var(--md-primary);
   outline: 2px solid var(--md-primary);
   outline-offset: -2px;
 }
+
+.report-datetime input:focus { outline: none; }
 
 .status-form { flex-wrap: wrap; }
 

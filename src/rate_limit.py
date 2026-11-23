@@ -54,6 +54,37 @@ def record_attempt(scope, email, address):
     db.session.commit()
 
 
+def reserve_attempt(scope, email, address):
+    """Claim one attempt before doing the work; False means the limit is used.
+
+    The row is committed before counting, so concurrent requests see each other
+    and cannot all pass. A refused request removes its row, so blocked retries
+    do not extend the window.
+    """
+    hashed = key_hash(email, address)
+    cutoff = _cutoff(scope)
+    AuthAttempt.query.filter(
+        AuthAttempt.scope == scope, AuthAttempt.created_at <= cutoff
+    ).delete(synchronize_session=False)
+    attempt = AuthAttempt(scope=scope, key_hash=hashed)
+    db.session.add(attempt)
+    db.session.flush()
+    # Read now: a concurrent clear_attempts may delete the row after the commit.
+    attempt_id = attempt.id
+    db.session.commit()
+
+    used = AuthAttempt.query.filter(
+        AuthAttempt.scope == scope,
+        AuthAttempt.key_hash == hashed,
+        AuthAttempt.created_at > cutoff,
+    ).count()
+    allowed = used <= current_app.config[_SETTINGS[scope][0]]
+    if not allowed:
+        AuthAttempt.query.filter_by(id=attempt_id).delete(synchronize_session=False)
+    db.session.commit()
+    return allowed
+
+
 def clear_attempts(scope, email, address):
     AuthAttempt.query.filter_by(
         scope=scope, key_hash=key_hash(email, address)

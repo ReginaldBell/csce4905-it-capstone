@@ -1,6 +1,6 @@
 # Sprint 3 Plan: Profiles, Accounts, and Privacy
 
-**Status:** Implemented on `sprint3/integration`, not merged; 180 automated tests passed; 22 of 27 Sprint 3 cases passed and 5 are Not run | **Sprint dates:** November 7 to December 3, 2026
+**Status:** Merged to `main` through PRs #24 and #25; not deployed or sponsor accepted; review patches P1-P11 pending; 180 automated tests passed at `1724829`; 22 of 27 Sprint 3 cases passed and 5 are Not run | **Sprint dates:** November 7 to December 3, 2026
 
 **Owners:** _TBD_ | **Updated:** November 22, 2026 | **Sponsor approval:** _TBD_
 
@@ -17,7 +17,7 @@ Card IDs are plan IDs, not GitHub issue or PR numbers. The
 
 | Card | Title | Priority | IDs | Test cases | Current state |
 |---|---|---|---|---|---|
-| S3-01 | Merge the nearby feed and Material 3 UI to `main` | Lower, required first | Baseline | Unit tests | Snapshot committed at `5be8fa7`, the Sprint 3 base; not merged to `main` |
+| S3-01 | Merge the nearby feed and Material 3 UI to `main` | Lower, required first | Baseline | Unit tests | Snapshot committed at `5be8fa7`, the Sprint 3 base; merged to `main` through PR #24 |
 | S3-02 | Protect private photo links and retest access | High | NF2 | TC-104, TC-107 | Implemented and bypass fixed; TC-104 and TC-107 passed November 22, 2026 |
 | S3-03 | Finish pet identifying fields | High | R2-R4 | TC-101 to TC-106, TC-108, TC-1003 to TC-1006 | Implemented; test cases passed November 22, 2026 |
 | S3-04 | Add contact addresses | High | R8-R9 | TC-301 to TC-303 | Implemented; test cases passed November 22, 2026 |
@@ -26,12 +26,19 @@ Card IDs are plan IDs, not GitHub issue or PR numbers. The
 | S3-07 | Add password reset | High | R23, NF1 | TC-005, TC-1001 | Implemented; test cases passed November 22, 2026 |
 | S3-08 | Limit repeated sign-in and reset requests | High | NF14 | TC-609, TC-1014 | Sign-in and reset limits implemented and passing; filing and tip limits are in the backlog; TC-609 and TC-1014 stay Not run |
 | S3-09 | Validate the login redirect | High | NF2, R1 | TC-001 to TC-003, TC-1002 | Implemented; test cases passed November 22, 2026 |
-| S3-10 | Fix phone navigation and page overflow | High | NF8 | TC-604 | Overflow fixed; Chrome and Edge passed at 390 and 1280 px; Firefox reported passing; TC-604 stays Not run until Safari is tested |
+| S3-10 | Fix phone navigation and page overflow | High | NF8 | TC-604 | Overflow fixed; Chrome and Edge passed at 390 and 1280 px; Firefox reported passing; latest `main` CI checked 2 of 8 desktop Safari pages and 0 iOS pages; TC-604 stays Not run |
 | S3-11 | Check forms and keyboard use | High | NF5, NF12 | TC-605, TC-607 | Implemented; available checks passed; TC-605 needs report editing and TC-607 needs tips |
 | S3-12 | Run Sprint 3 cases and finalize documents | High | All above | 27 assigned cases | Official run recorded: 22 Pass, 5 Not run |
 
 S3-09 covers only the `next` redirect after login. Registration keeps its visible
 duplicate-email error because TC-002 requires a clear error for a used email.
+
+## Review patches
+
+Review findings P1-P11 are on `sprint3-fix/*` branches, pending integration and
+verification. See [PROJECT_STATE.md](../../PROJECT_STATE.md#sprint-3-review-patches).
+The known review bugs remain on `main` until they merge. They do not change any recorded
+test outcome.
 
 ## Backlog
 
@@ -43,7 +50,7 @@ complete and are not Sprint 3 commitments.
 | Real email delivery | Sprint 4, with the first QA deploy | Choose a provider and sending address, set `APP_BASE_URL` and `MAIL_*`, and deliver a reset email to a test inbox. Local reset emails print to the app console until then. |
 | Upgrade the existing local database | Before this build runs on `infra_pgdata` | Back up the database and photos, run `flask init-db`, `flask upgrade-community`, and `flask upgrade-sprint3`, then confirm record counts. |
 | Report-filing and tip request limits | Sprint 4 | Build the limits with their features, then finish TC-609 and TC-1014. |
-| Finish remaining Sprint 3 cases | Safari now; others in Sprint 4 | Run TC-604 in Safari, TC-605 after report editing, and TC-607 after tips. |
+| Finish remaining Sprint 3 cases | Safari now; others in Sprint 4 | Fix and verify Safari CI (P11), run TC-604 in Safari, TC-605 after report editing, and TC-607 after tips. |
 
 ## Sprint 4 bucket
 
@@ -98,7 +105,7 @@ the team's Requirements document where a requirement exists.
 | Compose mail settings | S3-06 | Project owner approved November 21, 2026: `APP_BASE_URL` and `MAIL_*` are passed to `web` |
 | Card owners | Now | _TBD_ |
 | Whether proposed MVP items become requirements | Sprint 4 planning | _TBD_ |
-| ZIP search versus the current map and radius feed | Sprint 5 | _TBD_; requirements specify ZIP, the branch uses coordinates |
+| ZIP search versus the current map and radius feed | Sprint 5 | _TBD_; requirements specify ZIP, the app uses coordinates |
 
 ## Course documents
 
@@ -110,13 +117,15 @@ and the team completes the Reflection.
 
 | Date | Author | Summary |
 |---|---|---|
-| 2026-11-21 | Claude | Create the Sprint 3 MVP production-readiness plan. |
-| 2026-11-21 | Claude | Apply the project owner's priorities: security and product gaps High, all other cards Lower. |
-| 2026-11-21 | Claude | Align Sprint 3 to the team's official scope and move remaining MVP work to its target sprints. |
-| 2026-11-21 | Claude | Narrow S3-09 to login redirect validation, record the registration decision, and update card states to pending verification. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: approved decisions, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Add real email delivery, the existing database upgrade, and filing and tip limits to the backlog. |
-| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
-| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
-| 2026-11-22 | Claude | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
-| 2026-11-22 | Claude | Move report editing, private tips, the public report page, and filing and tip limits into the Sprint 4 bucket. |
+| 2026-11-21 | IT Capstone Team (B) | Create the Sprint 3 MVP production-readiness plan. |
+| 2026-11-21 | IT Capstone Team (B) | Apply the project owner's priorities: security and product gaps High, all other cards Lower. |
+| 2026-11-21 | IT Capstone Team (B) | Align Sprint 3 to the team's official scope and move remaining MVP work to its target sprints. |
+| 2026-11-21 | IT Capstone Team (B) | Narrow S3-09 to login redirect validation, record the registration decision, and update card states to pending verification. |
+| 2026-11-21 | IT Capstone Team (B) | Apply contract Addenda A and B: approved decisions, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | IT Capstone Team (B) | Add real email delivery, the existing database upgrade, and filing and tip limits to the backlog. |
+| 2026-11-22 | IT Capstone Team (B) | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | IT Capstone Team (B) | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-22 | IT Capstone Team (B) | Record the project owner's Firefox report; TC-604 stays Not run until Safari is tested. |
+| 2026-11-22 | IT Capstone Team (B) | Move report editing, private tips, the public report page, and filing and tip limits into the Sprint 4 bucket. |
+| 2026-11-22 | IT Capstone Team (B) | Record pending patches P1-P11 and the failing Safari CI result; TC-604 stays Not run. |
+| 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. |

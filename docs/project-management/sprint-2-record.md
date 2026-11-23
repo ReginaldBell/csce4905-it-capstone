@@ -228,4 +228,4 @@ rather than being inferred from merged code.
 
 | Date | Author | Summary |
 |---|---|---|
-| 2026-11-04 | Codex | Record Sprint 2 delivery, decisions, dependencies, review fixes, merges, and evidence limits. |
+| 2026-11-04 | IT Capstone Team (B) | Record Sprint 2 delivery, decisions, dependencies, review fixes, merges, and evidence limits. |

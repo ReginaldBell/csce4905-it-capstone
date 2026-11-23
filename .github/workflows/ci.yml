@@ -29,7 +29,7 @@ jobs:
 
   safari-render:
     runs-on: macos-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -39,6 +39,7 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install -r requirements.txt
       - name: Check layouts in desktop and iOS Simulator Safari
+        timeout-minutes: 40
         run: |
           python - <<'PY'
           import base64
@@ -53,6 +54,7 @@ jobs:
           import sys
           import tempfile
           import time
+          import zlib
           from urllib.error import HTTPError, URLError
           from urllib.parse import urlsplit
           from urllib.request import ProxyHandler, Request, build_opener
@@ -60,10 +62,113 @@ jobs:
           local_http = build_opener(ProxyHandler({}))
           artifacts = Path(os.environ["RUNNER_TEMP"]) / "safari-render"
           artifacts.mkdir(exist_ok=True)
-          result = {"commit": os.environ["GITHUB_SHA"], "browsers": {}, "errors": []}
+          result = {"commit": os.environ["GITHUB_SHA"], "browsers": {}, "errors": [], "passed": False}
+          expected_pages = ("contacts-new", "contacts", "contact-detail", "report-filing",
+                            "report-filing-populated", "report-detail", "flyer", "agency-email", "phone-script")
 
-          def output(*command):
-              return subprocess.check_output(command, text=True, timeout=60).strip()
+          def save_result():
+              # Written after every page so a step timeout still leaves usable evidence.
+              summary = json.dumps(result, indent=2)
+              (artifacts / "result.json").write_text(summary + "\n", encoding="utf-8")
+              return summary
+
+          def note(message):
+              line = f"[{time.strftime('%H:%M:%S')}] {message}"
+              print(line, flush=True)
+              with (artifacts / "diagnostics.log").open("a", encoding="utf-8") as log:
+                  log.write(line + "\n")
+
+          def output(*command, timeout=60, attempts=1, recover=None):
+              # Bounded retries for slow runner tools. The last failure is always raised.
+              for attempt in range(1, attempts + 1):
+                  started = time.monotonic()
+                  try:
+                      value = subprocess.run(command, check=True, text=True, timeout=timeout,
+                                             stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.strip()
+                      note(f"ok in {time.monotonic() - started:.0f}s: {' '.join(command[:4])}")
+                      return value
+                  except (subprocess.TimeoutExpired, subprocess.CalledProcessError) as error:
+                      stderr = getattr(error, "stderr", "") or ""
+                      if isinstance(stderr, bytes):
+                          stderr = stderr.decode(errors="replace")
+                      note(f"attempt {attempt}/{attempts} failed after {time.monotonic() - started:.0f}s: "
+                           f"{' '.join(command[:4])}: {type(error).__name__} {stderr[-400:]}")
+                      if attempt == attempts:
+                          raise
+                      if recover:
+                          recover()
+                      time.sleep(5)
+
+          def restart_simulator_service():
+              # launchd restarts this service on the next simctl call.
+              subprocess.run(["killall", "-9", "com.apple.CoreSimulator.CoreSimulatorService"],
+                             check=False, timeout=15, capture_output=True)
+
+          def painted_pixels(png, box):
+              """Count high-contrast pixels inside box (left, top, right, bottom) of an 8-bit PNG."""
+              if png[:8] != b"\x89PNG\r\n\x1a\n":
+                  raise RuntimeError("Screenshot is not a PNG")
+              position, compressed, header = 8, [], None
+              while position < len(png):
+                  size = int.from_bytes(png[position:position + 4], "big")
+                  kind = png[position + 4:position + 8]
+                  body = png[position + 8:position + 8 + size]
+                  if kind == b"IHDR":
+                      header = body
+                  elif kind == b"IDAT":
+                      compressed.append(body)
+                  elif kind == b"IEND":
+                      break
+                  position += size + 12
+              width = int.from_bytes(header[:4], "big")
+              height = int.from_bytes(header[4:8], "big")
+              depth, color, interlace = header[8], header[9], header[12]
+              channels = {2: 3, 6: 4}.get(color)
+              if depth != 8 or channels is None or interlace:
+                  raise RuntimeError(f"Unsupported screenshot PNG: depth={depth} color={color} interlace={interlace}")
+              left, top = max(0, int(box[0])), max(0, int(box[1]))
+              right, bottom = min(width, int(box[2]) + 1), min(height, int(box[3]) + 1)
+              if right <= left or bottom <= top:
+                  return 0, 0
+              stream = zlib.decompressobj()
+              raw = stream.decompress(b"".join(compressed), (bottom * (width * channels + 1)))
+              stride = width * channels
+              previous = bytearray(stride)
+              levels = []
+              for row in range(bottom):
+                  start = row * (stride + 1)
+                  kind = raw[start]
+                  line = bytearray(raw[start + 1:start + 1 + stride])
+                  if kind == 1:
+                      for i in range(channels, stride):
+                          line[i] = (line[i] + line[i - channels]) & 255
+                  elif kind == 2:
+                      for i in range(stride):
+                          line[i] = (line[i] + previous[i]) & 255
+                  elif kind == 3:
+                      for i in range(stride):
+                          before = line[i - channels] if i >= channels else 0
+                          line[i] = (line[i] + (before + previous[i]) // 2) & 255
+                  elif kind == 4:
+                      for i in range(stride):
+                          a = line[i - channels] if i >= channels else 0
+                          b = previous[i]
+                          c = previous[i - channels] if i >= channels else 0
+                          p = a + b - c
+                          pa, pb, pc = abs(p - a), abs(p - b), abs(p - c)
+                          predictor = a if pa <= pb and pa <= pc else b if pb <= pc else c
+                          line[i] = (line[i] + predictor) & 255
+                  elif kind != 0:
+                      raise RuntimeError(f"Invalid PNG filter {kind}")
+                  if row >= top:
+                      levels.extend((line[x * channels] * 299 + line[x * channels + 1] * 587 +
+                                     line[x * channels + 2] * 114) // 1000 for x in range(left, right))
+                  previous = line
+              counts = {}
+              for level in levels:
+                  counts[level] = counts.get(level, 0) + 1
+              background = max(counts, key=counts.get)
+              return sum(count for level, count in counts.items() if abs(level - background) >= 48), len(levels)
 
           def local_port():
               with socket.socket() as listener:
@@ -115,19 +220,43 @@ jobs:
                   tail = log_path.read_text(encoding="utf-8", errors="replace")[-2000:]
                   raise RuntimeError(f"{error}; last HTTP error: {last_error}; {filename}:\n{tail}") from error
 
-          def driver(method, path, payload=None):
+          def driver(method, path, payload=None, timeout=90):
               data = json.dumps(payload).encode() if payload is not None else None
-              request = Request(driver_url + path, data=data, method=method,
-                                headers={"Content-Type": "application/json"})
-              try:
-                  with local_http.open(request, timeout=90) as response:
-                      return json.load(response)["value"]
-              except HTTPError as error:
-                  detail = json.load(error)["value"]
-                  raise RuntimeError(f"Safari WebDriver {method} {path}: {detail['message']}") from error
+              # Only reads are retried. Repeating a POST could submit an action twice.
+              attempts = 3 if method == "GET" else 1
+              for attempt in range(1, attempts + 1):
+                  request = Request(driver_url + path, data=data, method=method,
+                                    headers={"Content-Type": "application/json"})
+                  try:
+                      with local_http.open(request, timeout=timeout) as response:
+                          return json.load(response)["value"]
+                  except HTTPError as error:
+                      body = error.read().decode(errors="replace")
+                      try:
+                          detail = json.loads(body)["value"]["message"]
+                      except (ValueError, KeyError, TypeError):
+                          detail = body[:500]
+                      raise RuntimeError(f"Safari WebDriver {method} {path}: {detail}") from error
+                  except (URLError, TimeoutError) as error:
+                      note(f"WebDriver {method} {path} attempt {attempt}/{attempts}: {error}")
+                      if attempt == attempts:
+                          raise RuntimeError(f"Safari WebDriver {method} {path}: {error}") from error
+                      time.sleep(2)
+
+          def new_session(capabilities, recover=None):
+              attempts = 3 if recover else 1
+              for attempt in range(1, attempts + 1):
+                  try:
+                      return driver("POST", "/session", {"capabilities": {"alwaysMatch": capabilities}}, timeout=180)
+                  except RuntimeError as error:
+                      note(f"session attempt {attempt}/{attempts} failed: {error}")
+                      if attempt == attempts:
+                          raise
+                      recover()
 
           def simulator():
-              inventory = json.loads(output("xcrun", "simctl", "list", "--json"))
+              inventory = json.loads(output("xcrun", "simctl", "list", "--json",
+                                            timeout=120, attempts=3, recover=restart_simulator_service))
               # These iPhones have a 1170-pixel-wide display at 3×. Verify 390 CSS px in Safari too.
               models = {"iPhone 12", "iPhone 12 Pro", "iPhone 13", "iPhone 13 Pro",
                         "iPhone 14", "iPhone 16e", "iPhone 17e"}
@@ -143,13 +272,30 @@ jobs:
                                      "Expected iPhone 12/13 (including Pro), 14, 16e, or 17e.")
               return max(candidates, key=lambda candidate: tuple(map(int, candidate[0]["version"].split("."))))
 
-          def exercise(name, capabilities, evidence):
-              session = driver("POST", "/session", {"capabilities": {"alwaysMatch": capabilities}})
+          def prepare_simulator(udid):
+              # bootstatus -b boots when needed and returns only after the device is ready.
+              output("xcrun", "simctl", "bootstatus", udid, "-b", timeout=300, attempts=2)
+              developer_dir = Path(os.environ.get("DEVELOPER_DIR") or output("xcode-select", "-p"))
+              simulator_app = developer_dir / "Applications" / "Simulator.app"
+              output("open", "-g", "-a", str(simulator_app), timeout=60, attempts=3)
+              wait_for("Simulator.app process",
+                       lambda: subprocess.run(["pgrep", "-x", "Simulator"], capture_output=True, timeout=10).returncode == 0,
+                       seconds=60)
+              launch_mobile_safari(udid)
+
+          def launch_mobile_safari(udid):
+              # WebDriver attaches faster when MobileSafari is already running.
+              output("xcrun", "simctl", "launch", "--terminate-running-process", udid, "com.apple.mobilesafari",
+                     timeout=90, attempts=2)
+              time.sleep(5)
+
+          def exercise(name, capabilities, evidence, recover=None):
+              session = new_session(capabilities, recover)
               root = "/session/" + session["sessionId"]
               screenshots = set()
               try:
-                  def js(script, *args):
-                      return driver("POST", root + "/execute/sync", {"script": script, "args": args})
+                  def js(script, *args, timeout=90):
+                      return driver("POST", root + "/execute/sync", {"script": script, "args": args}, timeout=timeout)
 
                   def navigate(path):
                       driver("POST", root + "/url", {"url": app_url + path})
@@ -174,33 +320,117 @@ jobs:
 
                       return wait_for(f"{name} form {selector} to reach {destination}", arrived)
 
-                  def check_page(label, path, expected, heading_text=""):
-                      navigate(path)
-                      data = js("""
+                  def read_page(expected, heading_text):
+                      return js("""
                           const html = document.documentElement;
+                          const heading = document.querySelector('main h1')?.textContent.trim() ?? '';
+                          const dateField = document.querySelector('input#last_seen_at');
+                          const inputBox = dateField?.getBoundingClientRect();
+                          const wrapperBox = dateField?.parentElement.getBoundingClientRect();
                           return {
+                              actualUrl: location.href,
+                              actualPath: location.pathname,
+                              title: document.title,
+                              readyState: document.readyState,
+                              heading,
                               expectedContent: document.querySelector(arguments[0]) !== null &&
-                                  document.querySelector('main h1').textContent.includes(arguments[1]),
+                                  heading.length > 0 && heading.includes(arguments[1]),
                               layoutWidth: html.clientWidth,
                               screenWidth: screen.width,
                               scrollWidth: Math.max(html.scrollWidth, document.body.scrollWidth),
-                              innerWidth: innerWidth
+                              innerWidth: innerWidth,
+                              dateField: dateField ? {
+                                  value: dateField.value,
+                                  overflowPx: Math.max(0, Math.round(wrapperBox.left - inputBox.left),
+                                      Math.round(inputBox.right - wrapperBox.right))
+                              } : null
                           };
-                      """, expected, heading_text)
-                      screenshot = f"{name}-{label}.png"
+                      """, expected, heading_text, timeout=5)
 
-                      def new_frame():
-                          png = driver("GET", root + "/screenshot")
-                          return png if png not in screenshots else None
+                  def check_page(label, path, expected, heading_text="", last_seen_at=None):
+                      data = {}
+                      probe_error = None
 
-                      png = wait_for(f"{name} screenshot for {label}", new_frame, seconds=10)
-                      screenshots.add(png)
-                      (artifacts / screenshot).write_bytes(base64.b64decode(png, validate=True))
-                      data.update({"page": label, "path": path, "screenshot": screenshot,
+                      def ready():
+                          nonlocal data, probe_error
+                          try:
+                              data = read_page(expected, heading_text)
+                              probe_error = None
+                          except RuntimeError as error:
+                              probe_error = str(error)
+                              return None
+                          if data["actualPath"] == path and data["readyState"] == "complete" and data["expectedContent"]:
+                              return data
+                          return None
+
+                      try:
+                          driver("POST", root + "/url", {"url": app_url + path})
+                          wait_for(f"{name} {path} to load {expected}", ready, seconds=20)
+                      except RuntimeError as error:
+                          data.update({"page": label, "path": path, "probeError": probe_error})
+                          if not data.get("actualUrl"):
+                              try:
+                                  data["actualUrl"] = driver("GET", root + "/url", timeout=5)
+                              except RuntimeError as url_error:
+                                  data["urlError"] = str(url_error)
+                          diagnostic = f"{name}-{label}-not-ready.png"
+                          try:
+                              encoded = driver("GET", root + "/screenshot", timeout=5)
+                              (artifacts / diagnostic).write_bytes(base64.b64decode(encoded, validate=True))
+                              data["diagnosticScreenshot"] = diagnostic
+                          except (RuntimeError, ValueError) as screenshot_error:
+                              data["diagnosticScreenshotError"] = str(screenshot_error)
+                          evidence["pages"].append(data)
+                          save_result()
+                          raise RuntimeError(f"{error}; last page state: {data}") from error
+
+                      if last_seen_at is not None:
+                          js("""
+                              const input = document.querySelector('#last_seen_at');
+                              input.value = arguments[0];
+                              input.dispatchEvent(new Event('input', {bubbles: true}));
+                          """, last_seen_at)
+                          data = read_page(expected, heading_text)
+                          if data["dateField"]["value"] != last_seen_at:
+                              raise RuntimeError(f"{name} did not retain the report date input: {data['dateField']}")
+                      data.update({"page": label, "path": path,
                                    "overflowPx": max(0, data["scrollWidth"] - data["layoutWidth"])})
+                      screenshot = f"{name}-{label}.png"
+                      last = {}
+
+                      def painted_frame():
+                          # The page's own heading must contain visible pixels, and the frame must be new.
+                          state = driver("POST", root + "/execute/async", {"script": settle_script, "args": []})
+                          encoded = driver("GET", root + "/screenshot", timeout=60)
+                          png = base64.b64decode(encoded, validate=True)
+                          width = int.from_bytes(png[16:20], "big")
+                          scale = width / state["viewportWidth"]
+                          margin = state["height"] * scale
+                          box = (state["x"] * scale, state["y"] * scale - margin,
+                                 (state["x"] + state["width"]) * scale, (state["y"] + state["height"]) * scale + margin)
+                          ink, area = painted_pixels(png, box)
+                          last.update({"png": png, "state": state, "inkPixels": ink, "cropPixels": area,
+                                       "imageWidth": width, "duplicate": encoded in screenshots})
+                          if ink >= max(8, area // 500) and encoded not in screenshots:
+                              screenshots.add(encoded)
+                              return png
+                          time.sleep(1)
+                          return None
+
+                      try:
+                          png = wait_for(f"{name} painted screenshot for {label}", painted_frame, seconds=45)
+                      except RuntimeError as error:
+                          if last:
+                              (artifacts / f"{name}-{label}-unpainted.png").write_bytes(last["png"])
+                          details = {key: value for key, value in last.items() if key != "png"}
+                          data["screenshotFailure"] = details
+                          evidence["pages"].append(data)
+                          save_result()
+                          raise RuntimeError(f"{error}; last frame: {details}") from error
+                      (artifacts / screenshot).write_bytes(png)
+                      data.update({"screenshot": screenshot, "inkPixels": last["inkPixels"]})
                       evidence["pages"].append(data)
-                      if not data["expectedContent"]:
-                          raise RuntimeError(f"{name} {label} did not render {expected}")
+                      save_result()
                       if name == "ios" and (data["screenWidth"], data["layoutWidth"]) != (390, 390):
                           raise RuntimeError(f"{name} {label} did not render at 390 CSS px: {data}")
                       if name == "desktop" and data["layoutWidth"] < 1000:
@@ -208,7 +438,13 @@ jobs:
 
                   evidence["browserVersion"] = session["capabilities"].get("browserVersion")
                   if name == "desktop":
-                      driver("POST", root + "/window/rect", {"x": 0, "y": 0, "width": 1280, "height": 800})
+                      # Hosted runners report a 1024 px display, so keep the window on screen.
+                      driver("POST", root + "/url", {"url": app_url + "/login"})
+                      display = driver("POST", root + "/execute/sync", {
+                          "script": "return {width: screen.availWidth, height: screen.availHeight};", "args": []})
+                      evidence["display"] = display
+                      driver("POST", root + "/window/rect", {"x": 0, "y": 0, "width": min(1280, display["width"]),
+                                                             "height": min(800, display["height"])})
                   navigate("/login")
                   evidence["userAgent"] = js("return navigator.userAgent;")
                   if not evidence["browserVersion"]:
@@ -216,14 +452,18 @@ jobs:
                       evidence["browserVersion"] = version.group(1) if version else "unreported"
                   submit("#email", {"email": "demo01@example.com", "password": "DemoPass123!"}, r"/pets/?")
 
-                  check_page("contacts-new", "/contacts/new", "input#category")
+                  check_page("contacts-new", "/contacts/new", "input#category", "Add a contact")
                   contact_name = "C" * (100 - len(name)) + name
                   contact = submit("#category", {"category": "Shelter", "name": contact_name,
                                                  "phone": "940-555-0100", "email": "shelter@example.test"},
                                    r"/contacts/\d+")
                   check_page("contacts", "/contacts", "a[href^='/contacts/']")
                   check_page("contact-detail", contact, ".pet-details", contact_name)
-                  check_page("report-filing", "/reports/new", "input[name='pet_ids']")
+                  report_heading = "File a missing pet report"
+                  report_date = 'input#last_seen_at[type="datetime-local"]'
+                  check_page("report-filing", "/reports/new", report_date, report_heading, last_seen_at="")
+                  check_page("report-filing-populated", "/reports/new", report_date, report_heading,
+                             last_seen_at="2024-10-15T14:30")
                   report = submit("#last_seen_location", {"last_seen_location": "Fictional park",
                                                         "notes": "Fictional CI missing-pet report."},
                                   r"/reports/\d+", pick_pet=True)
@@ -232,11 +472,40 @@ jobs:
                   contact_id = contact.rsplit("/", 1)[-1]
                   check_page("agency-email", f"{report}/email/{contact_id}", "textarea#email-body", contact_name)
                   check_page("phone-script", f"{report}/phone-script/{contact_id}", "textarea#phone-script", contact_name)
-                  overflowing = [page["page"] for page in evidence["pages"] if page["overflowPx"]]
+                  overflowing = [page["page"] for page in evidence["pages"]
+                                 if page["overflowPx"] or (page["dateField"] or {}).get("overflowPx")]
                   if overflowing:
                       raise RuntimeError(f"{name} horizontal overflow: {', '.join(overflowing)}")
+                  checked = [page["page"] for page in evidence["pages"] if page.get("screenshot")]
+                  if tuple(checked) != expected_pages:
+                      raise RuntimeError(f"{name} checked {len(checked)} of {len(expected_pages)} pages: {checked}")
               finally:
-                  driver("DELETE", root)
+                  # A cleanup error must not replace the failure that ended the browser check.
+                  try:
+                      driver("DELETE", root, timeout=30)
+                  except RuntimeError as error:
+                      note(f"{name} session cleanup failed: {error}")
+
+          settle_script = """
+              const done = arguments[arguments.length - 1];
+              let finished = false;
+              const report = () => {
+                  if (finished) return;
+                  finished = true;
+                  const range = document.createRange();
+                  range.selectNodeContents(document.querySelector('main h1'));
+                  const box = range.getBoundingClientRect();
+                  done({x: box.left, y: box.top, width: box.width, height: box.height,
+                        viewportWidth: innerWidth, viewportHeight: innerHeight,
+                        devicePixelRatio: devicePixelRatio, visibility: document.visibilityState,
+                        focused: document.hasFocus(), readyState: document.readyState});
+              };
+              document.querySelector('main h1').scrollIntoView({block: 'center'});
+              // Animation frames stop in a hidden page, so the timer keeps this bounded.
+              setTimeout(report, 3000);
+              const fonts = document.fonts ? document.fonts.ready : Promise.resolve();
+              fonts.then(() => requestAnimationFrame(() => requestAnimationFrame(report)), report);
+          """
 
           try:
               result["macOSVersion"] = output("sw_vers", "-productVersion")
@@ -257,33 +526,31 @@ jobs:
                   driver_url = f"http://127.0.0.1:{driver_port}"
                   safari_driver = launch(stack, "safaridriver.log", ["safaridriver", "--port", str(driver_port)])
                   wait_for_server(driver_url + "/status", safari_driver, "safaridriver.log")
+                  # Start CoreSimulator during the desktop check so its slow first response is not on the iOS clock.
+                  launch(stack, "simctl-warmup.log", ["xcrun", "simctl", "list", "runtimes"])
 
                   for name in ("desktop", "ios"):
                       evidence = result["browsers"][name] = {"pages": []}
                       capabilities = {"browserName": "safari", "platformName": "mac"}
+                      recover = None
                       try:
                           if name == "ios":
                               runtime, device = simulator()
                               udid = device["udid"]
                               evidence.update({"iOSVersion": runtime["version"], "device": device["name"]})
-                              if device["state"] != "Booted":
-                                  subprocess.run(["xcrun", "simctl", "boot", udid], check=True, timeout=60)
-                              developer_dir = Path(os.environ.get("DEVELOPER_DIR") or output("xcode-select", "-p"))
-                              simulator_app = developer_dir / "Applications" / "Simulator.app"
-                              subprocess.run(["open", "-a", str(simulator_app)], check=True, timeout=30)
-                              subprocess.run(["xcrun", "simctl", "bootstatus", udid, "-b"], check=True, timeout=240)
+                              prepare_simulator(udid)
+                              recover = lambda: launch_mobile_safari(udid)
                               capabilities.update({"platformName": "ios", "safari:useSimulator": True,
                                                    "safari:deviceUDID": udid})
-                          exercise(name, capabilities, evidence)
+                          exercise(name, capabilities, evidence, recover)
                       except Exception as error:
                           result["errors"].append(f"{name}: {error}")
+                      save_result()
           except Exception as error:
               result["errors"].append(f"setup: {error}")
           finally:
               result["passed"] = not result["errors"]
-              summary = json.dumps(result, indent=2)
-              (artifacts / "result.json").write_text(summary + "\n", encoding="utf-8")
-              print(summary)
+              print(save_result())
           if result["errors"]:
               raise SystemExit(1)
           PY

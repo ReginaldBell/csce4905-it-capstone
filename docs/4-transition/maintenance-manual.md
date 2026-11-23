@@ -1,8 +1,8 @@
 # Maintenance Manual
 
-**Phase:** Transition | **Status:** Sprint 2 implementation documented; Sprint 3 operations implemented on `sprint3/integration`, not merged; production handover _TBD_
+**Phase:** Transition | **Status:** Sprint 2 implementation documented; Sprint 3 operations merged to `main` through PRs #24 and #25; not deployed; production handover _TBD_
 
-**Owner:** _TBD_ | **Audience:** maintainers | **Baseline:** `4d51cc3`, November 4, 2026
+**Owner:** _TBD_ | **Audience:** maintainers | **Baseline:** Sprint 2 at `4d51cc3`, November 4, 2026; current `main` reviewed at `8038dc8`, including Sprint 3
 
 ## 1. System overview
 
@@ -222,8 +222,7 @@ Temporary review harnesses are not a committed test suite or CI pipeline.
 
 ## 8. Known limits and handover work
 
-- On `main`, uploaded photo URLs are directly accessible, and owned application routes
-  do not constitute private media delivery. On the Sprint 3 branch, they are
+- Since Sprint 3 merged to `main`, uploaded photo URLs are
   access-checked, and TC-107 passed on November 22, 2026.
 - Clipboard handlers were inspected, but browser permission/failure cases and
   a formal browser support matrix were not fully tested.
@@ -240,7 +239,7 @@ once one exists.
 
 ## 9. Sprint 3 upgrade and operations
 
-This section applies to work implemented on `sprint3/integration`, not merged. The upgrade ran on the
+This section applies to Sprint 3 work merged to `main` through PRs #24 and #25. It is not deployed. The upgrade ran on the
 isolated `petfinder-qa` database on November 22, 2026 with record counts unchanged. It has
 not run on `infra_pgdata` or any deployed database.
 
@@ -250,7 +249,7 @@ Back up first. There is no downgrade command, and restoring the dump has not bee
 
 1. Confirm which database you are changing. Compose names the project `infra` from the
    folder name, so **every checkout uses the same `infra_pgdata` volume by default**. To
-   try the branch without touching it, stop the `infra` stack and add a separate project
+   try this version without touching it, stop the `infra` stack and add a separate project
    name such as `-p pfs3-trial` to each Compose command.
 2. Take the database dump in [section 4](#persistence-and-backups) and confirm that it
    ends with `PostgreSQL database dump complete`.
@@ -327,6 +326,30 @@ effect on that stack, so the defaults above apply. Forwarding them needs an appr
   share one address. Review this before deployment.
 - Retention and cleanup for `auth_attempts` and `password_reset_tokens` are _TBD_.
 
+### Pending review patches
+
+The behavior in this subsection applies only after patches P1-P11 are integrated and
+verified. They are on `sprint3-fix/*` branches and are not recorded as passed, merged, or
+deployed, so the known review bugs remain on `main` until they merge. See [PROJECT_STATE.md](../../PROJECT_STATE.md#sprint-3-review-patches).
+
+| Patch | Operating change | What maintainers should do |
+|---|---|---|
+| P1, reset link | With `smtp` and no `APP_BASE_URL`, nothing is sent, even in debug. An error is logged without the token and the user sees the generic message | Set `APP_BASE_URL` wherever `smtp` is used |
+| P2, verified TLS | With `MAIL_USE_TLS=true`, STARTTLS verifies the certificate and hostname | Set `MAIL_HOST` to a name on the certificate. A self-signed or private-CA relay fails unless the container trusts it |
+| P3, sign-in limit | An attempt is reserved before the password check. Failures 1-5 show the normal error. The 6th attempt returns 429 even with the correct password. A correct password within the limit clears that key | Expect the same limit under concurrent requests |
+| P4, reset limit | An accepted request is reserved before sending. A blocked retry sends nothing, shows the generic page, and does not extend the block | Wait for the window to pass; repeated retries do not lengthen it |
+| P5, email change | A concurrent email conflict shows the inline email-taken error and rolls back | Treat a 500 on this path as a defect |
+| P6, measurements | Very small saved values display in plain decimal form | Do not rewrite stored values |
+| P7, comments | The author can delete a retained comment from `Your comments on unshared reports` on `/community`, then returns to the feed. Other requests get 404 | The section shows only that user's comment text, date, and Delete button. Unsharing still hides the post and comments from everyone else |
+| P8, background SMTP | With `smtp`, reset mail sends from a daemon thread, so a slow server does not delay the response. `console` and `memory` stay synchronous | Check web logs for a send failure. Only the error type is logged. There is no retry, and a process stop can lose a message in progress |
+| P9, registration email | Registration applies `MAX_EMAIL_LENGTH` and shows a field error | Treat a 500 on this path as a defect |
+| P10, seed prerequisite | If Sprint 3 pet columns are missing, the seed prints the required commands and exits nonzero without a partial seed | Run `flask init-db`, `flask upgrade-community`, and `flask upgrade-sprint3` before `flask seed-community-demo` |
+| P11, Safari CI | The job adds bounded waits, Simulator readiness checks, retries, and diagnostics. It still fails if any of the 8 pages is unchecked in either browser, overflows, or lacks expected content, or if iOS is not 390 px | Read the `safari-render` artifact. Do not use `continue-on-error` |
+
+The latest `main` CI run, [45063727705](https://github.com/ReginaldBell/csce4905-it-capstone/actions/runs/45063727705), failed `safari-render`: desktop Safari
+checked 2 of 8 pages and iOS checked 0. TC-604 stays Not run. A passing job is evidence
+for that case, not a replacement for its full written procedure.
+
 ### Sprint 3 troubleshooting
 
 | Symptom | Check / action |
@@ -345,11 +368,13 @@ effect on that stack, so the defaults above apply. Forwarding them needs an appr
 | Date | Author | Summary |
 |---|---|---|
 | _TBD_ | _TBD_ | Initial draft template |
-| 2026-11-04 | Codex | Document Sprint 2 setup, data lifecycle, configuration, preservation rules, verification, and operational limits. |
-| 2026-11-21 | Claude | Add the community upgrade step and Material 3 UI files for the unmerged UI branch. |
-| 2026-11-21 | Claude | Add the manual pre-upgrade backup procedure and its limits. |
-| 2026-11-21 | Claude | Add Sprint 3 upgrade order, backup, environment, and troubleshooting; correct the photo access statement, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Apply contract Addenda A and B: mail settings, console behavior, sessions, and troubleshooting, implemented on `sprint3/integration`, not merged. |
-| 2026-11-21 | Claude | Apply integration corrections and contract Addenda C and D: mail fallbacks, unforwarded limit settings, upgrade columns, and photo paths, implemented on `sprint3/integration`, not merged. |
-| 2026-11-22 | Claude | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
-| 2026-11-22 | Claude | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-04 | IT Capstone Team (B) | Document Sprint 2 setup, data lifecycle, configuration, preservation rules, verification, and operational limits. |
+| 2026-11-21 | IT Capstone Team (B) | Add the community upgrade step and Material 3 UI files for the unmerged UI branch. |
+| 2026-11-21 | IT Capstone Team (B) | Add the manual pre-upgrade backup procedure and its limits. |
+| 2026-11-21 | IT Capstone Team (B) | Add Sprint 3 upgrade order, backup, environment, and troubleshooting; correct the photo access statement, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | IT Capstone Team (B) | Apply contract Addenda A and B: mail settings, console behavior, sessions, and troubleshooting, implemented on `sprint3/integration`, not merged. |
+| 2026-11-21 | IT Capstone Team (B) | Apply integration corrections and contract Addenda C and D: mail fallbacks, unforwarded limit settings, upgrade columns, and photo paths, implemented on `sprint3/integration`, not merged. |
+| 2026-11-22 | IT Capstone Team (B) | Replace pending Sprint 3 status with recorded automated, QA, and owner-check evidence. |
+| 2026-11-22 | IT Capstone Team (B) | Record the official Sprint 3 run: 22 Pass and 5 Not run, with the 390 px heading overflow fixed. |
+| 2026-11-22 | IT Capstone Team (B) | Document pending patches P1-P11: reset mail, verified TLS, background SMTP, atomic limits, comments, measurements, seed prerequisite, and Safari CI. |
+| 2026-11-22 | IT Capstone Team (B) | Record Sprint 3 as merged through PRs #24 and #25, not deployed or sponsor accepted, with P1-P11 still pending. Add the P7 entry point. |

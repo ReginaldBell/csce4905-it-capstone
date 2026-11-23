@@ -11,6 +11,7 @@ from unittest import mock
 from extensions import db
 from models import User
 from sprint3_base import Sprint3TestCase
+from sprint3_fix_helpers import FakeSMTP
 
 GENERIC = "If an account exists for that email, we sent a reset link."
 INVALID = "This reset link is invalid or has expired."
@@ -189,24 +190,37 @@ class PasswordResetTests(Sprint3TestCase):
         self.assertNotIn(stored, logged)
 
     def test_tc_005_send_failure_is_logged_without_token_and_stays_generic(self):
+        # APP_BASE_URL is required for smtp (P1), so this reaches the real send failure.
         self.app.config.update(MAIL_BACKEND="smtp", MAIL_HOST="mail.example.test", MAIL_PORT=25,
-                               MAIL_FROM="noreply@example.test", MAIL_USE_TLS=False)
+                               MAIL_FROM="noreply@example.test", MAIL_USE_TLS=False,
+                               APP_BASE_URL="https://pets.example.test")
         capture = LogCapture()
         root = logging.getLogger()
         root.addHandler(capture)
         env = {"MAIL_HOST": "mail.example.test", "MAIL_PORT": "25",
                "MAIL_FROM": "noreply@example.test", "MAIL_USE_TLS": "false"}
+        detail = "synthetic failure detail"
+        raw_token = "synthetic-reset-token-value"
+        fake = FakeSMTP(error=OSError(detail))
         try:
             with mock.patch.dict(os.environ, env), \
-                    mock.patch("smtplib.SMTP", side_effect=OSError("synthetic failure")), \
-                    mock.patch("smtplib.SMTP_SSL", side_effect=OSError("synthetic failure")):
+                    mock.patch("auth.secrets.token_urlsafe", return_value=raw_token), \
+                    mock.patch("smtplib.SMTP", fake), \
+                    mock.patch("smtplib.SMTP_SSL", side_effect=OSError(detail)):
                 response = self.request_reset()
+                # Joins a background send (P8) so the log check cannot race it.
+                self.assertEqual(fake.settle(), [], "mail worker did not finish")
         finally:
             root.removeHandler(capture)
         self.assertEqual(response.status_code, 200)
         self.assertIn(GENERIC, self.page_text(response))
+        self.assertTrue(fake.called, "the SMTP send was never attempted")
+        self.assertEqual(fake.sent_messages, [])
         self.assertTrue(capture.lines, "send failure was not logged")
         logged = "\n".join(capture.lines)
+        self.assertIn("OSError", logged)
+        self.assertNotIn(detail, logged)
+        self.assertNotIn(raw_token, logged)
         self.assertNotIn("/reset-password/", logged)
         model = self.model_or_fail("PasswordResetToken")
         with self.app.app_context():

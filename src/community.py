@@ -5,6 +5,7 @@ from math import asin, cos, isfinite, radians, sin, sqrt
 
 from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
+from sqlalchemy import or_
 
 from extensions import db
 from models import Report, ReportComment
@@ -42,6 +43,19 @@ def _shared_report_or_404(report_id):
     if report is None or not report.pets:
         abort(404)
     return report
+
+
+def _retained_comments(author_id):
+    """This author's comments whose post page no longer exists for them."""
+    return (
+        ReportComment.query.join(Report)
+        .filter(
+            ReportComment.author_id == author_id,
+            or_(Report.is_shared.is_(False), ~Report.report_pets.any()),
+        )
+        .order_by(ReportComment.created_at.desc(), ReportComment.id.desc())
+        .all()
+    )
 
 
 def _name_error(name):
@@ -118,6 +132,7 @@ def feed():
             has_more = len(matches) > end
     return render_template(
         "community/feed.html",
+        retained_comments=_retained_comments(current_user.id),
         posts=posts,
         values=values,
         errors=errors,
@@ -238,7 +253,7 @@ def add_comment(report_id):
 )
 @login_required
 def delete_comment(report_id, comment_id):
-    _shared_report_or_404(report_id)
+    # Authors keep control of their own words after a report is unshared.
     comment = ReportComment.query.filter_by(
         id=comment_id,
         report_id=report_id,
@@ -246,8 +261,13 @@ def delete_comment(report_id, comment_id):
     ).first()
     if comment is None:
         abort(404)
+    report = comment.report
+    post_is_visible = report.is_shared and bool(report.pets)
     db.session.delete(comment)
     db.session.commit()
-    return redirect(
-        url_for("community.view_post", report_id=report_id, _anchor="comments")
-    )
+    if post_is_visible:
+        return redirect(
+            url_for("community.view_post", report_id=report_id, _anchor="comments")
+        )
+    flash("Your comment was deleted.", "success")
+    return redirect(url_for("community.feed"))

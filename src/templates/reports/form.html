@@ -31,7 +31,9 @@
 
   <div class="form-group">
     <label for="last_seen_at">Last seen time (optional)</label>
-    <input type="datetime-local" id="last_seen_at" name="last_seen_at" value="{{ values.last_seen_at }}"{{ describe(errors, 'last_seen_at') }}>
+    <div class="report-datetime">
+      <input type="datetime-local" id="last_seen_at" name="last_seen_at" value="{{ values.last_seen_at }}"{{ describe(errors, 'last_seen_at') }}>
+    </div>
     {{ field_error(errors, 'last_seen_at') }}
   </div>
 
